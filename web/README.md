@@ -28,6 +28,19 @@ Supabase projenizde kullanıcı oluştururken `user_metadata` içine şu alanlar
 
 Ortam değişkenleri yoksa middleware herkese açık sayfalara izin verir; pano yolları için `/login?error=config` yönlendirmesi hedeflenmiştir ve `createSupabaseServerClient` `null` ise layout yine config hatasına düşer.
 
-## Yayınlama
+## Yayınlama — Netlify
+
+Repo kökünde [`netlify.toml`](../netlify.toml) tanımlıdır: **Base directory = `web`**, Next.js için **`@netlify/plugin-nextjs`** kullanılır.  
+
+Netlify arayüzünde şunlara dikkat edin:
+
+- **Base directory:** `web` (veya sadece `netlify.toml` dosyasına güvenin; dosyada `base = "web"` var).
+- **Build command:** `npm run build` (genelde `netlify.toml` ile alınır).
+- **Publish directory:** Boş bırakın veya Netlify Next eklentisinin önerdiği değeri kullanın; **elle `dist` / `out` yazmayın** (SSR App Router için yanlış olur).
+- Ortam değişkenleri: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Site settings → Environment variables).
+
+**404 “Page not found”** genelde şu iki nedenden olur: (1) base directory repo kökü kalmış, `web` değil; (2) Next için Netlify eklentisi yok / publish yanlış ayarlı.
+
+## Yayınlama (genel)
 
 Netlify veya Vercel kullanırken `NEXT_PUBLIC_*` anahtarlarını proje ayarlarına ekleyin.
