@@ -4,6 +4,8 @@
 [build]
   base = "web"
   command = "npm run build"
+  # Varsayılan "publish = base" OpenNext için hata verir; base ile aynı dizin olamaz.
+  publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

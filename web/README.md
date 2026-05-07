@@ -36,7 +36,7 @@ Netlify arayüzünde şunlara dikkat edin:
 
 - **Base directory:** `web` (veya sadece `netlify.toml` dosyasına güvenin; dosyada `base = "web"` var).
 - **Build command:** `npm run build` (genelde `netlify.toml` ile alınır).
-- **Publish directory:** Boş bırakın veya Netlify Next eklentisinin önerdiği değeri kullanın; **elle `dist` / `out` yazmayın** (SSR App Router için yanlış olur).
+- **Publish directory:** `netlify.toml` içinde **`publish = ".next"`** vardır (`base = "web"` iken yayın klasörünün ana dizinle **aynı** olması OpenNext hatasına yol açar). Panelde gereksiz yere **`web`** veya **`.`** yazmayın — dosya ayarı geçerlidir veya publish alanını silin ki çakışma olmasın.
 - Ortam değişkenleri: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Site settings → Environment variables).
 
 **404 “Page not found”** genelde şu iki nedenden olur: (1) base directory repo kökü kalmış, `web` değil; (2) Next için Netlify eklentisi yok / publish yanlış ayarlı.
