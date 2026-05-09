@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { MoreHorizontal } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -47,29 +49,40 @@ export function DashboardTopbar({ user, profile, supabase }: Props) {
       <span className="text-sm text-muted-foreground">
         {profile?.role ? ROLE_LABELS[profile.role] : "Oturum"}
       </span>
-      <DropdownMenu>
-        <DropdownMenuTrigger className="rounded-full outline-none ring-offset-2 focus-visible:ring-2">
-          <Avatar>
+      <div className="flex items-center gap-0.5">
+        <Link
+          href="/account"
+          className="rounded-full outline-none ring-offset-2 focus-visible:ring-2"
+          aria-label="Hesap ayarları"
+          title="Hesap ayarları"
+        >
+          <Avatar className="h-9 w-9">
             <AvatarFallback>{initial}</AvatarFallback>
           </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-52">
-          <DropdownMenuLabel>{email ?? "Kullanıcı"}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onSelect={() => router.push("/account")} className="cursor-pointer">
-            Hesabım
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push("/")} className="cursor-pointer">
-            Siteye dön
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => void supabase?.auth.signOut()}
-            className="cursor-pointer"
+        </Link>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            type="button"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none ring-offset-2 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label="Menü"
           >
-            Çıkış
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+            <MoreHorizontal className="h-5 w-5" aria-hidden />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel>{email ?? "Kullanıcı"}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => router.push("/")} className="cursor-pointer">
+              Siteye dön
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => void supabase?.auth.signOut()}
+              className="cursor-pointer"
+            >
+              Çıkış
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }

@@ -89,4 +89,6 @@ create table public.landing_package_prices (
   updated_at timestamptz not null default now ()
 );
 
--- Örnek: RLS politikaları burada tanımlanmalıdır (SECURITY.md ile birlikte uygulanır).
+-- İşletme panosu tenants/services RLS: migration 005_business_tenant_rls.sql dosyasını Supabase’te çalıştırın.
+
+-- Örnek: Diğer tablolar için RLS SECURITY.md ile birlikte uygulanmalıdır.

@@ -145,5 +145,6 @@ export async function updateTenantPlatformAction(input: {
   }
 
   revalidatePath("/platform/tenants");
+  revalidatePath("/admin/settings");
   return { ok: true, error: null };
 }

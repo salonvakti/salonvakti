@@ -49,17 +49,18 @@ export default function AdminSettingsPage() {
         .from("tenants")
         .select("name,phone,address")
         .eq("id", profile.tenantId)
-        .single();
+        .maybeSingle();
 
       if (!active) return;
 
-      if (error) {
+      if (error || !data) {
         setSalonName(initialName);
-        setSaveError("İşletme bilgileri yüklenemedi, varsayılan bilgiler gösteriliyor.");
+        setPhone("");
+        setAddress("");
       } else {
-        setSalonName(data?.name ?? initialName);
-        setPhone(data?.phone ?? "");
-        setAddress(data?.address ?? "");
+        setSalonName(data.name ?? initialName);
+        setPhone(data.phone ?? "");
+        setAddress(data.address ?? "");
       }
 
       setLoadingProfile(false);
