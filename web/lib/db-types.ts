@@ -43,6 +43,8 @@ export interface AppointmentRow {
   start_time: string;
   end_time: string;
   status: AppointmentStatus;
+  /** Rezervasyon oluşturulurken kopyalanan hizmet fiyatı (TRY); eski kayıtlarda null olabilir */
+  price_snapshot: number | null;
   created_at: string;
 }
 

@@ -234,6 +234,7 @@ export async function createPublicBookingAction(input: {
       start_time: start.toISOString(),
       end_time: end.toISOString(),
       status: "pending",
+      price_snapshot: service.price,
     })
     .select("id")
     .single();

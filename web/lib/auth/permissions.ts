@@ -100,6 +100,7 @@ export const dashboardNav = {
       label: "Randevular",
       roles: ["business_admin", "business_user"] as UserRole[],
     },
+    { href: "/admin/reports", label: "Raporlar", roles: ["business_admin"] as UserRole[] },
     { href: "/admin/clients", label: "Müşteriler", roles: ["business_admin"] as UserRole[] },
     { href: "/admin/services", label: "Hizmetler", roles: ["business_admin"] as UserRole[] },
     { href: "/admin/staff", label: "Personel", roles: ["business_admin"] as UserRole[] },

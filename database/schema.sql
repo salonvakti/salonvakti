@@ -81,6 +81,7 @@ create table public.appointments (
   start_time timestamptz not null,
   end_time timestamptz not null,
   status public.appointment_status not null default 'pending',
+  price_snapshot numeric(12, 2),
   created_at timestamptz not null default now (),
   check (end_time > start_time)
 );
