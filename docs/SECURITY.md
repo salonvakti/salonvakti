@@ -6,7 +6,7 @@ Bu belge, SalonVakti çok kiracılı modelde **platform kullanıcılarının mü
 
 - `platform_user` rolü yalnızca `/platform/**` path'lerine middleware ve `canAccessPath()` ile yönlendirilir.
 - Tenant yönetimi ekranları yalnızca **aggregate ya da tenant meta** verisini listeler; müşteri adı, telefon, e-posta ya da randevu detayı UI'da sunulmaz.
-- `platform_admin` destek amaçlı tüm panelleri görebilir; yine de günlük kullanımda erişim günlüğü tutulması önerilir.
+- `platform_admin` uygulama katmanında yalnızca `/platform/**` panosuna yönlendirilir; işletme veya son müşteri panelleri ayrı oturum (rol) ile açılmalıdır. Destek için ek erişim gerekirse güvenilir backend / service role ile sınırlı araçlar kullanılmalıdır.
 
 ## Supabase (önerilen)
 

@@ -13,7 +13,7 @@ export type RoutePrefix =
 
 /**
  * Pathname (ör. /admin/clients) için rol erişimi.
- * - platform_admin: tüm korumalı paneller
+ * - platform_admin: yalnızca /platform (işletmeler = müşteri; işletme panosu ayrı hesap)
  * - platform_user: yalnızca /platform (müşteri/randevu verisi yok)
  * - business_admin: tam işletme paneli + personel görünümleri
  * - business_user: personel paneli + sınırlı işletme randevu ekranları
@@ -25,18 +25,8 @@ export function canAccessPath(pathname: string, role: UserRole): boolean {
     return isPlatformStaffRole(role);
   }
 
-  if (role === "platform_admin") {
-    if (
-      path.startsWith("/admin") ||
-      path.startsWith("/staff") ||
-      path.startsWith("/client")
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  if (role === "platform_user") {
+  /** platform_admin ve platform_user yalnızca platform panosu; işletme panelleri ayrı oturumla */
+  if (role === "platform_admin" || role === "platform_user") {
     return false;
   }
 
@@ -145,12 +135,6 @@ export function navItemsForRole(role: UserRole): { href: string; label: string }
       if ((n.roles as readonly UserRole[]).includes(role))
         items.push({ href: n.href, label: n.label });
     });
-  }
-
-  if (role === "platform_admin") {
-    dashboardNav.businessAdmin.forEach((n) => items.push({ href: n.href, label: n.label }));
-    dashboardNav.staff.forEach((n) => items.push({ href: n.href, label: n.label }));
-    dashboardNav.client.forEach((n) => items.push({ href: n.href, label: n.label }));
   }
 
   if (role === "business_admin") {
