@@ -20,6 +20,7 @@ create table public.tenants (
   logo_url text,
   address text,
   phone text,
+  promo_text text,
   status public.tenant_status not null default 'active',
   license_plan text,
   license_start_at timestamptz,

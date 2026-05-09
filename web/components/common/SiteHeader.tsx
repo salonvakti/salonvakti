@@ -14,6 +14,9 @@ export function SiteHeader() {
           <Link href="/#paketler" className={buttonVariants({ variant: "ghost" })}>
             Paketler
           </Link>
+          <Link href="/isletmeler" className={buttonVariants({ variant: "ghost" })}>
+            İşletmeler
+          </Link>
           <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
             Giriş
           </Link>

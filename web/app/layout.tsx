@@ -10,6 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: "SalonVakti – Online randevu ve salon yönetimi",
   description:
     "Küçük ve orta ölçekli salonlar için çok kiracılı SaaS randevu ve işletme yönetimi platformu.",

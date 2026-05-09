@@ -4,31 +4,49 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookingSalonClient } from "@/components/booking/BookingSalonClient";
+import { getPublicSalonBySlug } from "@/lib/public/salon-directory";
+import { absoluteUrl } from "@/lib/seo/site-url";
+import { normalizeTenantSlug } from "@/lib/tenant/slug";
 
 type Props = { params: { salonSlug: string } };
 
-export function generateMetadata({ params }: Props): Metadata {
-  const slug = decodeURIComponent(params.salonSlug);
-  const prettyName =
-    slug
-      .split("-")
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(" ") + " Salonu";
+function prettyNameFromSlug(slug: string): string {
+  return slug
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const slug = normalizeTenantSlug(decodeURIComponent(params.salonSlug));
+  const { salon } = await getPublicSalonBySlug(slug);
+  const label = salon?.name ?? (slug ? prettyNameFromSlug(slug) : "Salon");
+  const title = `${label} | Online randevu — SalonVakti`;
+  const description = salon?.promoText?.trim()
+    ? salon.promoText.trim().slice(0, 160)
+    : `${label} için online randevu oluşturun. SalonVakti ile hızlı rezervasyon.`;
+
   return {
-    title: `${prettyName} randevusu | SalonVakti`,
-    description: "Salon rezervasyonu — SalonVakti",
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: slug ? absoluteUrl(`/booking/${slug}`) : undefined,
+      locale: "tr_TR",
+      type: "website",
+    },
+    robots: { index: true, follow: true },
   };
 }
 
-export default function BookingSalonPage({ params }: Props) {
-  const slug = decodeURIComponent(params.salonSlug);
+export default async function BookingSalonPage({ params }: Props) {
+  const slug = normalizeTenantSlug(decodeURIComponent(params.salonSlug));
   if (!slug) notFound();
 
-  const prettyName =
-    slug
-      .split("-")
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(" ") + " Salonu";
+  const { salon } = await getPublicSalonBySlug(slug);
+  const prettyName = salon?.name ?? prettyNameFromSlug(slug);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -39,7 +57,15 @@ export default function BookingSalonPage({ params }: Props) {
             <Link href="/" className="underline underline-offset-4">
               SalonVakti
             </Link>{" "}
-            / rezervasyon
+            /{" "}
+            {salon ? (
+              <Link href={`/isletme/${encodeURIComponent(slug)}`} className="underline underline-offset-4">
+                {prettyName}
+              </Link>
+            ) : (
+              <span>{prettyName}</span>
+            )}{" "}
+            / online randevu
           </p>
         </div>
       </div>

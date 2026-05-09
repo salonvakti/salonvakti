@@ -13,6 +13,8 @@ export interface TenantRow {
   logo_url: string | null;
   address: string | null;
   phone: string | null;
+  /** Genel tanıtım sayfası (/isletme/{slug}) metni */
+  promo_text: string | null;
   status: TenantStatus;
   /** Lisans paket etiketi (örn. basic, pro) */
   license_plan: string | null;

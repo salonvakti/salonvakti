@@ -1,10 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SiteHeader } from "@/components/common/SiteHeader";
 import { getLandingPackagePriceLabels } from "@/lib/landing/package-prices";
+import { listPublicSalons } from "@/lib/public/salon-directory";
+import { SITE_SEO_KEYWORDS } from "@/lib/seo/keywords";
+import { absoluteUrl } from "@/lib/seo/site-url";
 import { cn } from "@/lib/utils";
 import {
   CalendarDays,
@@ -17,8 +21,39 @@ import {
   Users,
 } from "lucide-react";
 
+const homeDescription =
+  "SalonVakti: kuaför, berber ve güzellik merkezleri için online randevu yazılımı. Müşterileriniz anında online randevu alsın; siz takvim ve işletme yönetimini tek panelden yürütün.";
+
+export const metadata: Metadata = {
+  title: {
+    absolute:
+      "SalonVakti — Online randevu yazılımı | Salon, kuaför ve güzellik merkezi randevu sistemi",
+  },
+  description: homeDescription,
+  keywords: [...SITE_SEO_KEYWORDS],
+  openGraph: {
+    title: "SalonVakti — Online randevu ve salon yönetimi",
+    description: homeDescription,
+    locale: "tr_TR",
+    type: "website",
+    url: absoluteUrl("/"),
+    siteName: "SalonVakti",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SalonVakti — Online randevu yazılımı",
+    description: homeDescription,
+  },
+  alternates: {
+    canonical: absoluteUrl("/"),
+  },
+  robots: { index: true, follow: true },
+};
+
 export default async function HomePage() {
   const prices = await getLandingPackagePriceLabels();
+  const { salons: directorySalons } = await listPublicSalons();
+  const showcaseSalons = directorySalons.slice(0, 6);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -29,11 +64,12 @@ export default async function HomePage() {
             <div className="max-w-xl space-y-6">
               <p className="text-sm font-medium text-primary">SalonVakti SaaS</p>
               <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl">
-                Salonunuz için hızlı online randevu ve takip
+                Online randevu ve salon yönetimi — tek platformda
               </h1>
               <p className="text-lg text-muted-foreground">
-                İşletme bazlı paylaşım linki veya QR kod ile müşteriler dakikalar içinde randevu bıraksın,
-                işletmeniz bekleyen istekleri onaylayarak takviminizi yönetsin.
+                <strong className="font-medium text-foreground">Online randevu</strong> alın, müşteri
+                trafiğini paylaşılabilir bağlantı veya QR ile büyütün; işletmeniz talepleri onaylayarak
+                takvimini kontrol etsin. Salon, kuaför ve güzellik merkezleri için tasarlandı.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link href="/register" className={buttonVariants({ size: "lg" })}>
@@ -59,6 +95,72 @@ export default async function HomePage() {
                 <LandingPoint icon={<CheckCircle2 className="h-5 w-5" />} text="Hizmet süreleri ve ücret güncelleme ekranı" />
               </CardContent>
             </Card>
+          </div>
+        </section>
+
+        <section id="isletmeler" className="scroll-mt-16 border-b bg-background">
+          <div className="mx-auto max-w-6xl px-4 py-14">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div className="max-w-2xl space-y-2">
+                <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                  Online randevu veren işletmeler
+                </h2>
+                <p className="text-muted-foreground">
+                  Yayında olan işletmelerin tanıtım sayfalarını görün; müşteriler için{" "}
+                  <span className="font-medium text-foreground">online randevu</span> bağlantısıyla doğrudan
+                  rezervasyon oluşturun.
+                </p>
+              </div>
+              <Link href="/isletmeler" className={buttonVariants({ variant: "outline" })}>
+                Tümünü gör
+              </Link>
+            </div>
+            {showcaseSalons.length === 0 ? (
+              <p className="mt-8 text-sm text-muted-foreground">
+                Henüz listelenecek işletme yok. Kendi işletmenizi eklemek için{" "}
+                <Link href="/register" className="font-medium text-primary underline underline-offset-4">
+                  kayıt olun
+                </Link>
+                .
+              </p>
+            ) : (
+              <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {showcaseSalons.map((s) => (
+                  <li key={s.id}>
+                    <Card className="h-full border-muted/80 shadow-sm transition-shadow hover:shadow-md">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg leading-snug">
+                          <Link
+                            href={`/isletme/${encodeURIComponent(s.slug)}`}
+                            className="hover:underline"
+                          >
+                            {s.name}
+                          </Link>
+                        </CardTitle>
+                        <CardDescription className="line-clamp-2">
+                          {s.promoText?.trim() ||
+                            `${s.name} — online randevu ve işletme sayfası.`}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex flex-wrap gap-2">
+                        <Link
+                          href={`/isletme/${encodeURIComponent(s.slug)}`}
+                          className={buttonVariants({ variant: "secondary", size: "sm" })}
+                        >
+                          Tanıtım
+                        </Link>
+                        <Link
+                          href={`/booking/${encodeURIComponent(s.slug)}`}
+                          className={buttonVariants({ size: "sm" })}
+                        >
+                          Online randevu al
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </section>
 

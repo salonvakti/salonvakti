@@ -21,6 +21,7 @@ export default function AdminSettingsPage() {
   const [salonName, setSalonName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [promoText, setPromoText] = useState("");
   const [opened, setOpened] = useState("09:00");
   const [closed, setClosed] = useState("20:00");
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -47,7 +48,7 @@ export default function AdminSettingsPage() {
 
       const { data, error } = await client
         .from("tenants")
-        .select("name,phone,address")
+        .select("name,phone,address,promo_text")
         .eq("id", profile.tenantId)
         .maybeSingle();
 
@@ -57,10 +58,12 @@ export default function AdminSettingsPage() {
         setSalonName(initialName);
         setPhone("");
         setAddress("");
+        setPromoText("");
       } else {
         setSalonName(data.name ?? initialName);
         setPhone(data.phone ?? "");
         setAddress(data.address ?? "");
+        setPromoText(typeof data.promo_text === "string" ? data.promo_text : "");
       }
 
       setLoadingProfile(false);
@@ -95,6 +98,7 @@ export default function AdminSettingsPage() {
         name: salonName.trim(),
         phone: phone.trim() || null,
         address: address.trim() || null,
+        promo_text: promoText.trim() || null,
       })
       .eq("id", profile.tenantId);
 
@@ -151,6 +155,21 @@ export default function AdminSettingsPage() {
               onChange={(e) => setAddress(e.target.value)}
               disabled={loadingProfile || savingProfile}
             />
+          </div>
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="promo">Genel tanıtım metni</Label>
+            <textarea
+              id="promo"
+              rows={5}
+              value={promoText}
+              onChange={(e) => setPromoText(e.target.value)}
+              disabled={loadingProfile || savingProfile}
+              placeholder="İşletmenizi tanıtan kısa metin; /isletme sayfanızda ve arama sonuçlarında kullanılır."
+              className="flex min-h-[120px] w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-base outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30"
+            />
+            <p className="text-xs text-muted-foreground">
+              Bu metin herkese açık işletme sayfasında gösterilir (SEO için önemli).
+            </p>
           </div>
           {saveError ? <p className="text-sm text-destructive md:col-span-2">{saveError}</p> : null}
           {saveMessage ? (
