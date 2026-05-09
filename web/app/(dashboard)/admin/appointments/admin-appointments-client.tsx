@@ -121,6 +121,19 @@ export function AdminAppointmentsClient({
     router.refresh();
   }
 
+  function confirmReject(appointmentId: string) {
+    const ok = window.confirm(
+      "Bu randevu talebini reddetmek istediğinize emin misiniz? Durum «işletme reddetti» olarak kaydedilir."
+    );
+    if (!ok) return;
+    void updateAppointmentStatus(appointmentId, "cancelled_by_business");
+  }
+
+  const pendingCount = useMemo(
+    () => appointments.filter((a) => a.status === "pending").length,
+    [appointments]
+  );
+
   const visibleAppointments = useMemo(() => {
     let list = showPendingOnly
       ? appointments.filter((item) => item.status === "pending")
@@ -136,7 +149,15 @@ export function AdminAppointmentsClient({
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Randevular</h1>
-          <p className="text-muted-foreground">Bekleyen istekleri onaylayın veya reddedin.</p>
+          <p className="text-muted-foreground">
+            Bekleyen talepleri onaylayın veya reddedin
+            {pendingCount > 0 ? (
+              <span className="ml-1 font-medium text-foreground">
+                ({pendingCount} onay bekliyor)
+              </span>
+            ) : null}
+            .
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" type="button" onClick={() => void refreshFromServer()} disabled={loading}>
@@ -175,7 +196,12 @@ export function AdminAppointmentsClient({
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
       {loading ? <p className="text-sm text-muted-foreground">Randevular güncelleniyor...</p> : null}
-      <AppointmentCalendar items={visibleAppointments} />
+      <AppointmentCalendar
+        items={visibleAppointments}
+        moderationUpdatingId={updatingId}
+        onApprovePending={(id) => void updateAppointmentStatus(id, "confirmed")}
+        onRejectPending={(id) => confirmReject(id)}
+      />
 
       <div className="rounded-md border">
         <Table>
@@ -199,27 +225,29 @@ export function AdminAppointmentsClient({
                 <TableCell>
                   <Badge className={getStatusBadgeClass(a.status)}>{statusLabel[a.status]}</Badge>
                 </TableCell>
-                <TableCell className="text-right space-x-2">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => void updateAppointmentStatus(a.id, "confirmed")}
-                    disabled={updatingId === a.id || a.status === "confirmed" || a.status === "completed"}
-                  >
-                    Onayla
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => void updateAppointmentStatus(a.id, "cancelled_by_business")}
-                    disabled={
-                      updatingId === a.id ||
-                      a.status === "cancelled_by_business" ||
-                      a.status === "completed"
-                    }
-                  >
-                    Reddet
-                  </Button>
+                <TableCell className="text-right">
+                  {a.status === "pending" ? (
+                    <div className="flex flex-wrap justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => void updateAppointmentStatus(a.id, "confirmed")}
+                        disabled={updatingId === a.id}
+                      >
+                        Onayla
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => confirmReject(a.id)}
+                        disabled={updatingId === a.id}
+                      >
+                        Reddet
+                      </Button>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">—</span>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

@@ -90,10 +90,17 @@ export async function listAppointmentsForTenantAdminAction(): Promise<{
   };
 }
 
+const adminModerationStatuses: AppointmentStatus[] = ["confirmed", "cancelled_by_business"];
+
+/** Yalnızca beklemedeki randevular onaylanır veya işletme tarafından reddedilir. */
 export async function updateAppointmentStatusAdminAction(input: {
   appointmentId: string;
   status: AppointmentStatus;
 }): Promise<{ ok: boolean; error: string | null }> {
+  if (!adminModerationStatuses.includes(input.status)) {
+    return { ok: false, error: "Bu işlem türü panelden yapılamaz." };
+  }
+
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return { ok: false, error: "Oturum yapılandırması eksik." };
@@ -116,14 +123,24 @@ export async function updateAppointmentStatusAdminAction(input: {
     return { ok: false, error: "Sunucu yapılandırması eksik." };
   }
 
-  const { error } = await admin
+  const { data, error } = await admin
     .from("appointments")
     .update({ status: input.status })
     .eq("id", input.appointmentId)
-    .eq("tenant_id", profile.tenantId);
+    .eq("tenant_id", profile.tenantId)
+    .eq("status", "pending")
+    .select("id");
 
   if (error) {
     return { ok: false, error: error.message };
+  }
+
+  if (!data?.length) {
+    return {
+      ok: false,
+      error:
+        "Bu randevu güncellenemedi. Yalnızca «beklemede» durumundaki talepler onaylanabilir veya reddedilebilir.",
+    };
   }
 
   revalidatePath("/admin/appointments");
