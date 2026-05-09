@@ -11,10 +11,12 @@ type Props = {
     durationMinutes: number;
     price: number;
     description: string;
-  }) => void;
+  }) => Promise<boolean> | boolean;
+  disabled?: boolean;
+  submitting?: boolean;
 };
 
-export function ServiceForm({ onSubmit }: Props) {
+export function ServiceForm({ onSubmit, disabled = false, submitting = false }: Props) {
   const [name, setName] = useState("");
   const [duration, setDuration] = useState(30);
   const [price, setPrice] = useState(0);
@@ -23,19 +25,30 @@ export function ServiceForm({ onSubmit }: Props) {
   return (
     <form
       className="space-y-4"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        onSubmit({
+        const ok = await onSubmit({
           name,
           durationMinutes: duration,
           price,
           description,
         });
+        if (!ok) return;
+        setName("");
+        setDuration(30);
+        setPrice(0);
+        setDescription("");
       }}
     >
       <div className="space-y-2">
         <Label htmlFor="svc-name">Hizmet adı</Label>
-        <Input id="svc-name" value={name} onChange={(e) => setName(e.target.value)} required />
+        <Input
+          id="svc-name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          disabled={disabled || submitting}
+          required
+        />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
@@ -47,6 +60,7 @@ export function ServiceForm({ onSubmit }: Props) {
             step={5}
             value={duration}
             onChange={(e) => setDuration(Number(e.target.value))}
+            disabled={disabled || submitting}
             required
           />
         </div>
@@ -59,15 +73,23 @@ export function ServiceForm({ onSubmit }: Props) {
             step={10}
             value={price}
             onChange={(e) => setPrice(Number(e.target.value))}
+            disabled={disabled || submitting}
             required
           />
         </div>
       </div>
       <div className="space-y-2">
         <Label htmlFor="svc-desc">Açıklama</Label>
-        <Input id="svc-desc" value={description} onChange={(e) => setDescription(e.target.value)} />
+        <Input
+          id="svc-desc"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          disabled={disabled || submitting}
+        />
       </div>
-      <Button type="submit">Hizmeti ekle</Button>
+      <Button type="submit" disabled={disabled || submitting}>
+        {submitting ? "Kaydediliyor..." : "Hizmeti ekle"}
+      </Button>
     </form>
   );
 }

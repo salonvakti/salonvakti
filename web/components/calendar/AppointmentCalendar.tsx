@@ -13,6 +13,19 @@ const statusLabel: Record<AppointmentSummary["status"], string> = {
   completed: "Tamamlandı",
 };
 
+function getStatusBadgeClass(status: AppointmentSummary["status"]): string {
+  if (status === "confirmed") {
+    return "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300";
+  }
+  if (status === "pending") {
+    return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300";
+  }
+  if (status === "cancelled_by_business") {
+    return "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300";
+  }
+  return "";
+}
+
 type Props = {
   items: AppointmentSummary[];
   title?: string;
@@ -42,7 +55,7 @@ export function AppointmentCalendar({ items, title = "Randevular" }: Props) {
                 </div>
                 <div className="flex flex-col items-start gap-1 md:items-end">
                   <span>{new Date(a.startTime).toLocaleString("tr-TR")}</span>
-                  <Badge variant={a.status === "pending" ? "secondary" : "default"} className="text-xs">
+                  <Badge className={getStatusBadgeClass(a.status)}>
                     {statusLabel[a.status]}
                   </Badge>
                 </div>
