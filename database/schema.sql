@@ -70,6 +70,8 @@ create table public.staff (
 
 create index staff_tenant_idx on public.staff (tenant_id);
 
+-- Personel RLS (migration: 008_staff_rls.sql)
+
 create table public.appointments (
   id uuid primary key default gen_random_uuid (),
   tenant_id uuid not null references public.tenants (id) on delete cascade,

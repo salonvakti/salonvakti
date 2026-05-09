@@ -2,12 +2,11 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { createStaffMemberAction } from "./actions";
+import { createStaffMemberAction, listStaffForAdminAction } from "./actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useSupabaseContext } from "@/components/providers/supabase-provider";
 import type { StaffRow } from "@/lib/db-types";
 import {
   Table,
@@ -18,12 +17,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export function StaffAdminClient() {
+export function StaffAdminClient({
+  initialRows,
+  initialListError,
+}: {
+  initialRows: StaffRow[];
+  initialListError: string | null;
+}) {
   const router = useRouter();
-  const { client, profile } = useSupabaseContext();
-  const [rows, setRows] = useState<StaffRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [rows, setRows] = useState<StaffRow[]>(initialRows);
+  const [error, setError] = useState<string | null>(initialListError);
   const [showForm, setShowForm] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [teamRole, setTeamRole] = useState("");
@@ -33,40 +36,9 @@ export function StaffAdminClient() {
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
-    let active = true;
-
-    async function load() {
-      setError(null);
-      if (!client || !profile?.tenantId) {
-        if (active) {
-          setLoading(false);
-          setError("İşletme bilgisi bulunamadı (tenant_id eksik).");
-        }
-        return;
-      }
-
-      const { data, error: fetchError } = await client
-        .from("staff")
-        .select("id,tenant_id,user_id,display_name,team_role,color")
-        .eq("tenant_id", profile.tenantId)
-        .order("display_name", { ascending: true });
-
-      if (!active) return;
-
-      if (fetchError) {
-        setError(`Personel listesi yüklenemedi: ${fetchError.message}`);
-        setRows([]);
-      } else {
-        setRows((data ?? []) as StaffRow[]);
-      }
-      setLoading(false);
-    }
-
-    void load();
-    return () => {
-      active = false;
-    };
-  }, [client, profile?.tenantId]);
+    setRows(initialRows);
+    setError(initialListError);
+  }, [initialRows, initialListError]);
 
   function submitCreate() {
     startTransition(async () => {
@@ -88,13 +60,12 @@ export function StaffAdminClient() {
       setEmail("");
       setPassword("");
       router.refresh();
-      if (client && profile?.tenantId) {
-        const { data } = await client
-          .from("staff")
-          .select("id,tenant_id,user_id,display_name,team_role,color")
-          .eq("tenant_id", profile.tenantId)
-          .order("display_name", { ascending: true });
-        setRows((data ?? []) as StaffRow[]);
+      const refreshed = await listStaffForAdminAction();
+      if (refreshed.error) {
+        setError(refreshed.error);
+      } else {
+        setError(null);
+        setRows(refreshed.rows);
       }
     });
   }
@@ -114,7 +85,6 @@ export function StaffAdminClient() {
       </div>
 
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
-      {loading ? <p className="text-sm text-muted-foreground">Yükleniyor...</p> : null}
 
       {showForm ? (
         <div className="space-y-4 rounded-lg border bg-card p-4">
@@ -222,7 +192,7 @@ export function StaffAdminClient() {
                 </TableCell>
               </TableRow>
             ))}
-            {!loading && rows.length === 0 ? (
+            {rows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">
                   Henüz personel yok.

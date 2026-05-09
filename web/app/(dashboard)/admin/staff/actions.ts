@@ -3,7 +3,52 @@
 import { revalidatePath } from "next/cache";
 import { createStaffMemberWithAuthUser } from "@/lib/business/staff-members";
 import { getSessionProfile } from "@/lib/auth/session";
+import type { StaffRow } from "@/lib/db-types";
+import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+/** İşletme yöneticisi paneli: RLS client SELECT başarısız olsa bile liste sunucudan gelir. */
+export async function listStaffForAdminAction(): Promise<{
+  rows: StaffRow[];
+  error: string | null;
+}> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return { rows: [], error: "Oturum yapılandırması eksik." };
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { rows: [], error: "Oturum yok." };
+  }
+
+  const profile = getSessionProfile(user);
+  if (profile?.role !== "business_admin" || !profile.tenantId) {
+    return { rows: [], error: "Bu sayfa için işletme yöneticisi olmalısınız." };
+  }
+
+  const admin = createServiceRoleSupabaseClient();
+  if (!admin) {
+    return {
+      rows: [],
+      error: "Sunucu yapılandırması eksik: SUPABASE_SERVICE_ROLE_KEY gerekli.",
+    };
+  }
+
+  const { data, error } = await admin
+    .from("staff")
+    .select("id,tenant_id,user_id,display_name,team_role,color")
+    .eq("tenant_id", profile.tenantId)
+    .order("display_name", { ascending: true });
+
+  if (error) {
+    return { rows: [], error: error.message };
+  }
+
+  return { rows: (data ?? []) as StaffRow[], error: null };
+}
 
 export async function createStaffMemberAction(input: {
   displayName: string;

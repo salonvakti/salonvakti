@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { TenantRow } from "@/lib/db-types";
+import { fetchPublicBookingStaff } from "@/lib/public/booking-staff";
 import { pickPublicAddress, pickPublicPromo } from "@/lib/public/tenant-public-fields";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 import { isTenantLicenseActive } from "@/lib/tenant/license";
@@ -184,20 +185,7 @@ export async function getPublicSalonBySlug(rawSlug: string): Promise<{
     description: (s.description as string | null) ?? null,
   }));
 
-  const { data: staffRows, error: stErr } = await admin
-    .from("staff")
-    .select("id,display_name")
-    .eq("tenant_id", tr.id)
-    .order("display_name", { ascending: true });
-
-  if (stErr) {
-    return { salon: null, error: stErr.message };
-  }
-
-  const staff: PublicSalonStaff[] = (staffRows ?? []).map((row) => ({
-    id: row.id as string,
-    displayName: row.display_name as string,
-  }));
+  const staff: PublicSalonStaff[] = await fetchPublicBookingStaff(tr.id);
 
   return {
     salon: {
