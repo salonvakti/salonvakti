@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AppointmentCalendar } from "@/components/calendar/AppointmentCalendar";
 import { useSupabaseContext } from "@/components/providers/supabase-provider";
@@ -34,10 +33,6 @@ export default function StaffMySchedulePage() {
     async function resolveStaff() {
       if (!client || !profile?.tenantId) {
         if (active) setResolvedStaffId(null);
-        return;
-      }
-      if (profile.role === "business_admin") {
-        if (active) setResolvedStaffId("__all__");
         return;
       }
       if (profile.role !== "business_user") {
@@ -81,19 +76,14 @@ export default function StaffMySchedulePage() {
         return;
       }
 
-      let query = client
+      const { data, error: fetchError } = await client
         .from("appointments")
         .select(
           "id,tenant_id,staff_id,start_time,end_time,status,clients(name),services(name),staff(display_name)"
         )
         .eq("tenant_id", profile.tenantId)
+        .eq("staff_id", resolvedStaffId)
         .order("start_time", { ascending: true });
-
-      if (resolvedStaffId !== "__all__") {
-        query = query.eq("staff_id", resolvedStaffId);
-      }
-
-      const { data, error: fetchError } = await query;
 
       if (!active) return;
 
@@ -123,11 +113,11 @@ export default function StaffMySchedulePage() {
     };
   }, [client, profile?.tenantId, resolvedStaffId]);
 
-  if (profile?.role !== "business_user" && profile?.role !== "business_admin") {
+  if (profile?.role !== "business_user") {
     return (
       <div className="space-y-6">
         <h1 className="text-3xl font-bold tracking-tight">Takvimim</h1>
-        <p className="text-sm text-muted-foreground">Bu sayfa işletme hesapları içindir.</p>
+        <p className="text-sm text-muted-foreground">Bu sayfa işletme personeli hesapları içindir.</p>
       </div>
     );
   }
@@ -136,19 +126,9 @@ export default function StaffMySchedulePage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Takvimim</h1>
-        <p className="text-muted-foreground">
-          {profile?.role === "business_admin"
-            ? "İşletmenizdeki tüm randevuların özeti. Onay ve filtre için "
-            : "Size atanmış randevular. "}
-          {profile?.role === "business_admin" ? (
-            <Link href="/admin/appointments" className="underline underline-offset-4">
-              Randevular
-            </Link>
-          ) : null}
-          {profile?.role === "business_admin" ? " sayfasını kullanın." : null}
-        </p>
+        <p className="text-muted-foreground">Size atanmış randevular.</p>
       </div>
-      {profile?.role === "business_user" && !resolvedStaffId ? (
+      {!resolvedStaffId ? (
         <p className="text-sm text-destructive">
           Personel kaydı bulunamadı. İşletme yöneticinizin sizi personel listesine eklediğinden ve hesabınızın
           bağlandığından emin olun.

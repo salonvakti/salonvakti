@@ -64,13 +64,6 @@ export default function StaffMyClientsPage() {
         }
         return;
       }
-      if (profile.role === "business_admin") {
-        if (active) {
-          setResolvedStaffId("__all__");
-          setStaffLookupDone(true);
-        }
-        return;
-      }
       if (profile.role !== "business_user") {
         if (active) {
           setResolvedStaffId(null);
@@ -133,63 +126,51 @@ export default function StaffMyClientsPage() {
         if (active) {
           setLoading(false);
           setRows([]);
-          setError(
-            profile.role === "business_user"
-              ? "Personel kaydı bulunamadı; müşteri listesi için staff bağlantısı gerekir."
-              : "Bu hesap için müşteri listesi açılamıyor."
-          );
+          setError("Personel kaydı bulunamadı; müşteri listesi için staff bağlantısı gerekir.");
         }
         return;
       }
 
       setLoading(true);
 
-      let clientIds: string[] = [];
       const lastByClient = new Map<string, string>();
 
-      if (resolvedStaffId !== "__all__") {
-        const { data: appts, error: apptErr } = await client
-          .from("appointments")
-          .select("client_id,start_time")
-          .eq("tenant_id", profile.tenantId)
-          .eq("staff_id", resolvedStaffId)
-          .order("start_time", { ascending: false });
+      const { data: appts, error: apptErr } = await client
+        .from("appointments")
+        .select("client_id,start_time")
+        .eq("tenant_id", profile.tenantId)
+        .eq("staff_id", resolvedStaffId)
+        .order("start_time", { ascending: false });
 
-        if (!active) return;
+      if (!active) return;
 
-        if (apptErr) {
-          setError(`Randevular yüklenemedi: ${apptErr.message}`);
-          setRows([]);
-          setLoading(false);
-          return;
-        }
-
-        for (const row of appts ?? []) {
-          const cid = row.client_id as string | null;
-          const st = row.start_time as string | null;
-          if (!cid || !st) continue;
-          if (!lastByClient.has(cid)) lastByClient.set(cid, st);
-        }
-        clientIds = Array.from(lastByClient.keys());
-
-        if (clientIds.length === 0) {
-          setRows([]);
-          setLoading(false);
-          return;
-        }
+      if (apptErr) {
+        setError(`Randevular yüklenemedi: ${apptErr.message}`);
+        setRows([]);
+        setLoading(false);
+        return;
       }
 
-      let q = client
+      for (const row of appts ?? []) {
+        const cid = row.client_id as string | null;
+        const st = row.start_time as string | null;
+        if (!cid || !st) continue;
+        if (!lastByClient.has(cid)) lastByClient.set(cid, st);
+      }
+      const clientIds = Array.from(lastByClient.keys());
+
+      if (clientIds.length === 0) {
+        setRows([]);
+        setLoading(false);
+        return;
+      }
+
+      const { data, error: fetchError } = await client
         .from("clients")
         .select("id,name,phone,email,user_id,business_approved_at,phone_verified_at")
         .eq("tenant_id", profile.tenantId)
+        .in("id", clientIds)
         .order("created_at", { ascending: false });
-
-      if (resolvedStaffId !== "__all__") {
-        q = q.in("id", clientIds);
-      }
-
-      const { data, error: fetchError } = await q;
 
       if (!active) return;
 
@@ -211,7 +192,7 @@ export default function StaffMyClientsPage() {
     return () => {
       active = false;
     };
-  }, [client, profile?.tenantId, profile?.role, resolvedStaffId, staffLookupDone]);
+  }, [client, profile?.tenantId, resolvedStaffId, staffLookupDone]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -222,15 +203,23 @@ export default function StaffMyClientsPage() {
     });
   }, [rows, query]);
 
+  if (profile?.role !== "business_user") {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold tracking-tight">Müşterilerim</h1>
+        <p className="text-sm text-muted-foreground">Bu sayfa işletme personeli hesapları içindir.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Müşterilerim</h1>
           <p className="text-muted-foreground">
-            {resolvedStaffId === "__all__"
-              ? "İşletmenizdeki tüm müşteriler. İşletme onaylı (yeşil), telefon onaylı (sarı), yalnızca platform kaydı (turuncu)."
-              : "Sizinle randevusu olan müşteriler. İşletme onaylı (yeşil), telefon onaylı (sarı), yalnızca platform kaydı (turuncu)."}
+            Sizinle randevusu olan müşteriler. İşletme onaylı (yeşil), telefon onaylı (sarı), yalnızca platform
+            kaydı (turuncu).
           </p>
         </div>
         <Input
@@ -265,9 +254,7 @@ export default function StaffMyClientsPage() {
                     <Badge className={meta.badgeClass}>{meta.label}</Badge>
                   </TableCell>
                   <TableCell className="font-medium">{c.name}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {resolvedStaffId === "__all__" ? "—" : formatLastVisit(c.lastAppointmentAt)}
-                  </TableCell>
+                  <TableCell className="text-muted-foreground">{formatLastVisit(c.lastAppointmentAt)}</TableCell>
                   <TableCell>{c.phone ?? "—"}</TableCell>
                   <TableCell>{c.email ?? "—"}</TableCell>
                 </TableRow>
@@ -276,9 +263,7 @@ export default function StaffMyClientsPage() {
             {!loading && filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
-                  {resolvedStaffId !== "__all__"
-                    ? "Bu personel için kayıtlı randevu / müşteri yok veya arama sonucu boş."
-                    : "Müşteri yok veya arama sonucu boş."}
+                  Bu personel için kayıtlı randevu / müşteri yok veya arama sonucu boş.
                 </TableCell>
               </TableRow>
             ) : null}

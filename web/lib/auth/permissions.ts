@@ -15,8 +15,8 @@ export type RoutePrefix =
  * Pathname (ör. /admin/clients) için rol erişimi.
  * - platform_admin: yalnızca /platform (işletmeler = müşteri; işletme panosu ayrı hesap)
  * - platform_user: yalnızca /platform (müşteri/randevu verisi yok)
- * - business_admin: tam işletme paneli + personel görünümleri
- * - business_user: personel paneli + sınırlı işletme randevu ekranları
+ * - business_admin: tam işletme paneli (/admin); personel rotaları (/staff) yalnızca business_user içindir
+ * - business_user: personel paneli (/staff) + sınırlı işletme randevu ekranları (/admin/dashboard, /admin/appointments)
  */
 export function canAccessPath(pathname: string, role: UserRole): boolean {
   const path = pathname.split("?")[0] ?? pathname;
@@ -46,8 +46,8 @@ export function canAccessPath(pathname: string, role: UserRole): boolean {
     return false;
   }
 
-  if (path.startsWith("/staff")) {
-    return role === "business_user" || role === "business_admin";
+  if (path === "/staff" || path.startsWith("/staff/")) {
+    return role === "business_user";
   }
 
   if (path.startsWith("/client")) {
@@ -109,12 +109,12 @@ export const dashboardNav = {
     {
       href: "/staff/my-schedule",
       label: "Takvimim",
-      roles: ["business_user", "business_admin"] as UserRole[],
+      roles: ["business_user"] as UserRole[],
     },
     {
       href: "/staff/my-clients",
       label: "Müşterilerim",
-      roles: ["business_user", "business_admin"] as UserRole[],
+      roles: ["business_user"] as UserRole[],
     },
   ],
   client: [
@@ -148,7 +148,6 @@ export function navItemsForRole(role: UserRole): { href: string; label: string }
 
   if (role === "business_admin") {
     dashboardNav.businessAdmin.forEach((n) => items.push({ href: n.href, label: n.label }));
-    dashboardNav.staff.forEach((n) => items.push({ href: n.href, label: n.label }));
   }
 
   if (role === "business_user") {

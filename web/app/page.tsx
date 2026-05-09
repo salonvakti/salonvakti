@@ -62,7 +62,7 @@ export default async function HomePage() {
         <section className="border-b bg-gradient-to-b from-muted/60 to-background">
           <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-16 md:flex-row md:items-center md:justify-between">
             <div className="max-w-xl space-y-6">
-              <p className="text-sm font-medium text-primary">SalonVakti SaaS</p>
+              <p className="text-sm font-medium text-primary">SalonVakti Web Uygulaması</p>
               <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl">
                 Online randevu ve salon yönetimi — tek platformda
               </h1>
@@ -195,7 +195,7 @@ export default async function HomePage() {
               <HighlightCard
                 icon={<Shield className="h-5 w-5" />}
                 title="İşletme odaklı veri"
-                body="Müşteri ve randevu detayları kiracı sınırlarında kalır; platform ekibi bu kayıtlara erişmez."
+                body="Müşteri ve randevu detayları işletme sınırlarında kalır; sayfa kurucuları dahil hiç kimese bu kayıtlara erişmez."
               />
               <HighlightCard
                 icon={<Sparkles className="h-5 w-5" />}
