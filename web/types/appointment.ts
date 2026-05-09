@@ -8,6 +8,7 @@ export interface AppointmentSummary {
   clientName: string;
   serviceName: string;
   staffName: string | null;
+  staffId: string | null;
   startTime: string;
   endTime: string;
   status: AppointmentStatus;

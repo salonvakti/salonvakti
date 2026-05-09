@@ -5,7 +5,6 @@ import { isPlatformStaffRole } from "@/lib/constants/roles";
 import { getDefaultDashboardPath } from "@/lib/auth/permissions";
 import { listTenantsForPlatform } from "@/lib/platform/tenant-admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
 
 export default async function PlatformTenantsPage() {
   const supabase = await createSupabaseServerClient();
@@ -37,9 +36,6 @@ export default async function PlatformTenantsPage() {
             Kiracı meta verisi ve süre bazlı lisans. Müşteri kişisel verisi bu ekranda yoktur.
           </p>
         </div>
-        <Button type="button" variant="outline" disabled>
-          Yeni işletme (yakında)
-        </Button>
       </div>
 
       <PlatformTenantsClient
