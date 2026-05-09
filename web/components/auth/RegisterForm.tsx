@@ -1,53 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { registerBusinessAction } from "@/app/(auth)/register/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useSupabaseContext } from "@/components/providers/supabase-provider";
+import { normalizeTenantSlug } from "@/lib/tenant/slug";
 
 export function RegisterForm() {
   const router = useRouter();
-  const { client, refreshSession } = useSupabaseContext();
-
   const [businessName, setBusinessName] = useState("");
   const [slug, setSlug] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [info, setInfo] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
-  async function onSubmit(e: React.FormEvent) {
+  function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setInfo(null);
-    if (!client) {
-      setError("Supabase yapılandırması eksik (.env).");
-      return;
-    }
-    setLoading(true);
-    const { error: signError } = await client.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          role: "business_admin",
-          business_name: businessName,
-          tenant_slug: slug,
-        },
-      },
+    startTransition(async () => {
+      const result = await registerBusinessAction({
+        businessName,
+        slugRaw: slug,
+        email,
+        password,
+      });
+      if (!result.ok && result.error) {
+        setError(result.error);
+        return;
+      }
+      router.push("/login?registered=1");
     });
-    setLoading(false);
-    if (signError) {
-      setError(signError.message);
-      return;
-    }
-    setInfo("Doğrulama e-postası gönderildiyse gelen kutunuzu kontrol edin. Ardından giriş yapabilirsiniz.");
-    await refreshSession();
-    router.push("/login");
   }
 
   return (
@@ -59,6 +46,7 @@ export function RegisterForm() {
           value={businessName}
           onChange={(e) => setBusinessName(e.target.value)}
           required
+          disabled={pending}
         />
       </div>
       <div className="space-y-2">
@@ -67,8 +55,9 @@ export function RegisterForm() {
           id="slug"
           placeholder="ornek-salon"
           value={slug}
-          onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-"))}
+          onChange={(e) => setSlug(normalizeTenantSlug(e.target.value))}
           required
+          disabled={pending}
         />
         <p className="text-xs text-muted-foreground">
           Randevu linki: <span className="font-mono">/booking/{slug || "…"}</span>
@@ -83,6 +72,7 @@ export function RegisterForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          disabled={pending}
         />
       </div>
       <div className="space-y-2">
@@ -95,12 +85,15 @@ export function RegisterForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={6}
+          disabled={pending}
         />
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
-      {info ? <p className="text-sm text-muted-foreground">{info}</p> : null}
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Kaydediliyor…" : "İşletmeyi oluştur"}
+      <p className="text-xs text-muted-foreground">
+        Kayıt sonrası işletmenize <strong>10 günlük Basic</strong> deneme lisansı atanır (başlangıç: kayıt anı).
+      </p>
+      <Button type="submit" className="w-full" disabled={pending}>
+        {pending ? "Kaydediliyor…" : "İşletmeyi oluştur"}
       </Button>
       <p className="text-center text-sm text-muted-foreground">
         Zaten hesabınız var mı?{" "}

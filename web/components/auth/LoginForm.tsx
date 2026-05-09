@@ -22,6 +22,7 @@ export function LoginForm() {
   const [loading, setLoading] = useState(false);
 
   const configError = params.get("error") === "config";
+  const justRegistered = params.get("registered") === "1";
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,6 +53,12 @@ export function LoginForm() {
       {configError ? (
         <p className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
           Supabase ortam değişkenleri tanımlı değil. Lütfen <code className="font-mono">.env.local</code> dosyasını ekleyin.
+        </p>
+      ) : null}
+      {justRegistered ? (
+        <p className="rounded-md border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+          İşletme kaydınız tamamlandı. Hesabınıza <strong>10 günlük Basic</strong> deneme lisansı tanımlandı. Aşağıdan giriş
+          yapın.
         </p>
       ) : null}
       <div className="space-y-2">

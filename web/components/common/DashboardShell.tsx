@@ -1,6 +1,8 @@
 "use client";
 
 import type { User } from "@supabase/supabase-js";
+import { useEffect, useRef } from "react";
+import { repairBusinessTenantAction } from "@/app/(dashboard)/business-tenant-actions";
 import type { SessionProfile } from "@/lib/auth/session";
 import { DashboardSidebar } from "@/components/common/DashboardSidebar";
 import { DashboardTopbar } from "@/components/common/DashboardTopbar";
@@ -13,8 +15,24 @@ type Props = {
 };
 
 export function DashboardShell({ user, profile, children }: Props) {
-  const { client } = useSupabaseContext();
+  const { client, refreshSession } = useSupabaseContext();
   const role = profile?.role ?? "customer";
+  const repairStarted = useRef(false);
+
+  useEffect(() => {
+    if (repairStarted.current) return;
+    if (profile?.role !== "business_admin" || profile.tenantId) return;
+    if (!client) return;
+    repairStarted.current = true;
+    void (async () => {
+      const r = await repairBusinessTenantAction();
+      if (r.ok) {
+        await refreshSession();
+      } else {
+        repairStarted.current = false;
+      }
+    })();
+  }, [profile?.role, profile?.tenantId, client, refreshSession]);
 
   return (
     <div className="flex min-h-screen w-full">
