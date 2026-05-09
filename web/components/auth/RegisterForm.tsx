@@ -21,7 +21,6 @@ export function RegisterForm() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setInfo(null);
     startTransition(async () => {
       const result = await registerBusinessAction({
         businessName,
