@@ -10,7 +10,10 @@ export function SiteHeader() {
           <Building2 className="h-6 w-6" aria-hidden />
           <span>SalonVakti</span>
         </Link>
-        <nav className="flex items-center gap-2 text-sm">
+        <nav className="flex flex-wrap items-center justify-end gap-2 text-sm">
+          <Link href="/#paketler" className={buttonVariants({ variant: "ghost" })}>
+            Paketler
+          </Link>
           <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
             Giriş
           </Link>

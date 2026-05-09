@@ -4,7 +4,7 @@ import { canAccessPath, getDefaultDashboardPath } from "@/lib/auth/permissions";
 import { getSessionProfile } from "@/lib/auth/session";
 
 function isProtectedDashboardPath(pathname: string): boolean {
-  const prefixes = ["/admin", "/staff", "/platform", "/client"];
+  const prefixes = ["/admin", "/staff", "/platform", "/client", "/account"];
   return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
@@ -51,7 +51,8 @@ export async function middleware(request: NextRequest) {
     }
 
     const profile = getSessionProfile(user);
-    if (profile && !canAccessPath(pathname, profile.role)) {
+    const isAccountPath = pathname === "/account" || pathname.startsWith("/account/");
+    if (!isAccountPath && profile && !canAccessPath(pathname, profile.role)) {
       const fallback = getDefaultDashboardPath(profile.role);
       return NextResponse.redirect(new URL(fallback, request.url));
     }

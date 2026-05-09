@@ -37,6 +37,16 @@ export function DashboardSidebar({ role }: Props) {
             </Link>
           );
         })}
+        <Link
+          href="/account"
+          className={cn(
+            "mt-auto rounded-md px-3 py-2 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+            (pathname === "/account" || pathname.startsWith("/account/")) &&
+              "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+          )}
+        >
+          Hesabım
+        </Link>
       </nav>
     </aside>
   );

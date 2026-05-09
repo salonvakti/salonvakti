@@ -100,6 +100,83 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section id="paketler" className="scroll-mt-16 border-b bg-background">
+          <div className="mx-auto max-w-6xl px-4 py-16">
+            <h2 className="text-center text-2xl font-semibold tracking-tight">Paketler</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-muted-foreground">
+              İşletmenizin büyüklüğüne ve hedeflerinize uygun planı seçin; tüm paketlerde çekirdek randevu ve
+              salon yönetimi altyapısıyla başlarsınız.
+            </p>
+            <div className="mt-10 grid gap-8 lg:grid-cols-3">
+              <PackageCard
+                name="Basic"
+                tagline="Yeni başlayan ve tek şubeli salonlar için ideal başlangıç paketi."
+                features={[
+                  "7/24 online randevu sistemi",
+                  "Müşteri kayıtları ve geçmiş işlemler",
+                  "Personel yönetimi",
+                  "Hizmet ve fiyat tanımlama",
+                  "Salonunuza özel tanıtım sayfası",
+                  "Temel gelir ve performans raporları",
+                ]}
+                audienceTitle="Kimler için uygun?"
+                audience="Yeni açılan güzellik salonları, kuaförler ve küçük işletmeler."
+              />
+              <PackageCard
+                name="Pro"
+                tagline="Büyümek isteyen salonlar için profesyonel çözümler."
+                features={[
+                  "Basic paketteki tüm özellikler",
+                  "Aylık 500 SMS gönderimi",
+                  "Otomatik e-posta hatırlatmaları",
+                  "2 şubeye kadar kullanım desteği",
+                  "Mobil uygulama erişimi",
+                  "Gelişmiş analiz ve raporlama",
+                  "Personel prim / komisyon hesaplama",
+                  "Sadakat programı ve müşteri puan sistemi",
+                  "Google Takvim senkronizasyonu",
+                  "Zapier entegrasyonu",
+                  "Geliştiriciler için API erişimi",
+                ]}
+                audienceTitle="Kimler için uygun?"
+                audience="Yoğun müşteri trafiğine sahip, büyümeyi hedefleyen salonlar ve güzellik merkezleri."
+                highlighted
+              />
+              <PackageCard
+                name="Ultimate"
+                tagline="Kurumsal düzeyde yönetim ve sınırsız özellikler."
+                features={[
+                  "Pro paketteki tüm özellikler",
+                  "Sınırsız SMS ve e-posta gönderimi",
+                  "WhatsApp ve Telegram entegrasyonu",
+                  "Sınırsız şube yönetimi",
+                  "Yapay zekâ destekli analiz ve öneriler",
+                  "Özel entegrasyon desteği",
+                  "Sınırsız otomasyon altyapısı",
+                  "Size özel müşteri temsilcisi",
+                  "7/24 öncelikli teknik destek",
+                  "Gelişmiş güvenlik altyapısı",
+                ]}
+                audienceTitle="Kimler için uygun?"
+                audience="Zincir salonlar, franchise yapılar ve profesyonel işletmeler."
+              />
+            </div>
+            <p className="mt-10 text-center text-sm text-muted-foreground">
+              Şu an kayıt ile{" "}
+              <span className="font-medium text-foreground">Basic deneme lisansı</span> ile başlayabilirsiniz.
+              Diğer paketler için satış ekibimizle iletişime geçin.
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <Link href="/register" className={buttonVariants({ size: "lg" })}>
+                Ücretsiz dene
+              </Link>
+              <Link href="/login" className={buttonVariants({ variant: "outline", size: "lg" })}>
+                Zaten hesabım var
+              </Link>
+            </div>
+          </div>
+        </section>
+
         <section className="mx-auto max-w-6xl px-4 py-16">
           <h2 className="mb-10 text-center text-2xl font-semibold tracking-tight">Neden SalonVakti?</h2>
           <div className="grid gap-6 md:grid-cols-3">
@@ -161,6 +238,56 @@ function HighlightCard({
         <CardTitle className="text-base leading-snug">{title}</CardTitle>
       </CardHeader>
       <CardContent className="text-sm text-muted-foreground">{body}</CardContent>
+    </Card>
+  );
+}
+
+function PackageCard({
+  name,
+  tagline,
+  features,
+  audienceTitle,
+  audience,
+  highlighted,
+}: {
+  name: string;
+  tagline: string;
+  features: string[];
+  audienceTitle: string;
+  audience: string;
+  highlighted?: boolean;
+}) {
+  return (
+    <Card
+      className={
+        highlighted
+          ? "relative border-primary/50 shadow-md ring-2 ring-primary/20"
+          : "border-muted/80 shadow-sm"
+      }
+    >
+      {highlighted ? (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-medium text-primary-foreground">
+          Öne çıkan
+        </div>
+      ) : null}
+      <CardHeader className="space-y-2 pt-2">
+        <CardTitle className="text-xl">{name} Paket</CardTitle>
+        <CardDescription className="text-base leading-relaxed">{tagline}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <ul className="space-y-2.5 text-sm">
+          {features.map((line) => (
+            <li key={line} className="flex gap-2">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="rounded-lg bg-muted/50 p-4 text-sm">
+          <p className="font-medium text-foreground">{audienceTitle}</p>
+          <p className="mt-2 text-muted-foreground">{audience}</p>
+        </div>
+      </CardContent>
     </Card>
   );
 }

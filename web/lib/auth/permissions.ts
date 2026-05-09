@@ -21,6 +21,10 @@ export type RoutePrefix =
 export function canAccessPath(pathname: string, role: UserRole): boolean {
   const path = pathname.split("?")[0] ?? pathname;
 
+  if (path === "/account" || path.startsWith("/account/")) {
+    return true;
+  }
+
   if (path.startsWith("/platform")) {
     return isPlatformStaffRole(role);
   }
@@ -112,11 +116,6 @@ export const dashboardNav = {
     {
       href: "/client/my-bookings",
       label: "Randevularım",
-      roles: ["customer", "verified_customer"] as UserRole[],
-    },
-    {
-      href: "/client/my-profile",
-      label: "Profilim",
       roles: ["customer", "verified_customer"] as UserRole[],
     },
     {

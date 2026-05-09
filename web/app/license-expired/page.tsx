@@ -11,6 +11,9 @@ export default function LicenseExpiredPage() {
       </p>
       <div className="flex flex-wrap items-center justify-center gap-3">
         <LicenseExpiredSignOut />
+        <Link href="/account" className="text-sm underline underline-offset-4">
+          Hesap ayarları
+        </Link>
         <Link href="/" className="text-sm underline underline-offset-4">
           Ana sayfa
         </Link>

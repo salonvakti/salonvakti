@@ -38,7 +38,7 @@ export function DashboardShell({ user, profile, children }: Props) {
     <div className="flex min-h-screen w-full">
       <DashboardSidebar role={role} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar email={user.email ?? null} profile={profile} supabase={client} />
+        <DashboardTopbar user={user} profile={profile} supabase={client} />
         <main className="flex-1 space-y-6 p-4 md:p-6">{children}</main>
       </div>
     </div>

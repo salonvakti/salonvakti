@@ -1,7 +1,6 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/common/DashboardShell";
-import { getSessionProfile } from "@/lib/auth/session";
+import { getDashboardSessionOrRedirect } from "@/lib/auth/get-dashboard-session";
 import { isBusinessRole } from "@/lib/constants/roles";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 import { isTenantLicenseActive } from "@/lib/tenant/license";
@@ -9,20 +8,7 @@ import { isTenantLicenseActive } from "@/lib/tenant/license";
 export default async function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    redirect("/login?error=config");
-  }
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const profile = getSessionProfile(user);
+  const { user, profile } = await getDashboardSessionOrRedirect();
 
   if (
     profile &&
