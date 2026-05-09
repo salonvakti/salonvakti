@@ -14,6 +14,12 @@ export interface TenantRow {
   address: string | null;
   phone: string | null;
   status: TenantStatus;
+  /** Lisans paket etiketi (örn. basic, pro) */
+  license_plan: string | null;
+  /** Lisans geçerlilik başlangıcı; null = başlangıç kısıtı yok */
+  license_start_at: string | null;
+  /** Lisans bitişi; geçmiş tarih = panel erişimi kapalı */
+  license_end_at: string | null;
   settings_json?: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;

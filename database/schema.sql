@@ -21,6 +21,9 @@ create table public.tenants (
   address text,
   phone text,
   status public.tenant_status not null default 'active',
+  license_plan text,
+  license_start_at timestamptz,
+  license_end_at timestamptz,
   settings_json jsonb default '{}'::jsonb,
   created_at timestamptz not null default now (),
   updated_at timestamptz not null default now ()
