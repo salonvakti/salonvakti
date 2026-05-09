@@ -4,6 +4,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SiteHeader } from "@/components/common/SiteHeader";
+import { getLandingPackagePriceLabels } from "@/lib/landing/package-prices";
+import { cn } from "@/lib/utils";
 import {
   CalendarDays,
   CheckCircle2,
@@ -15,7 +17,9 @@ import {
   Users,
 } from "lucide-react";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const prices = await getLandingPackagePriceLabels();
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -101,16 +105,17 @@ export default function HomePage() {
         </section>
 
         <section id="paketler" className="scroll-mt-16 border-b bg-background">
-          <div className="mx-auto max-w-6xl px-4 py-16">
+          <div className="mx-auto max-w-6xl px-4 py-16 pb-20">
             <h2 className="text-center text-2xl font-semibold tracking-tight">Paketler</h2>
             <p className="mx-auto mt-3 max-w-2xl text-center text-muted-foreground">
               İşletmenizin büyüklüğüne ve hedeflerinize uygun planı seçin; tüm paketlerde çekirdek randevu ve
               salon yönetimi altyapısıyla başlarsınız.
             </p>
-            <div className="mt-10 grid gap-8 lg:grid-cols-3">
+            <div className="mt-10 grid gap-8 lg:grid-cols-3 lg:items-stretch">
               <PackageCard
                 name="Basic"
                 tagline="Yeni başlayan ve tek şubeli salonlar için ideal başlangıç paketi."
+                priceLabel={prices.basic}
                 features={[
                   "7/24 online randevu sistemi",
                   "Müşteri kayıtları ve geçmiş işlemler",
@@ -125,6 +130,7 @@ export default function HomePage() {
               <PackageCard
                 name="Pro"
                 tagline="Büyümek isteyen salonlar için profesyonel çözümler."
+                priceLabel={prices.pro}
                 features={[
                   "Basic paketteki tüm özellikler",
                   "Aylık 500 SMS gönderimi",
@@ -145,6 +151,7 @@ export default function HomePage() {
               <PackageCard
                 name="Ultimate"
                 tagline="Kurumsal düzeyde yönetim ve sınırsız özellikler."
+                priceLabel={prices.ultimate}
                 features={[
                   "Pro paketteki tüm özellikler",
                   "Sınırsız SMS ve e-posta gönderimi",
@@ -161,12 +168,7 @@ export default function HomePage() {
                 audience="Zincir salonlar, franchise yapılar ve profesyonel işletmeler."
               />
             </div>
-            <p className="mt-10 text-center text-sm text-muted-foreground">
-              Şu an kayıt ile{" "}
-              <span className="font-medium text-foreground">Basic deneme lisansı</span> ile başlayabilirsiniz.
-              Diğer paketler için satış ekibimizle iletişime geçin.
-            </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <div className="mt-12 flex flex-wrap justify-center gap-3">
               <Link href="/register" className={buttonVariants({ size: "lg" })}>
                 Ücretsiz dene
               </Link>
@@ -245,6 +247,7 @@ function HighlightCard({
 function PackageCard({
   name,
   tagline,
+  priceLabel,
   features,
   audienceTitle,
   audience,
@@ -252,6 +255,7 @@ function PackageCard({
 }: {
   name: string;
   tagline: string;
+  priceLabel: string;
   features: string[];
   audienceTitle: string;
   audience: string;
@@ -259,33 +263,40 @@ function PackageCard({
 }) {
   return (
     <Card
-      className={
+      className={cn(
+        "relative flex h-full min-h-0 flex-col overflow-visible shadow-sm",
         highlighted
-          ? "relative border-primary/50 shadow-md ring-2 ring-primary/20"
-          : "border-muted/80 shadow-sm"
-      }
+          ? "border-primary/50 pt-7 ring-2 ring-primary/20"
+          : "border-muted/80"
+      )}
     >
       {highlighted ? (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-medium text-primary-foreground">
+        <div className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-0.5 text-xs font-medium text-primary-foreground shadow-sm">
           Öne çıkan
         </div>
       ) : null}
-      <CardHeader className="space-y-2 pt-2">
+      <CardHeader className={cn("shrink-0 space-y-2", highlighted ? "pt-1" : "pt-2")}>
         <CardTitle className="text-xl">{name} Paket</CardTitle>
         <CardDescription className="text-base leading-relaxed">{tagline}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <ul className="space-y-2.5 text-sm">
+      <CardContent className="flex flex-1 flex-col gap-6">
+        <ul className="min-h-0 flex-1 space-y-2.5 text-sm">
           {features.map((line) => (
             <li key={line} className="flex gap-2">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-              <span>{line}</span>
+              <span className="leading-snug">{line}</span>
             </li>
           ))}
         </ul>
-        <div className="rounded-lg bg-muted/50 p-4 text-sm">
-          <p className="font-medium text-foreground">{audienceTitle}</p>
-          <p className="mt-2 text-muted-foreground">{audience}</p>
+        <div className="mt-auto space-y-4">
+          <div className="rounded-lg bg-muted/50 p-4 text-sm">
+            <p className="font-medium text-foreground">{audienceTitle}</p>
+            <p className="mt-2 text-muted-foreground">{audience}</p>
+          </div>
+          <div className="border-t border-border/80 pt-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Fiyat</p>
+            <p className="mt-1 text-lg font-semibold tracking-tight text-foreground">{priceLabel}</p>
+          </div>
         </div>
       </CardContent>
     </Card>

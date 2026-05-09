@@ -82,4 +82,11 @@ create table public.appointments (
 
 create index appointments_tenant_window_idx on public.appointments (tenant_id, start_time);
 
+-- Ana sayfa paket fiyat metinleri (migration: 004_landing_package_prices.sql)
+create table public.landing_package_prices (
+  slug text primary key check (slug in ('basic', 'pro', 'ultimate')),
+  price_label text not null default '—',
+  updated_at timestamptz not null default now ()
+);
+
 -- Örnek: RLS politikaları burada tanımlanmalıdır (SECURITY.md ile birlikte uygulanır).

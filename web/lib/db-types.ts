@@ -79,6 +79,13 @@ export interface StaffRow {
   color: string | null;
 }
 
+/** Ana sayfa Basic / Pro / Ultimate fiyat satırı */
+export interface LandingPackagePriceRow {
+  slug: "basic" | "pro" | "ultimate";
+  price_label: string;
+  updated_at: string;
+}
+
 export interface UserProfileRow {
   id: string;
   email: string;

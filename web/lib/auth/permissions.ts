@@ -87,6 +87,11 @@ export const dashboardNav = {
       label: "Platform kullanıcıları",
       roles: ["platform_admin"] as UserRole[],
     },
+    {
+      href: "/platform/packages",
+      label: "Paket fiyatları",
+      roles: ["platform_admin"] as UserRole[],
+    },
   ],
   businessAdmin: [
     { href: "/admin/dashboard", label: "Özet", roles: ["business_admin"] as UserRole[] },
