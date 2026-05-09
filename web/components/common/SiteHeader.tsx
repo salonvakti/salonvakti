@@ -17,8 +17,11 @@ export function SiteHeader() {
           <Link href="/isletmeler" className={buttonVariants({ variant: "ghost" })}>
             İşletmeler
           </Link>
+          <Link href="/customer/login" className={buttonVariants({ variant: "ghost" })}>
+            Müşteri girişi
+          </Link>
           <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
-            Giriş
+            İşletme girişi
           </Link>
           <Link href="/register" className={buttonVariants()}>
             İşletme oluştur

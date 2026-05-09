@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookingSalonClient } from "@/components/booking/BookingSalonClient";
+import { mapPublicServicesToSummaries } from "@/lib/booking/map-services";
 import { getPublicSalonBySlug } from "@/lib/public/salon-directory";
 import { absoluteUrl } from "@/lib/seo/site-url";
 import { normalizeTenantSlug } from "@/lib/tenant/slug";
@@ -46,7 +47,16 @@ export default async function BookingSalonPage({ params }: Props) {
   if (!slug) notFound();
 
   const { salon } = await getPublicSalonBySlug(slug);
-  const prettyName = salon?.name ?? prettyNameFromSlug(slug);
+  if (!salon) {
+    notFound();
+  }
+
+  const prettyName = salon.name;
+  const services = mapPublicServicesToSummaries(salon.services);
+  const staffOptions = salon.staff.map((s) => ({
+    id: s.id,
+    displayName: s.displayName,
+  }));
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -58,18 +68,14 @@ export default async function BookingSalonPage({ params }: Props) {
               SalonVakti
             </Link>{" "}
             /{" "}
-            {salon ? (
-              <Link href={`/isletme/${encodeURIComponent(slug)}`} className="underline underline-offset-4">
-                {prettyName}
-              </Link>
-            ) : (
-              <span>{prettyName}</span>
-            )}{" "}
+            <Link href={`/isletme/${encodeURIComponent(slug)}`} className="underline underline-offset-4">
+              {prettyName}
+            </Link>{" "}
             / online randevu
           </p>
         </div>
       </div>
-      <BookingSalonClient salonSlug={slug} salonName={prettyName} />
+      <BookingSalonClient salonSlug={slug} salonName={prettyName} services={services} staffOptions={staffOptions} />
       <SiteFooter />
     </div>
   );

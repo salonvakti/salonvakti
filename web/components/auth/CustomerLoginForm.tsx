@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,7 @@ import { useSupabaseContext } from "@/components/providers/supabase-provider";
 import { getDefaultDashboardPath } from "@/lib/auth/permissions";
 import { getSessionProfile } from "@/lib/auth/session";
 
-export function LoginForm() {
+export function CustomerLoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") ?? "";
@@ -52,19 +52,19 @@ export function LoginForm() {
     <form className="space-y-4" onSubmit={(e) => void onSubmit(e)}>
       {configError ? (
         <p className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-          Supabase ortam değişkenleri tanımlı değil. Lütfen <code className="font-mono">.env.local</code> dosyasını ekleyin.
+          Supabase ortam değişkenleri tanımlı değil. Lütfen <code className="font-mono">.env.local</code> dosyasını
+          ekleyin.
         </p>
       ) : null}
       {justRegistered ? (
         <p className="rounded-md border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
-          İşletme kaydınız tamamlandı. Hesabınıza <strong>10 günlük Basic</strong> deneme lisansı tanımlandı. Aşağıdan giriş
-          yapın.
+          Hesabınız oluşturuldu. Giriş yaparak devam edebilirsiniz.
         </p>
       ) : null}
       <div className="space-y-2">
-        <Label htmlFor="email">E-posta</Label>
+        <Label htmlFor="c-email">E-posta</Label>
         <Input
-          id="email"
+          id="c-email"
           type="email"
           autoComplete="email"
           value={email}
@@ -73,9 +73,9 @@ export function LoginForm() {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Şifre</Label>
+        <Label htmlFor="c-password">Şifre</Label>
         <Input
-          id="password"
+          id="c-password"
           type="password"
           autoComplete="current-password"
           value={password}
@@ -85,19 +85,19 @@ export function LoginForm() {
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Giriş yapılıyor…" : "Giriş yap"}
+        {loading ? "Giriş yapılıyor…" : "Müşteri olarak giriş yap"}
       </Button>
       <p className="text-center text-sm text-muted-foreground">
         <Link href="/reset-password" className="underline underline-offset-4">
           Şifremi unuttum
         </Link>
         {" · "}
-        <Link href="/customer/login" className="underline underline-offset-4">
-          Müşteri girişi
+        <Link href="/customer/register" className="underline underline-offset-4">
+          Müşteri kaydı
         </Link>
         {" · "}
-        <Link href="/register" className="underline underline-offset-4">
-          İşletme kaydı
+        <Link href="/login" className="underline underline-offset-4">
+          İşletme girişi
         </Link>
       </p>
     </form>

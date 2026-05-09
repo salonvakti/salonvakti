@@ -3,6 +3,7 @@ import { PlatformTenantsClient } from "./platform-tenants-client";
 import { getSessionProfile } from "@/lib/auth/session";
 import { isPlatformStaffRole } from "@/lib/constants/roles";
 import { getDefaultDashboardPath } from "@/lib/auth/permissions";
+import { listFeaturedTenantOrders } from "@/lib/platform/featured-tenants";
 import { listTenantsForPlatform } from "@/lib/platform/tenant-admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -25,6 +26,7 @@ export default async function PlatformTenantsPage() {
   }
 
   const { tenants, error } = await listTenantsForPlatform();
+  const featuredOrders = await listFeaturedTenantOrders();
   const canManage = profile.role === "platform_admin";
 
   return (
@@ -40,6 +42,7 @@ export default async function PlatformTenantsPage() {
 
       <PlatformTenantsClient
         tenants={tenants}
+        featuredOrders={featuredOrders}
         canManage={canManage}
         configError={error}
       />

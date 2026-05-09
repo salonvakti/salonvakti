@@ -124,6 +124,11 @@ export const dashboardNav = {
       roles: ["customer", "verified_customer"] as UserRole[],
     },
     {
+      href: "/client/my-profile",
+      label: "Profilim",
+      roles: ["customer", "verified_customer"] as UserRole[],
+    },
+    {
       href: "/client/favorite-salons",
       label: "Favori salonlar",
       roles: ["customer", "verified_customer"] as UserRole[],

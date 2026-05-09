@@ -17,7 +17,11 @@ export async function middleware(request: NextRequest) {
 
   if (!url || !key) {
     if (isProtectedDashboardPath(pathname)) {
-      return NextResponse.redirect(new URL("/login?error=config", request.url));
+      const dest =
+        pathname === "/client" || pathname.startsWith("/client/")
+          ? "/customer/login?error=config"
+          : "/login?error=config";
+      return NextResponse.redirect(new URL(dest, request.url));
     }
     return response;
   }
@@ -45,7 +49,10 @@ export async function middleware(request: NextRequest) {
 
   if (isProtectedDashboardPath(pathname)) {
     if (!user) {
-      const loginUrl = new URL("/login", request.url);
+      const loginUrl = new URL(
+        pathname === "/client" || pathname.startsWith("/client/") ? "/customer/login" : "/login",
+        request.url
+      );
       loginUrl.searchParams.set("next", pathname);
       return NextResponse.redirect(loginUrl);
     }

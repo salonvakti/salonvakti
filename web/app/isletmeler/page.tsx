@@ -6,7 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { SITE_SEO_KEYWORDS } from "@/lib/seo/keywords";
 import { absoluteUrl } from "@/lib/seo/site-url";
 import { listPublicSalons } from "@/lib/public/salon-directory";
-import { MapPin, Phone } from "lucide-react";
+import { MapPin, Phone, Sparkles } from "lucide-react";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "İşletmeler | Online randevu veren salonlar — SalonVakti",
@@ -29,6 +32,8 @@ export const metadata: Metadata = {
 
 export default async function IsletmelerPage() {
   const { salons, error } = await listPublicSalons();
+  const featured = salons.filter((s) => s.isFeatured);
+  const others = salons.filter((s) => !s.isFeatured);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -73,50 +78,110 @@ export default async function IsletmelerPage() {
             </p>
           ) : null}
 
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {salons.map((s) => (
-              <li key={s.id}>
-                <Card className="h-full transition-shadow hover:shadow-md">
-                  <CardHeader>
-                    <CardTitle className="text-xl leading-snug">
-                      <Link
-                        href={`/isletme/${encodeURIComponent(s.slug)}`}
-                        className="hover:underline"
-                      >
-                        {s.name}
-                      </Link>
-                    </CardTitle>
-                    <CardDescription className="line-clamp-3">
-                      {s.promoText?.trim() ||
-                        `${s.name} — online randevu ve salon tanıtım sayfası.`}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-2 text-sm text-muted-foreground">
-                    {s.address ? (
-                      <p className="flex gap-2">
-                        <MapPin className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-                        <span>{s.address}</span>
-                      </p>
-                    ) : null}
-                    {s.phone ? (
-                      <p className="flex gap-2">
-                        <Phone className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-                        <a href={`tel:${s.phone.replace(/\s/g, "")}`} className="hover:underline">
-                          {s.phone}
-                        </a>
-                      </p>
-                    ) : null}
-                    <Link
-                      href={`/isletme/${encodeURIComponent(s.slug)}`}
-                      className="inline-block pt-2 text-sm font-medium text-primary hover:underline"
-                    >
-                      Tanıtım ve online randevu →
-                    </Link>
-                  </CardContent>
-                </Card>
-              </li>
-            ))}
-          </ul>
+          {!error && featured.length > 0 ? (
+            <div className="mb-12 space-y-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-amber-600" aria-hidden />
+                <h2 className="text-xl font-semibold tracking-tight">Öne çıkan işletmeler</h2>
+              </div>
+              <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {featured.map((s) => (
+                  <li key={s.id}>
+                    <Card className="h-full border-amber-500/25 bg-amber-500/[0.03] transition-shadow hover:shadow-md">
+                      <CardHeader>
+                        <CardTitle className="text-xl leading-snug">
+                          <Link
+                            href={`/isletme/${encodeURIComponent(s.slug)}`}
+                            className="hover:underline"
+                          >
+                            {s.name}
+                          </Link>
+                        </CardTitle>
+                        <CardDescription className="line-clamp-3">
+                          {s.promoText?.trim() ||
+                            `${s.name} — online randevu ve salon tanıtım sayfası.`}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-2 text-sm text-muted-foreground">
+                        {s.address ? (
+                          <p className="flex gap-2">
+                            <MapPin className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                            <span>{s.address}</span>
+                          </p>
+                        ) : null}
+                        {s.phone ? (
+                          <p className="flex gap-2">
+                            <Phone className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                            <a href={`tel:${s.phone.replace(/\s/g, "")}`} className="hover:underline">
+                              {s.phone}
+                            </a>
+                          </p>
+                        ) : null}
+                        <Link
+                          href={`/isletme/${encodeURIComponent(s.slug)}`}
+                          className="inline-block pt-2 text-sm font-medium text-primary hover:underline"
+                        >
+                          Tanıtım ve online randevu →
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {!error && others.length > 0 ? (
+            <div className="space-y-4">
+              {featured.length > 0 ? (
+                <h2 className="text-xl font-semibold tracking-tight">Tüm işletmeler</h2>
+              ) : null}
+              <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {others.map((s) => (
+                  <li key={s.id}>
+                    <Card className="h-full transition-shadow hover:shadow-md">
+                      <CardHeader>
+                        <CardTitle className="text-xl leading-snug">
+                          <Link
+                            href={`/isletme/${encodeURIComponent(s.slug)}`}
+                            className="hover:underline"
+                          >
+                            {s.name}
+                          </Link>
+                        </CardTitle>
+                        <CardDescription className="line-clamp-3">
+                          {s.promoText?.trim() ||
+                            `${s.name} — online randevu ve salon tanıtım sayfası.`}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-2 text-sm text-muted-foreground">
+                        {s.address ? (
+                          <p className="flex gap-2">
+                            <MapPin className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                            <span>{s.address}</span>
+                          </p>
+                        ) : null}
+                        {s.phone ? (
+                          <p className="flex gap-2">
+                            <Phone className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                            <a href={`tel:${s.phone.replace(/\s/g, "")}`} className="hover:underline">
+                              {s.phone}
+                            </a>
+                          </p>
+                        ) : null}
+                        <Link
+                          href={`/isletme/${encodeURIComponent(s.slug)}`}
+                          className="inline-block pt-2 text-sm font-medium text-primary hover:underline"
+                        >
+                          Tanıtım ve online randevu →
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </section>
       </main>
       <SiteFooter />

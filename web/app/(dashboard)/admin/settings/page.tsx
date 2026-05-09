@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { StaffForm } from "@/components/forms/StaffForm";
+import Link from "next/link";
 import { useSupabaseContext } from "@/components/providers/supabase-provider";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -14,6 +14,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  mergeLandingIntoSettingsJson,
+  pickPublicAddress,
+  pickPublicPromo,
+} from "@/lib/public/tenant-public-fields";
 
 export default function AdminSettingsPage() {
   const { client, profile, session } = useSupabaseContext();
@@ -48,7 +53,7 @@ export default function AdminSettingsPage() {
 
       const { data, error } = await client
         .from("tenants")
-        .select("name,phone,address,promo_text")
+        .select("name,phone,address,promo_text,settings_json")
         .eq("id", profile.tenantId)
         .maybeSingle();
 
@@ -60,10 +65,11 @@ export default function AdminSettingsPage() {
         setAddress("");
         setPromoText("");
       } else {
-        setSalonName(data.name ?? initialName);
-        setPhone(data.phone ?? "");
-        setAddress(data.address ?? "");
-        setPromoText(typeof data.promo_text === "string" ? data.promo_text : "");
+        const raw = data as Record<string, unknown>;
+        setSalonName(typeof raw.name === "string" ? raw.name : initialName);
+        setPhone(typeof raw.phone === "string" ? raw.phone : "");
+        setAddress(pickPublicAddress(raw) ?? "");
+        setPromoText(pickPublicPromo(raw) ?? "");
       }
 
       setLoadingProfile(false);
@@ -92,15 +98,35 @@ export default function AdminSettingsPage() {
 
     setSavingProfile(true);
 
-    const { error } = await client
+    const { data: existingRow } = await client
+      .from("tenants")
+      .select("settings_json")
+      .eq("id", profile.tenantId)
+      .maybeSingle();
+
+    const mergedSettings = mergeLandingIntoSettingsJson(existingRow?.settings_json, {
+      promo: promoText.trim() || null,
+      address: address.trim() || null,
+    });
+
+    const basePayload = {
+      name: salonName.trim(),
+      phone: phone.trim() || null,
+      address: address.trim() || null,
+      settings_json: mergedSettings,
+    };
+
+    let { error } = await client
       .from("tenants")
       .update({
-        name: salonName.trim(),
-        phone: phone.trim() || null,
-        address: address.trim() || null,
+        ...basePayload,
         promo_text: promoText.trim() || null,
       })
       .eq("id", profile.tenantId);
+
+    if (error && error.message.includes("promo_text")) {
+      ({ error } = await client.from("tenants").update(basePayload).eq("id", profile.tenantId));
+    }
 
     if (!error) {
       await client.auth.updateUser({
@@ -202,16 +228,16 @@ export default function AdminSettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Personel artır</CardTitle>
-          <CardDescription>Yeni personel kaydı ve takvim rengi.</CardDescription>
+          <CardTitle>Personel</CardTitle>
+          <CardDescription>
+            Yeni personel hesabı (e-posta / şifre) ve takvim rengi için Personel sayfasını kullanın.
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <StaffForm
-            onSubmit={() => {
-              /* Supabase insert */
-            }}
-          />
-        </CardContent>
+        <CardFooter>
+          <Link href="/admin/staff" className={buttonVariants({ variant: "outline" })}>
+            Personel sayfasına git
+          </Link>
+        </CardFooter>
       </Card>
     </div>
   );

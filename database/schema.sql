@@ -52,6 +52,8 @@ create table public.clients (
   note text,
   business_approved_at timestamptz,
   phone_verified_at timestamptz,
+  invite_token text unique,
+  invite_expires_at timestamptz,
   created_at timestamptz not null default now ()
 );
 
@@ -82,6 +84,13 @@ create table public.appointments (
 );
 
 create index appointments_tenant_window_idx on public.appointments (tenant_id, start_time);
+
+-- Platform öne çıkan işletmeler + müşteri daveti (migration: 007_platform_featured_client_invite.sql)
+create table public.platform_featured_tenants (
+  tenant_id uuid not null primary key references public.tenants (id) on delete cascade,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now ()
+);
 
 -- Ana sayfa paket fiyat metinleri (migration: 004_landing_package_prices.sql)
 create table public.landing_package_prices (

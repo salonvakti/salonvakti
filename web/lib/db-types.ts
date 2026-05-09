@@ -58,6 +58,14 @@ export interface ClientRow {
   business_approved_at: string | null;
   /** Telefon doğrulandıysa dolu */
   phone_verified_at: string | null;
+  invite_token: string | null;
+  invite_expires_at: string | null;
+  created_at: string;
+}
+
+export interface PlatformFeaturedTenantRow {
+  tenant_id: string;
+  sort_order: number;
   created_at: string;
 }
 

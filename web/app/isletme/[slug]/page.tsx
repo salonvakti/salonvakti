@@ -21,6 +21,10 @@ import { CalendarClock, MapPin, Phone } from "lucide-react";
 
 type Props = { params: { slug: string } };
 
+/** Tanıtım metni ve adres güncellemelerinin hemen yansıması için */
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = normalizeTenantSlug(params.slug);
   const { salon } = await getPublicSalonBySlug(slug);

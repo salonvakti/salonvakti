@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { TenantRow } from "@/lib/db-types";
+import { pickPublicAddress, pickPublicPromo } from "@/lib/public/tenant-public-fields";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 import { isTenantLicenseActive } from "@/lib/tenant/license";
 import { normalizeTenantSlug } from "@/lib/tenant/slug";
@@ -13,6 +14,11 @@ export type PublicSalonService = {
   description: string | null;
 };
 
+export type PublicSalonStaff = {
+  id: string;
+  displayName: string;
+};
+
 export type PublicSalonDetail = {
   id: string;
   name: string;
@@ -22,12 +28,13 @@ export type PublicSalonDetail = {
   phone: string | null;
   promoText: string | null;
   services: PublicSalonService[];
+  staff: PublicSalonStaff[];
 };
 
 export type PublicSalonListItem = Pick<
   PublicSalonDetail,
   "id" | "name" | "slug" | "address" | "phone" | "logoUrl" | "promoText"
->;
+> & { isFeatured: boolean };
 
 function tenantRowEligible(t: Pick<TenantRow, "status" | "license_start_at" | "license_end_at">): boolean {
   if (t.status !== "active") return false;
@@ -49,7 +56,9 @@ export async function listPublicSalons(): Promise<{
 
   const { data, error } = await admin
     .from("tenants")
-    .select("id,name,slug,logo_url,address,phone,promo_text,status,license_start_at,license_end_at")
+    .select(
+      "id,name,slug,logo_url,address,phone,promo_text,settings_json,status,license_start_at,license_end_at"
+    )
     .eq("status", "active")
     .order("name", { ascending: true });
 
@@ -71,19 +80,54 @@ export async function listPublicSalons(): Promise<{
     | "license_end_at"
   >[];
 
-  const salons: PublicSalonListItem[] = rows
+  const base: PublicSalonListItem[] = rows
     .filter((t) => tenantRowEligible(t))
-    .map((t) => ({
-      id: t.id,
-      name: t.name,
-      slug: t.slug,
-      logoUrl: t.logo_url,
-      address: t.address,
-      phone: t.phone,
-      promoText: t.promo_text,
-    }));
+    .map((t) => {
+      const raw = t as unknown as Record<string, unknown>;
+      return {
+        id: t.id,
+        name: t.name,
+        slug: t.slug,
+        logoUrl: t.logo_url,
+        address: pickPublicAddress(raw),
+        phone: t.phone,
+        promoText: pickPublicPromo(raw),
+        isFeatured: false,
+      };
+    });
 
-  return { salons, error: null };
+  const { data: featRows, error: fErr } = await admin
+    .from("platform_featured_tenants")
+    .select("tenant_id, sort_order")
+    .order("sort_order", { ascending: true });
+
+  if (fErr) {
+    return {
+      salons: base.sort((a, b) => a.name.localeCompare(b.name, "tr")).map((s) => ({
+        ...s,
+        isFeatured: false,
+      })),
+      error: null,
+    };
+  }
+
+  const featuredOrder = (featRows ?? []) as { tenant_id: string; sort_order: number }[];
+  const featuredIdSet = new Set(featuredOrder.map((r) => r.tenant_id));
+
+  const featuredSalons: PublicSalonListItem[] = [];
+  for (const row of featuredOrder) {
+    const s = base.find((x) => x.id === row.tenant_id);
+    if (s) {
+      featuredSalons.push({ ...s, isFeatured: true });
+    }
+  }
+
+  const rest = base
+    .filter((s) => !featuredIdSet.has(s.id))
+    .sort((a, b) => a.name.localeCompare(b.name, "tr"))
+    .map((s) => ({ ...s, isFeatured: false }));
+
+  return { salons: [...featuredSalons, ...rest], error: null };
 }
 
 export async function getPublicSalonBySlug(rawSlug: string): Promise<{
@@ -103,7 +147,7 @@ export async function getPublicSalonBySlug(rawSlug: string): Promise<{
   const { data: tenant, error: tErr } = await admin
     .from("tenants")
     .select(
-      "id,name,slug,logo_url,address,phone,promo_text,status,license_start_at,license_end_at"
+      "id,name,slug,logo_url,address,phone,promo_text,settings_json,status,license_start_at,license_end_at"
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -116,6 +160,10 @@ export async function getPublicSalonBySlug(rawSlug: string): Promise<{
   if (!tr || !tenantRowEligible(tr)) {
     return { salon: null, error: null };
   }
+
+  const rawTenant = tenant as unknown as Record<string, unknown>;
+  const resolvedPromo = pickPublicPromo(rawTenant);
+  const resolvedAddress = pickPublicAddress(rawTenant);
 
   const { data: svcRows, error: sErr } = await admin
     .from("services")
@@ -136,16 +184,32 @@ export async function getPublicSalonBySlug(rawSlug: string): Promise<{
     description: (s.description as string | null) ?? null,
   }));
 
+  const { data: staffRows, error: stErr } = await admin
+    .from("staff")
+    .select("id,display_name")
+    .eq("tenant_id", tr.id)
+    .order("display_name", { ascending: true });
+
+  if (stErr) {
+    return { salon: null, error: stErr.message };
+  }
+
+  const staff: PublicSalonStaff[] = (staffRows ?? []).map((row) => ({
+    id: row.id as string,
+    displayName: row.display_name as string,
+  }));
+
   return {
     salon: {
       id: tr.id,
       name: tr.name,
       slug: tr.slug,
       logoUrl: tr.logo_url,
-      address: tr.address,
+      address: resolvedAddress,
       phone: tr.phone,
-      promoText: tr.promo_text,
+      promoText: resolvedPromo,
       services,
+      staff,
     },
     error: null,
   };

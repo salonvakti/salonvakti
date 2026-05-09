@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { createTenantAction, updateTenantPlatformAction } from "./actions";
+import { removeFeaturedTenantAction, upsertFeaturedTenantAction } from "./featured-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,11 +37,12 @@ function fromDatetimeLocalValue(v: string): string | null {
 
 type Props = {
   tenants: TenantRow[];
+  featuredOrders: { tenantId: string; sortOrder: number }[];
   canManage: boolean;
   configError: string | null;
 };
 
-export function PlatformTenantsClient({ tenants, canManage, configError }: Props) {
+export function PlatformTenantsClient({ tenants, featuredOrders, canManage, configError }: Props) {
   const router = useRouter();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
@@ -66,6 +68,54 @@ export function PlatformTenantsClient({ tenants, canManage, configError }: Props
     () => tenants.find((t) => t.id === editingId) ?? null,
     [tenants, editingId]
   );
+
+  const featuredSortByTenant = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const o of featuredOrders) {
+      m.set(o.tenantId, o.sortOrder);
+    }
+    return m;
+  }, [featuredOrders]);
+
+  function addToFeatured(tenantId: string) {
+    const max =
+      featuredOrders.length > 0 ? Math.max(...featuredOrders.map((o) => o.sortOrder)) : -1;
+    startTransition(async () => {
+      const result = await upsertFeaturedTenantAction({
+        tenantId,
+        sortOrder: max + 1,
+      });
+      if (!result.ok && result.error) {
+        window.alert(result.error);
+        return;
+      }
+      router.refresh();
+    });
+  }
+
+  function removeFromFeatured(tenantId: string) {
+    startTransition(async () => {
+      const result = await removeFeaturedTenantAction(tenantId);
+      if (!result.ok && result.error) {
+        window.alert(result.error);
+        return;
+      }
+      router.refresh();
+    });
+  }
+
+  function saveFeaturedSort(tenantId: string, raw: string) {
+    const v = Number.parseInt(raw, 10);
+    if (!Number.isFinite(v)) return;
+    startTransition(async () => {
+      const result = await upsertFeaturedTenantAction({ tenantId, sortOrder: v });
+      if (!result.ok && result.error) {
+        window.alert(result.error);
+        return;
+      }
+      router.refresh();
+    });
+  }
 
   function openEdit(t: TenantRow) {
     setEditingId(t.id);
@@ -311,6 +361,7 @@ export function PlatformTenantsClient({ tenants, canManage, configError }: Props
               <TableHead>Lisans</TableHead>
               <TableHead>Durum</TableHead>
               <TableHead>Tenant</TableHead>
+              {canManage ? <TableHead className="text-right">Öne çıkan</TableHead> : null}
               {canManage ? <TableHead className="text-right">İşlem</TableHead> : null}
             </TableRow>
           </TableHeader>
@@ -344,6 +395,41 @@ export function PlatformTenantsClient({ tenants, canManage, configError }: Props
                   <TableCell>
                     <code className="text-xs text-muted-foreground">{t.id.slice(0, 8)}…</code>
                   </TableCell>
+                  {canManage ? (
+                    <TableCell className="text-right">
+                      {featuredSortByTenant.has(t.id) ? (
+                        <div className="flex flex-wrap items-center justify-end gap-2">
+                          <Input
+                            key={`feat-${t.id}-${featuredSortByTenant.get(t.id) ?? 0}`}
+                            type="number"
+                            className="h-8 w-16"
+                            defaultValue={featuredSortByTenant.get(t.id) ?? 0}
+                            disabled={pending}
+                            onBlur={(e) => saveFeaturedSort(t.id, e.target.value)}
+                          />
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={pending}
+                            onClick={() => removeFromFeatured(t.id)}
+                          >
+                            Kaldır
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="secondary"
+                          disabled={pending}
+                          onClick={() => addToFeatured(t.id)}
+                        >
+                          Öne çıkar
+                        </Button>
+                      )}
+                    </TableCell>
+                  ) : null}
                   {canManage ? (
                     <TableCell className="text-right">
                       <Button size="sm" variant="outline" onClick={() => openEdit(t)}>
