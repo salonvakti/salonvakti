@@ -49,6 +49,8 @@ create table public.clients (
   phone text,
   email text,
   note text,
+  business_approved_at timestamptz,
+  phone_verified_at timestamptz,
   created_at timestamptz not null default now ()
 );
 

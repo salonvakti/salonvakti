@@ -52,6 +52,10 @@ export interface ClientRow {
   phone: string | null;
   email: string | null;
   note: string | null;
+  /** İşletme onayı verildiyse dolu */
+  business_approved_at: string | null;
+  /** Telefon doğrulandıysa dolu */
+  phone_verified_at: string | null;
   created_at: string;
 }
 
