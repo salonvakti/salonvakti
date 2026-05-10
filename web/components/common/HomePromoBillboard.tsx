@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { SALON_GOOGLE_MAPS_PROMO } from "@/lib/marketing/salon-promo";
 
 /** Ana sayfada üst şeritten sonra büyük tipografi ile kampanya vurgusu */
-export function HomePromoBillboard() {
+export function HomePromoBillboard({ promoText }: { promoText: string }) {
   return (
     <section
       className="border-b-2 border-amber-500/40 bg-gradient-to-b from-amber-100/90 via-amber-50/80 to-background dark:from-amber-950/50 dark:via-amber-950/25 dark:to-background"
@@ -20,7 +20,7 @@ export function HomePromoBillboard() {
             Kampanya
           </p>
           <p className="text-balance text-2xl font-extrabold leading-tight tracking-tight text-foreground md:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
-            {SALON_GOOGLE_MAPS_PROMO}
+            {promoText.trim() || SALON_GOOGLE_MAPS_PROMO}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <Link href="/register" className={buttonVariants({ size: "lg" })}>

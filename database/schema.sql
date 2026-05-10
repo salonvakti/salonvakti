@@ -126,6 +126,13 @@ create table public.landing_package_prices (
   updated_at timestamptz not null default now ()
 );
 
+-- Vitrin tema / metin / görsel (migration: 012_platform_public_site_settings.sql)
+create table public.platform_public_site_settings (
+  id text primary key default 'default' check (id = 'default'),
+  settings_json jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now ()
+);
+
 -- İşletme panosu tenants/services RLS: migration 005_business_tenant_rls.sql dosyasını Supabase’te çalıştırın.
 
 -- Örnek: Diğer tablolar için RLS SECURITY.md ile birlikte uygulanmalıdır.

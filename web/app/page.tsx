@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HomePromoBillboard } from "@/components/common/HomePromoBillboard";
@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/common/SiteFooter";
 import { SiteHeader } from "@/components/common/SiteHeader";
 import { SALON_GOOGLE_MAPS_PROMO } from "@/lib/marketing/salon-promo";
 import { getLandingPackagePriceLabels } from "@/lib/landing/package-prices";
+import { getPublicSiteSettings } from "@/lib/platform/public-site-settings";
 import { listPublicSalons } from "@/lib/public/salon-directory";
 import { SITE_SEO_KEYWORDS } from "@/lib/seo/keywords";
 import { absoluteUrl } from "@/lib/seo/site-url";
@@ -23,37 +24,50 @@ import {
   Users,
 } from "lucide-react";
 
-const homeDescription =
-  "SalonVakti: kuaför, berber ve güzellik merkezleri için online randevu yazılımı. Müşterileriniz anında online randevu alsın; siz takvim ve işletme yönetimini tek panelden yürütün. " +
-  SALON_GOOGLE_MAPS_PROMO;
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getPublicSiteSettings();
+  const promo = site.copy.promoBannerText?.trim() || SALON_GOOGLE_MAPS_PROMO;
+  const homeDescription =
+    `${site.copy.siteName}: kuaför, berber ve güzellik merkezleri için online randevu yazılımı. Müşterileriniz anında online randevu alsın; siz takvim ve işletme yönetimini tek panelden yürütün. ${promo}`;
 
-export const metadata: Metadata = {
-  title: {
-    absolute:
-      "SalonVakti — Online randevu yazılımı | Salon, kuaför ve güzellik merkezi randevu sistemi",
-  },
-  description: homeDescription,
-  keywords: [...SITE_SEO_KEYWORDS],
-  openGraph: {
-    title: "SalonVakti — Online randevu ve salon yönetimi",
+  return {
+    title: {
+      absolute: `${site.copy.siteName} — Online randevu yazılımı | Salon, kuaför ve güzellik merkezi randevu sistemi`,
+    },
     description: homeDescription,
-    locale: "tr_TR",
-    type: "website",
-    url: absoluteUrl("/"),
-    siteName: "SalonVakti",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "SalonVakti — Online randevu yazılımı",
-    description: homeDescription,
-  },
-  alternates: {
-    canonical: absoluteUrl("/"),
-  },
-  robots: { index: true, follow: true },
-};
+    keywords: [...SITE_SEO_KEYWORDS],
+    openGraph: {
+      title: `${site.copy.siteName} — Online randevu ve salon yönetimi`,
+      description: homeDescription,
+      locale: "tr_TR",
+      type: "website",
+      url: absoluteUrl("/"),
+      siteName: site.copy.siteName,
+      ...(site.images.ogImageUrl ? { images: [{ url: site.images.ogImageUrl }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${site.copy.siteName} — Online randevu yazılımı`,
+      description: homeDescription,
+    },
+    alternates: {
+      canonical: absoluteUrl("/"),
+    },
+    robots: { index: true, follow: true },
+  };
+}
 
 export default async function HomePage() {
+  const site = await getPublicSiteSettings();
+  const promoDisplay = site.copy.promoBannerText?.trim() || SALON_GOOGLE_MAPS_PROMO;
+  const heroBgStyle: CSSProperties | undefined = site.images.heroBackgroundUrl
+    ? {
+        backgroundImage: `linear-gradient(to bottom, oklch(0.97 0 0 / 0.88), oklch(1 0 0 / 0.75)), url(${site.images.heroBackgroundUrl})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }
+    : undefined;
+
   const prices = await getLandingPackagePriceLabels();
   const { salons: directorySalons } = await listPublicSalons();
   const showcaseSalons = directorySalons.slice(0, 6);
@@ -62,18 +76,17 @@ export default async function HomePage() {
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="flex-1">
-        <section className="border-b bg-gradient-to-b from-muted/60 to-background">
+        <section
+          className="border-b bg-gradient-to-b from-muted/60 to-background"
+          style={heroBgStyle}
+        >
           <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-16 md:flex-row md:items-center md:justify-between">
             <div className="max-w-xl space-y-6">
-              <p className="text-sm font-medium text-primary">SalonVakti Web Uygulaması</p>
+              <p className="text-sm font-medium text-primary">{site.copy.siteTagline}</p>
               <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl">
-                Online randevu ve salon yönetimi — tek platformda
+                {site.copy.heroTitle}
               </h1>
-              <p className="text-lg text-muted-foreground">
-                <strong className="font-medium text-foreground">Online randevu</strong> alın, müşteri
-                trafiğini paylaşılabilir bağlantı veya QR ile büyütün; işletmeniz talepleri onaylayarak
-                takvimini kontrol etsin. Salon, kuaför ve güzellik merkezleri için tasarlandı.
-              </p>
+              <p className="text-lg text-muted-foreground">{site.copy.heroSubtitle}</p>
               <div className="flex flex-wrap gap-3">
                 <Link href="/register" className={buttonVariants({ size: "lg" })}>
                   Ücretsiz dene
@@ -101,7 +114,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <HomePromoBillboard />
+        <HomePromoBillboard promoText={promoDisplay} />
 
         <section id="isletmeler" className="scroll-mt-16 border-b bg-background">
           <div className="mx-auto max-w-6xl px-4 py-14">
@@ -219,7 +232,7 @@ export default async function HomePage() {
               salon yönetimi altyapısıyla başlarsınız.
             </p>
             <p className="mx-auto mt-6 max-w-3xl text-center text-base font-bold leading-snug text-foreground md:text-lg">
-              {SALON_GOOGLE_MAPS_PROMO}
+              {promoDisplay}
             </p>
             <div className="mt-10 grid gap-8 lg:grid-cols-3 lg:items-stretch">
               <PackageCard
@@ -290,7 +303,9 @@ export default async function HomePage() {
         </section>
 
         <section className="mx-auto max-w-6xl px-4 py-16">
-          <h2 className="mb-10 text-center text-2xl font-semibold tracking-tight">Neden SalonVakti?</h2>
+          <h2 className="mb-10 text-center text-2xl font-semibold tracking-tight">
+            Neden {site.copy.siteName}?
+          </h2>
           <div className="grid gap-6 md:grid-cols-3">
             <FeatureCard
               title="Hızlı kurulum"

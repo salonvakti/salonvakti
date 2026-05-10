@@ -4,7 +4,15 @@ import { buttonVariants } from "@/components/ui/button";
 import { SALON_GOOGLE_MAPS_PROMO } from "@/lib/marketing/salon-promo";
 import { cn } from "@/lib/utils";
 
-export function SitePromoStrip({ className }: { className?: string }) {
+export function SitePromoStrip({
+  promoText,
+  className,
+}: {
+  /** Boşsa yerleşik kampanya metni kullanılır */
+  promoText?: string;
+  className?: string;
+}) {
+  const text = promoText?.trim() || SALON_GOOGLE_MAPS_PROMO;
   return (
     <div
       className={cn(
@@ -21,7 +29,7 @@ export function SitePromoStrip({ className }: { className?: string }) {
             aria-hidden
           />
           <p className="text-center text-[0.8125rem] font-bold leading-snug tracking-tight sm:text-left sm:text-sm md:text-base">
-            {SALON_GOOGLE_MAPS_PROMO}
+            {text}
           </p>
         </div>
         <Link
