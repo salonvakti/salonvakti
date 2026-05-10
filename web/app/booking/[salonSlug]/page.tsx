@@ -56,6 +56,7 @@ export default async function BookingSalonPage({ params }: Props) {
   const staffOptions = salon.staff.map((s) => ({
     id: s.id,
     displayName: s.displayName,
+    branchId: s.branchId,
   }));
 
   return (
@@ -75,7 +76,13 @@ export default async function BookingSalonPage({ params }: Props) {
           </p>
         </div>
       </div>
-      <BookingSalonClient salonSlug={slug} salonName={prettyName} services={services} staffOptions={staffOptions} />
+      <BookingSalonClient
+        salonSlug={slug}
+        salonName={prettyName}
+        branches={salon.branches}
+        services={services}
+        staffOptions={staffOptions}
+      />
       <SiteFooter />
     </div>
   );

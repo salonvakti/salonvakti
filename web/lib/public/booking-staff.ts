@@ -5,6 +5,7 @@ import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 export type PublicBookingStaffMember = {
   id: string;
   displayName: string;
+  branchId: string | null;
 };
 
 /**
@@ -19,7 +20,7 @@ export async function fetchPublicBookingStaff(tenantId: string): Promise<PublicB
 
   const { data, error } = await admin
     .from("staff")
-    .select("id,display_name")
+    .select("id,display_name,branch_id")
     .eq("tenant_id", tenantId);
 
   if (error) {
@@ -27,7 +28,7 @@ export async function fetchPublicBookingStaff(tenantId: string): Promise<PublicB
     return [];
   }
 
-  const rows = (data ?? []) as { id: string; display_name: string }[];
+  const rows = (data ?? []) as { id: string; display_name: string; branch_id: string | null }[];
   rows.sort((a, b) =>
     (a.display_name ?? "").localeCompare(b.display_name ?? "", "tr", { sensitivity: "base" })
   );
@@ -35,5 +36,6 @@ export async function fetchPublicBookingStaff(tenantId: string): Promise<PublicB
   return rows.map((row) => ({
     id: row.id,
     displayName: row.display_name,
+    branchId: row.branch_id,
   }));
 }

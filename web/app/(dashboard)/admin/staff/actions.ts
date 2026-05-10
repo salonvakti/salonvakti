@@ -39,7 +39,7 @@ export async function listStaffForAdminAction(): Promise<{
 
   const { data, error } = await admin
     .from("staff")
-    .select("id,tenant_id,user_id,display_name,team_role,color")
+    .select("id,tenant_id,branch_id,user_id,display_name,team_role,color")
     .eq("tenant_id", profile.tenantId)
     .order("display_name", { ascending: true });
 
@@ -56,6 +56,7 @@ export async function createStaffMemberAction(input: {
   color: string | null;
   email: string;
   password: string;
+  branchId: string | null;
 }): Promise<{ ok: boolean; error: string | null }> {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
@@ -89,6 +90,7 @@ export async function createStaffMemberAction(input: {
     color: input.color,
     email: input.email,
     password: input.password,
+    branchId: input.branchId?.trim() || null,
   });
 
   if (error) {
@@ -97,5 +99,59 @@ export async function createStaffMemberAction(input: {
 
   revalidatePath("/admin/staff");
   revalidatePath("/admin/appointments");
+  return { ok: true, error: null };
+}
+
+export async function updateStaffBranchAction(input: {
+  staffId: string;
+  branchId: string | null;
+}): Promise<{ ok: boolean; error: string | null }> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return { ok: false, error: "Oturum yapılandırması eksik." };
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { ok: false, error: "Oturum yok." };
+  }
+
+  const profile = getSessionProfile(user);
+  if (profile?.role !== "business_admin" || !profile.tenantId) {
+    return { ok: false, error: "Bu işlem için işletme yöneticisi olmalısınız." };
+  }
+
+  const branchId = input.branchId?.trim() || null;
+
+  const admin = createServiceRoleSupabaseClient();
+  if (!admin) {
+    return { ok: false, error: "Sunucu yapılandırması eksik." };
+  }
+
+  if (branchId) {
+    const { data: br, error: bErr } = await admin
+      .from("tenant_branches")
+      .select("id")
+      .eq("id", branchId)
+      .eq("tenant_id", profile.tenantId)
+      .maybeSingle();
+    if (bErr || !br) {
+      return { ok: false, error: bErr?.message ?? "Geçersiz şube." };
+    }
+  }
+
+  const { error } = await admin
+    .from("staff")
+    .update({ branch_id: branchId })
+    .eq("id", input.staffId)
+    .eq("tenant_id", profile.tenantId);
+
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+
+  revalidatePath("/admin/staff");
   return { ok: true, error: null };
 }

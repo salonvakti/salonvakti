@@ -79,7 +79,7 @@ export default function StaffMySchedulePage() {
       const { data, error: fetchError } = await client
         .from("appointments")
         .select(
-          "id,tenant_id,staff_id,start_time,end_time,status,clients(name),services(name),staff(display_name)"
+          "id,tenant_id,staff_id,start_time,end_time,status,clients(name),services(name),staff(display_name),tenant_branches(name)"
         )
         .eq("tenant_id", profile.tenantId)
         .eq("staff_id", resolvedStaffId)
@@ -98,6 +98,7 @@ export default function StaffMySchedulePage() {
           serviceName: (item.services as { name?: string } | null)?.name ?? "Hizmet",
           staffName: (item.staff as { display_name?: string } | null)?.display_name ?? null,
           staffId: (item.staff_id as string | null) ?? null,
+          branchName: (item.tenant_branches as { name?: string } | null)?.name ?? null,
           startTime: item.start_time as string,
           endTime: item.end_time as string,
           status: item.status as AppointmentStatus,

@@ -64,6 +64,7 @@ export function AppointmentCalendar({
                   <p className="text-muted-foreground">
                     {a.serviceName}
                     {a.staffName ? ` · ${a.staffName}` : ""}
+                    {a.branchName ? ` · ${a.branchName}` : ""}
                   </p>
                 </div>
                 <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3 md:flex-col md:items-end lg:flex-row lg:items-center">

@@ -42,6 +42,24 @@ create table public.services (
 
 create index services_tenant_idx on public.services (tenant_id);
 
+create table public.tenant_branches (
+  id uuid primary key default gen_random_uuid (),
+  tenant_id uuid not null references public.tenants (id) on delete cascade,
+  name text not null,
+  address text,
+  phone text,
+  sort_order int not null default 0,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now (),
+  updated_at timestamptz not null default now ()
+);
+
+create index tenant_branches_tenant_idx on public.tenant_branches (tenant_id);
+
+create index tenant_branches_tenant_active_idx on public.tenant_branches (tenant_id)
+where
+  is_active = true;
+
 create table public.clients (
   id uuid primary key default gen_random_uuid (),
   tenant_id uuid not null references public.tenants (id) on delete cascade,
@@ -62,6 +80,7 @@ create index clients_tenant_idx on public.clients (tenant_id);
 create table public.staff (
   id uuid primary key default gen_random_uuid (),
   tenant_id uuid not null references public.tenants (id) on delete cascade,
+  branch_id uuid references public.tenant_branches (id) on delete set null,
   user_id uuid references auth.users (id) on delete set null,
   display_name text not null,
   team_role text,
@@ -70,6 +89,8 @@ create table public.staff (
 
 create index staff_tenant_idx on public.staff (tenant_id);
 
+create index staff_branch_idx on public.staff (branch_id);
+
 -- Personel RLS (migration: 008_staff_rls.sql)
 
 create table public.appointments (
@@ -77,6 +98,7 @@ create table public.appointments (
   tenant_id uuid not null references public.tenants (id) on delete cascade,
   client_id uuid not null references public.clients (id) on delete cascade,
   staff_id uuid references public.staff (id) on delete set null,
+  branch_id uuid references public.tenant_branches (id) on delete set null,
   service_id uuid not null references public.services (id) on delete restrict,
   start_time timestamptz not null,
   end_time timestamptz not null,
@@ -87,6 +109,8 @@ create table public.appointments (
 );
 
 create index appointments_tenant_window_idx on public.appointments (tenant_id, start_time);
+
+create index appointments_branch_idx on public.appointments (branch_id);
 
 -- Platform öne çıkan işletmeler + müşteri daveti (migration: 007_platform_featured_client_invite.sql)
 create table public.platform_featured_tenants (

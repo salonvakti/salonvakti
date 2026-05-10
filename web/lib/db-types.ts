@@ -39,6 +39,8 @@ export interface AppointmentRow {
   tenant_id: string;
   client_id: string;
   staff_id: string | null;
+  /** Şube tanımlı işletmelerde dolu olabilir; eski kayıtlarda null */
+  branch_id: string | null;
   service_id: string;
   start_time: string;
   end_time: string;
@@ -46,6 +48,18 @@ export interface AppointmentRow {
   /** Rezervasyon oluşturulurken kopyalanan hizmet fiyatı (TRY); eski kayıtlarda null olabilir */
   price_snapshot: number | null;
   created_at: string;
+}
+
+export interface TenantBranchRow {
+  id: string;
+  tenant_id: string;
+  name: string;
+  address: string | null;
+  phone: string | null;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ClientRow {
@@ -84,6 +98,8 @@ export interface ServiceRow {
 export interface StaffRow {
   id: string;
   tenant_id: string;
+  /** Null = tüm şubelerde geçerli (şube tanımlı işletmelerde) */
+  branch_id: string | null;
   user_id: string | null;
   display_name: string;
   /** İşletme içi görünüm rolü (Supabase Auth rolünden bağımsız etiket) */

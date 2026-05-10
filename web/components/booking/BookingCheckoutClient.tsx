@@ -17,10 +17,14 @@ function BookingCheckoutInner({
   salonSlug,
   salonName,
   services,
+  requiresBranch,
+  branchOptions,
 }: {
   salonSlug: string;
   salonName: string;
   services: ServiceSummary[];
+  requiresBranch: boolean;
+  branchOptions: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const params = useSearchParams();
@@ -28,6 +32,7 @@ function BookingCheckoutInner({
   const slot = params.get("slot");
   const staffId = params.get("staff");
   const dateStr = params.get("date");
+  const branchId = params.get("branch");
 
   const service = useMemo(
     () => services.find((s) => s.id === serviceId) ?? null,
@@ -40,7 +45,16 @@ function BookingCheckoutInner({
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const canSubmit = Boolean(service && slot && staffId && dateStr && name.trim() && phone.trim());
+  const branchOk = !requiresBranch || Boolean(branchId?.trim());
+
+  const canSubmit = Boolean(
+    branchOk && service && slot && staffId && dateStr && name.trim() && phone.trim()
+  );
+
+  const branchLabel =
+    branchId && branchOptions.length
+      ? branchOptions.find((b) => b.id === branchId)?.name ?? null
+      : null;
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -57,6 +71,7 @@ function BookingCheckoutInner({
         email: email.trim() || null,
         dateStr,
         slotHHmm: slot,
+        branchId: requiresBranch ? branchId : null,
       });
 
       if (!result.ok || !result.appointmentId) {
@@ -81,6 +96,12 @@ function BookingCheckoutInner({
       <CardContent>
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="rounded-lg border bg-muted/40 p-3 text-sm">
+            {requiresBranch ? (
+              <p className="mb-1">
+                <span className="text-muted-foreground">Şube: </span>
+                <span className="font-medium">{branchLabel ?? "—"}</span>
+              </p>
+            ) : null}
             <p>
               <span className="text-muted-foreground">Hizmet: </span>
               <span className="font-medium">{service?.name ?? "Seçili değil veya geçersiz"}</span>
@@ -106,6 +127,16 @@ function BookingCheckoutInner({
           {service && (!staffId || !dateStr || !slot) ? (
             <p className="text-sm text-destructive">
               Personel, tarih veya saat eksik.{" "}
+              <Link href={`/booking/${encodeURIComponent(salonSlug)}`} className="underline">
+                Randevu adımına dönün
+              </Link>
+              .
+            </p>
+          ) : null}
+
+          {requiresBranch && service && staffId && dateStr && slot && !branchId ? (
+            <p className="text-sm text-destructive">
+              Şube seçimi eksik.{" "}
               <Link href={`/booking/${encodeURIComponent(salonSlug)}`} className="underline">
                 Randevu adımına dönün
               </Link>
@@ -153,16 +184,26 @@ export function BookingCheckoutClient({
   salonSlug,
   salonName,
   services,
+  requiresBranch,
+  branchOptions,
 }: {
   salonSlug: string;
   salonName: string;
   services: ServiceSummary[];
+  requiresBranch: boolean;
+  branchOptions: { id: string; name: string }[];
 }) {
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <Suspense fallback={<p className="px-6 py-10 text-center text-sm text-muted-foreground">Yükleniyor...</p>}>
-        <BookingCheckoutInner salonSlug={salonSlug} salonName={salonName} services={services} />
+        <BookingCheckoutInner
+          salonSlug={salonSlug}
+          salonName={salonName}
+          services={services}
+          requiresBranch={requiresBranch}
+          branchOptions={branchOptions}
+        />
       </Suspense>
       <SiteFooter />
     </div>

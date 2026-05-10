@@ -9,7 +9,7 @@ import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const appointmentSelect =
-  "id,tenant_id,staff_id,start_time,end_time,status,clients(name),services(name),staff(display_name)";
+  "id,tenant_id,staff_id,branch_id,start_time,end_time,status,clients(name),services(name),staff(display_name),tenant_branches(name)";
 
 function mapAppointmentRows(data: unknown[] | null): AppointmentSummary[] {
   return (data ?? []).map((item) => {
@@ -21,6 +21,7 @@ function mapAppointmentRows(data: unknown[] | null): AppointmentSummary[] {
       serviceName: (row.services as { name?: string } | null)?.name ?? "Hizmet",
       staffName: (row.staff as { display_name?: string } | null)?.display_name ?? null,
       staffId: (row.staff_id as string | null) ?? null,
+      branchName: (row.tenant_branches as { name?: string } | null)?.name ?? null,
       startTime: row.start_time as string,
       endTime: row.end_time as string,
       status: row.status as AppointmentStatus,

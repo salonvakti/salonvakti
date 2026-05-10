@@ -3,8 +3,10 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { HomePromoBillboard } from "@/components/common/HomePromoBillboard";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SiteHeader } from "@/components/common/SiteHeader";
+import { SALON_GOOGLE_MAPS_PROMO } from "@/lib/marketing/salon-promo";
 import { getLandingPackagePriceLabels } from "@/lib/landing/package-prices";
 import { listPublicSalons } from "@/lib/public/salon-directory";
 import { SITE_SEO_KEYWORDS } from "@/lib/seo/keywords";
@@ -22,7 +24,8 @@ import {
 } from "lucide-react";
 
 const homeDescription =
-  "SalonVakti: kuaför, berber ve güzellik merkezleri için online randevu yazılımı. Müşterileriniz anında online randevu alsın; siz takvim ve işletme yönetimini tek panelden yürütün.";
+  "SalonVakti: kuaför, berber ve güzellik merkezleri için online randevu yazılımı. Müşterileriniz anında online randevu alsın; siz takvim ve işletme yönetimini tek panelden yürütün. " +
+  SALON_GOOGLE_MAPS_PROMO;
 
 export const metadata: Metadata = {
   title: {
@@ -97,6 +100,8 @@ export default async function HomePage() {
             </Card>
           </div>
         </section>
+
+        <HomePromoBillboard />
 
         <section id="isletmeler" className="scroll-mt-16 border-b bg-background">
           <div className="mx-auto max-w-6xl px-4 py-14">
@@ -212,6 +217,9 @@ export default async function HomePage() {
             <p className="mx-auto mt-3 max-w-2xl text-center text-muted-foreground">
               İşletmenizin büyüklüğüne ve hedeflerinize uygun planı seçin; tüm paketlerde çekirdek randevu ve
               salon yönetimi altyapısıyla başlarsınız.
+            </p>
+            <p className="mx-auto mt-6 max-w-3xl text-center text-base font-bold leading-snug text-foreground md:text-lg">
+              {SALON_GOOGLE_MAPS_PROMO}
             </p>
             <div className="mt-10 grid gap-8 lg:grid-cols-3 lg:items-stretch">
               <PackageCard

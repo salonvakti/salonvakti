@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import type { PublicSalonBranch } from "@/lib/public/salon-directory";
+import { staffListedForBranch } from "@/lib/booking/staff-branch";
 import type { ServiceSummary } from "@/types/service";
 
 function formatTodayLocal(): string {
@@ -17,19 +19,23 @@ function formatTodayLocal(): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-export type BookingStaffOption = { id: string; displayName: string };
+export type BookingStaffOption = { id: string; displayName: string; branchId: string | null };
 
 export function BookingSalonClient({
   salonSlug,
   salonName,
+  branches,
   services,
   staffOptions,
 }: {
   salonSlug: string;
   salonName: string;
+  branches: PublicSalonBranch[];
   services: ServiceSummary[];
   staffOptions: BookingStaffOption[];
 }) {
+  const tenantHasBranches = branches.length > 0;
+  const [branchId, setBranchId] = useState<string>(() => branches[0]?.id ?? "");
   const [selectedId, setSelectedId] = useState<string | null>(services[0]?.id ?? null);
   const [staffId, setStaffId] = useState<string>("");
   const [dateStr, setDateStr] = useState<string>(formatTodayLocal);
@@ -42,6 +48,20 @@ export function BookingSalonClient({
     () => services.find((s) => s.id === selectedId) ?? null,
     [services, selectedId]
   );
+
+  const effectiveStaff = useMemo(
+    () =>
+      staffOptions.filter((s) =>
+        staffListedForBranch(s.branchId, tenantHasBranches ? branchId : null, tenantHasBranches)
+      ),
+    [staffOptions, branchId, tenantHasBranches]
+  );
+
+  useEffect(() => {
+    if (tenantHasBranches) {
+      setStaffId("");
+    }
+  }, [branchId, tenantHasBranches]);
 
   useEffect(() => {
     if (!staffId || !dateStr || !selectedId) {
@@ -60,6 +80,7 @@ export function BookingSalonClient({
       staffId,
       dateStr,
       serviceId: selectedId,
+      branchId: tenantHasBranches ? branchId : null,
     }).then((res) => {
       if (cancelled) return;
       setSlotsLoading(false);
@@ -78,14 +99,18 @@ export function BookingSalonClient({
     return () => {
       cancelled = true;
     };
-  }, [salonSlug, staffId, dateStr, selectedId]);
+  }, [salonSlug, staffId, dateStr, selectedId, tenantHasBranches, branchId]);
+
+  const branchOk = !tenantHasBranches || Boolean(branchId);
 
   const canContinue = Boolean(
-    selected &&
+    branchOk &&
+      selected &&
       slot &&
       staffId &&
-      dateStr &&
       staffOptions.length > 0 &&
+      effectiveStaff.length > 0 &&
+      dateStr &&
       !slotsLoading &&
       slots.length > 0
   );
@@ -95,7 +120,10 @@ export function BookingSalonClient({
     `?service=${encodeURIComponent(selected?.id ?? "")}` +
     `&staff=${encodeURIComponent(staffId)}` +
     `&date=${encodeURIComponent(dateStr)}` +
-    `&slot=${encodeURIComponent(slot ?? "")}`;
+    `&slot=${encodeURIComponent(slot ?? "")}` +
+    (tenantHasBranches && branchId
+      ? `&branch=${encodeURIComponent(branchId)}`
+      : "");
 
   return (
     <div className="mx-auto grid max-w-5xl gap-8 px-4 py-10 lg:grid-cols-[3fr_2fr]">
@@ -128,10 +156,43 @@ export function BookingSalonClient({
           </div>
         ) : (
           <>
+            {tenantHasBranches ? (
+              <div className="space-y-3">
+                <h2 className="text-lg font-semibold">Şube</h2>
+                <p className="text-xs text-muted-foreground">
+                  Randevunuz seçtiğiniz lokasyonda oluşturulur; personel listesi şubeye göre filtrelenir.
+                </p>
+                <div className="space-y-2">
+                  <Label htmlFor="bk-branch">Şube seçimi</Label>
+                  <select
+                    id="bk-branch"
+                    className="flex h-10 w-full max-w-md rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    value={branchId}
+                    required
+                    onChange={(e) => setBranchId(e.target.value)}
+                  >
+                    <option value="">— Şube seçin —</option>
+                    {branches.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ) : null}
             <div className="space-y-3">
               <h2 className="text-lg font-semibold">Hizmet seçimi</h2>
               <ServiceList services={services} selectedId={selectedId} onSelect={setSelectedId} />
             </div>
+            {tenantHasBranches && branchId && effectiveStaff.length === 0 ? (
+              <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-4 text-sm">
+                <p className="font-medium text-foreground">Bu şubede online randevu personeli yok</p>
+                <p className="mt-2 text-muted-foreground">
+                  Başka bir şube seçin veya işletme ile iletişime geçin.
+                </p>
+              </div>
+            ) : null}
             <div className="space-y-3">
               <h2 className="text-lg font-semibold">Personel</h2>
               <p className="text-xs text-muted-foreground">
@@ -144,10 +205,11 @@ export function BookingSalonClient({
                   className="flex h-10 w-full max-w-md rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   value={staffId}
                   required
+                  disabled={tenantHasBranches && (!branchId || effectiveStaff.length === 0)}
                   onChange={(e) => setStaffId(e.target.value)}
                 >
                   <option value="">— Personel seçin —</option>
-                  {staffOptions.map((s) => (
+                  {effectiveStaff.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.displayName}
                     </option>
@@ -205,6 +267,14 @@ export function BookingSalonClient({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
+            {tenantHasBranches ? (
+              <div>
+                <p className="text-muted-foreground">Şube</p>
+                <p className="font-medium">
+                  {branchId ? branches.find((b) => b.id === branchId)?.name ?? "—" : "—"}
+                </p>
+              </div>
+            ) : null}
             <div>
               <p className="text-muted-foreground">Hizmet</p>
               <p className="font-medium">{selected?.name ?? "—"}</p>
@@ -228,12 +298,26 @@ export function BookingSalonClient({
               className={cn(
                 buttonVariants(),
                 "flex w-full items-center justify-center",
-                (!canContinue || services.length === 0 || staffOptions.length === 0) &&
+                (!canContinue ||
+                  services.length === 0 ||
+                  staffOptions.length === 0 ||
+                  (tenantHasBranches && effectiveStaff.length === 0)) &&
                   "pointer-events-none opacity-50"
               )}
-              aria-disabled={!canContinue || services.length === 0 || staffOptions.length === 0}
+              aria-disabled={
+                !canContinue ||
+                services.length === 0 ||
+                staffOptions.length === 0 ||
+                (tenantHasBranches && effectiveStaff.length === 0)
+              }
               onClick={(e) => {
-                if (!canContinue || services.length === 0 || staffOptions.length === 0) e.preventDefault();
+                if (
+                  !canContinue ||
+                  services.length === 0 ||
+                  staffOptions.length === 0 ||
+                  (tenantHasBranches && effectiveStaff.length === 0)
+                )
+                  e.preventDefault();
               }}
             >
               Devam et

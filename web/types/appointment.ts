@@ -9,6 +9,8 @@ export interface AppointmentSummary {
   serviceName: string;
   staffName: string | null;
   staffId: string | null;
+  /** Şube kaydı yoksa veya eski randevuda null */
+  branchName: string | null;
   startTime: string;
   endTime: string;
   status: AppointmentStatus;

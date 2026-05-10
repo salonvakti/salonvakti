@@ -11,6 +11,8 @@ export async function createStaffMemberWithAuthUser(input: {
   color: string | null;
   email: string;
   password: string;
+  /** Null = tüm şubelerde geçerli */
+  branchId: string | null;
 }): Promise<{ error: string | null }> {
   const admin = createServiceRoleSupabaseClient();
   if (!admin) {
@@ -25,10 +27,23 @@ export async function createStaffMemberWithAuthUser(input: {
     return { error: "Geçerli bir e-posta girin." };
   }
 
+  if (input.branchId) {
+    const { data: br, error: bErr } = await admin
+      .from("tenant_branches")
+      .select("id")
+      .eq("id", input.branchId)
+      .eq("tenant_id", input.tenantId)
+      .maybeSingle();
+    if (bErr || !br) {
+      return { error: bErr?.message ?? "Geçersiz şube." };
+    }
+  }
+
   const { data: staffRow, error: insErr } = await admin
     .from("staff")
     .insert({
       tenant_id: input.tenantId,
+      branch_id: input.branchId,
       display_name: input.displayName.trim(),
       team_role: input.teamRole?.trim() || null,
       color: input.color?.trim() || null,

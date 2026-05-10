@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSessionProfile } from "@/lib/auth/session";
 import { isCustomerRole } from "@/lib/constants/roles";
 import { hasStaffBookingConflict, listAvailableBookingSlots } from "@/lib/booking/availability";
+import { assertBranchAndStaffForBooking, loadActiveBranchIdsForTenant } from "@/lib/booking/branch-booking-guards";
 import { validateBookingWallSlot } from "@/lib/booking/slot-validation";
 import type { TenantRow } from "@/lib/db-types";
 import { normalizePhoneDigits } from "@/lib/phone/normalize";
@@ -17,6 +18,8 @@ export async function getAvailableBookingSlotsAction(input: {
   staffId: string;
   dateStr: string;
   serviceId: string;
+  /** İşletmenin aktif şubesi varsa zorunlu */
+  branchId?: string | null;
 }): Promise<{ slots: string[]; error: string | null }> {
   const slug = normalizeTenantSlug(input.salonSlug);
   if (!slug) {
@@ -38,6 +41,21 @@ export async function getAvailableBookingSlotsAction(input: {
 
   if (!salon.staff.some((s) => s.id === input.staffId)) {
     return { slots: [], error: "Personel geçersiz." };
+  }
+
+  const { ids: activeBranchIds, error: brErr } = await loadActiveBranchIdsForTenant(salon.id);
+  if (brErr) {
+    return { slots: [], error: brErr };
+  }
+
+  const branchGate = await assertBranchAndStaffForBooking({
+    tenantId: salon.id,
+    staffId: input.staffId,
+    branchId: input.branchId?.trim() || null,
+    activeBranchIds,
+  });
+  if (!branchGate.ok) {
+    return { slots: [], error: branchGate.error };
   }
 
   const admin = createServiceRoleSupabaseClient();
@@ -71,6 +89,7 @@ export async function createPublicBookingAction(input: {
   email: string | null;
   dateStr: string;
   slotHHmm: string;
+  branchId?: string | null;
 }): Promise<{ ok: boolean; appointmentId: string | null; error: string | null }> {
   const slug = normalizeTenantSlug(input.salonSlug);
   if (!slug) {
@@ -108,6 +127,24 @@ export async function createPublicBookingAction(input: {
   if (!salon.staff.some((s) => s.id === input.staffId)) {
     return { ok: false, appointmentId: null, error: "Seçilen personel geçerli değil." };
   }
+
+  const { ids: activeBranchIds, error: brErr } = await loadActiveBranchIdsForTenant(salon.id);
+  if (brErr) {
+    return { ok: false, appointmentId: null, error: brErr };
+  }
+
+  const branchGate = await assertBranchAndStaffForBooking({
+    tenantId: salon.id,
+    staffId: input.staffId,
+    branchId: input.branchId?.trim() || null,
+    activeBranchIds,
+  });
+  if (!branchGate.ok) {
+    return { ok: false, appointmentId: null, error: branchGate.error };
+  }
+
+  const resolvedBranchId =
+    activeBranchIds.length > 0 ? (input.branchId?.trim() || null) : null;
 
   const admin = createServiceRoleSupabaseClient();
   if (!admin) {
@@ -230,6 +267,7 @@ export async function createPublicBookingAction(input: {
       tenant_id: salon.id,
       client_id: clientId,
       staff_id: input.staffId,
+      branch_id: resolvedBranchId,
       service_id: input.serviceId,
       start_time: start.toISOString(),
       end_time: end.toISOString(),

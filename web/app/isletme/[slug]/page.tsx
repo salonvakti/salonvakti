@@ -17,7 +17,7 @@ import { SITE_SEO_KEYWORDS } from "@/lib/seo/keywords";
 import { absoluteUrl } from "@/lib/seo/site-url";
 import { normalizeTenantSlug } from "@/lib/tenant/slug";
 import { cn } from "@/lib/utils";
-import { CalendarClock, MapPin, Phone } from "lucide-react";
+import { Building2, CalendarClock, MapPin, Phone } from "lucide-react";
 
 type Props = { params: { slug: string } };
 
@@ -198,6 +198,47 @@ export default async function IsletmeTanitimPage({ params }: Props) {
             </div>
           </div>
         </section>
+
+        {salon.branches.length > 0 ? (
+          <section className="border-t bg-muted/10 py-12">
+            <div className="mx-auto max-w-6xl px-4">
+              <h2 className="text-2xl font-semibold tracking-tight">Şubelerimiz</h2>
+              <p className="mt-2 max-w-3xl text-muted-foreground">
+                Online randevu alırken aşağıdaki lokasyonlardan birini seçebilirsiniz.
+              </p>
+              <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {salon.branches.map((b) => (
+                  <li key={b.id}>
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="flex items-start gap-2 text-lg leading-snug">
+                          <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+                          {b.name}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-2 text-sm text-muted-foreground">
+                        {b.address ? (
+                          <p className="flex gap-2">
+                            <MapPin className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                            <span>{b.address}</span>
+                          </p>
+                        ) : null}
+                        {b.phone ? (
+                          <p className="flex gap-2">
+                            <Phone className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                            <a href={`tel:${b.phone.replace(/\s/g, "")}`} className="hover:underline">
+                              {b.phone}
+                            </a>
+                          </p>
+                        ) : null}
+                      </CardContent>
+                    </Card>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        ) : null}
 
         {salon.address?.trim() ? (
           <section className="mx-auto max-w-6xl px-4 py-12">

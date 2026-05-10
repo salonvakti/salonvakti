@@ -15,6 +15,15 @@ export default async function BookingCheckoutPage({ params }: Props) {
   if (!salon) notFound();
 
   const services: ServiceSummary[] = mapPublicServicesToSummaries(salon.services);
+  const branchOptions = salon.branches.map((b) => ({ id: b.id, name: b.name }));
 
-  return <BookingCheckoutClient salonSlug={slug} salonName={salon.name} services={services} />;
+  return (
+    <BookingCheckoutClient
+      salonSlug={slug}
+      salonName={salon.name}
+      services={services}
+      requiresBranch={salon.branches.length > 0}
+      branchOptions={branchOptions}
+    />
+  );
 }

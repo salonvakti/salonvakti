@@ -15,9 +15,17 @@ export type PublicSalonService = {
   description: string | null;
 };
 
+export type PublicSalonBranch = {
+  id: string;
+  name: string;
+  address: string | null;
+  phone: string | null;
+};
+
 export type PublicSalonStaff = {
   id: string;
   displayName: string;
+  branchId: string | null;
 };
 
 export type PublicSalonDetail = {
@@ -28,6 +36,8 @@ export type PublicSalonDetail = {
   address: string | null;
   phone: string | null;
   promoText: string | null;
+  /** Aktif şubeler; boşsa tek lokasyon (şube seçimi yok) */
+  branches: PublicSalonBranch[];
   services: PublicSalonService[];
   staff: PublicSalonStaff[];
 };
@@ -185,7 +195,31 @@ export async function getPublicSalonBySlug(rawSlug: string): Promise<{
     description: (s.description as string | null) ?? null,
   }));
 
-  const staff: PublicSalonStaff[] = await fetchPublicBookingStaff(tr.id);
+  const { data: branchRows, error: bErr } = await admin
+    .from("tenant_branches")
+    .select("id,name,address,phone,sort_order")
+    .eq("tenant_id", tr.id)
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true });
+
+  if (bErr) {
+    return { salon: null, error: bErr.message };
+  }
+
+  const branches: PublicSalonBranch[] = (branchRows ?? []).map((b) => ({
+    id: b.id as string,
+    name: b.name as string,
+    address: (b.address as string | null) ?? null,
+    phone: (b.phone as string | null) ?? null,
+  }));
+
+  const staffRaw = await fetchPublicBookingStaff(tr.id);
+  const staff: PublicSalonStaff[] = staffRaw.map((s) => ({
+    id: s.id,
+    displayName: s.displayName,
+    branchId: s.branchId,
+  }));
 
   return {
     salon: {
@@ -196,6 +230,7 @@ export async function getPublicSalonBySlug(rawSlug: string): Promise<{
       address: resolvedAddress,
       phone: tr.phone,
       promoText: resolvedPromo,
+      branches,
       services,
       staff,
     },
