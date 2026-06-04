@@ -11,6 +11,7 @@ import { LandingSalonsSection } from "@/components/landing/LandingSalonsSection"
 import { LandingStats } from "@/components/landing/LandingStats";
 import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
 import { LandingWhyChoose } from "@/components/landing/LandingWhyChoose";
+import { DEFAULT_LANDING_HERO_BANNER } from "@/lib/landing/default-assets";
 import { SALON_GOOGLE_MAPS_PROMO } from "@/lib/marketing/salon-promo";
 import { getLandingPackagePriceLabels } from "@/lib/landing/package-prices";
 import { getPublicSiteSettings } from "@/lib/platform/public-site-settings";
@@ -56,7 +57,9 @@ export default async function HomePage() {
   const promoDisplay = site.copy.promoBannerText?.trim() || SALON_GOOGLE_MAPS_PROMO;
 
   const heroImageUrl =
-    site.images.heroBackgroundUrl?.trim() || site.images.ogImageUrl?.trim() || null;
+    site.images.heroBackgroundUrl?.trim() ||
+    site.images.ogImageUrl?.trim() ||
+    DEFAULT_LANDING_HERO_BANNER;
   const wideImageUrl =
     site.images.ogImageUrl?.trim() || site.images.heroBackgroundUrl?.trim() || null;
   const screenImageUrl =
