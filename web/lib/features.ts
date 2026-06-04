@@ -2,13 +2,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   FEATURE_UNLIMITED,
   PLAN_FEATURES_DEFAULT,
-  PLAN_TYPES,
   type BooleanFeatureKey,
   type FeatureOverrides,
   type NumericFeatureKey,
   type PlanType,
   type ResolvedTenantFeatures,
-  type TenantFeatures,
 } from "@/types/features";
 
 export {
