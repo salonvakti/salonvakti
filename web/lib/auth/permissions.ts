@@ -97,6 +97,11 @@ export const dashboardNav = {
       label: "Site görünümü",
       roles: ["platform_admin"] as UserRole[],
     },
+    {
+      href: "/platform/media",
+      label: "Medya kütüphanesi",
+      roles: ["platform_admin", "platform_user"] as UserRole[],
+    },
   ],
   businessAdmin: [
     { href: "/admin/dashboard", label: "Özet", roles: ["business_admin"] as UserRole[] },

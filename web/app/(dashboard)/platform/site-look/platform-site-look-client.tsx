@@ -333,8 +333,15 @@ export function PlatformSiteLookClient({ initial }: { initial: ResolvedPublicSit
               {activeSection === "hero" && "Ana sayfa kahraman alanı başlık ve açıklama metinleri."}
               {activeSection === "seo" &&
                 "Arama motoru özeti, üst kampanya şeridi ve footer vurgusu."}
-              {activeSection === "images" &&
-                "Logo, ikon, kahraman arka planı ve sosyal paylaşım görseli (https)."}
+              {activeSection === "images" && (
+                <>
+                  Logo, ikon, kahraman arka planı ve sosyal paylaşım görseli (https).{" "}
+                  <Link href="/platform/media" className="text-primary underline underline-offset-2">
+                    Medya kütüphanesinden
+                  </Link>{" "}
+                  URL kopyalayabilirsiniz.
+                </>
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5 pt-5">
