@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { ArrowRight, Star } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { FloatingShapes } from "@/components/landing/landing-shared";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 import { HeroBannerVisual } from "@/components/landing/HeroBannerVisual";
-import { cn } from "@/lib/utils";
+import {
+  DEFAULT_LANDING_HERO_BANNER,
+  TEENO_HOME3_HERO_BG,
+} from "@/lib/landing/default-assets";
 
 type Props = {
   siteName: string;
-  tagline: string;
   title: string;
   subtitle: string;
   heroImageUrl: string | null;
@@ -17,7 +18,6 @@ type Props = {
 
 export function LandingHero({
   siteName,
-  tagline,
   title,
   subtitle,
   heroImageUrl,
@@ -25,69 +25,68 @@ export function LandingHero({
   promoLine,
 }: Props) {
   const statLabel =
-    salonCount > 0 ? `${salonCount}+ işletme platformda` : "500+ salon hedefi";
+    salonCount > 0
+      ? `${salonCount}+ işletme platformda`
+      : "500+ salon hedefi";
+  const bannerSrc = heroImageUrl?.trim() || DEFAULT_LANDING_HERO_BANNER;
 
   return (
-    <section className="relative overflow-hidden border-b bg-gradient-to-br from-slate-50 via-background to-violet-50/80 dark:from-slate-950/50 dark:via-background dark:to-violet-950/30">
-      <FloatingShapes />
-      <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-14 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] md:items-center md:gap-8 md:py-20 lg:py-24">
-        <div className="relative z-10 space-y-7 md:pr-4">
-          <p className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-background/90 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur">
-            <Star className="h-4 w-4 fill-primary text-primary" aria-hidden />
-            {tagline}
-          </p>
-          <h1 className="text-balance text-4xl font-extrabold leading-[1.08] tracking-tight md:text-5xl lg:text-[3.35rem]">
-            {title}
-          </h1>
-          <p className="max-w-lg text-lg leading-relaxed text-muted-foreground">{subtitle}</p>
-          {promoLine ? (
-            <p className="max-w-lg rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-medium leading-snug">
-              {promoLine}
-            </p>
-          ) : null}
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/register"
-              className={cn(buttonVariants({ size: "lg" }), "shadow-lg shadow-primary/25")}
-            >
-              Ücretsiz başla
-              <ArrowRight className="h-4 w-4" data-icon="inline-end" />
-            </Link>
-            <Link href="/#paketler" className={buttonVariants({ variant: "outline", size: "lg" })}>
-              Paketleri incele
-            </Link>
-          </div>
-          <div className="flex flex-wrap items-center gap-4 border-t border-border/60 pt-6">
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-background bg-primary/15 text-xs font-bold text-primary"
-                >
-                  {siteName.charAt(0)}
-                </div>
-              ))}
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-background bg-primary text-xs font-bold text-primary-foreground">
-                +
-              </div>
+    <section
+      className="hero-banner hero-banner-3"
+      style={{ backgroundImage: `url(${TEENO_HOME3_HERO_BG})` }}
+    >
+      <div className="relative mx-auto max-w-6xl px-4">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
+          <div className="banner-content relative z-10">
+            <h1>{title}</h1>
+            <p>{subtitle}</p>
+            {promoLine ? (
+              <p className="!mt-4 rounded-xl border border-[#f79b22]/35 bg-[#f79b22]/10 px-4 py-3 !text-sm font-medium !text-[#9a3412]">
+                {promoLine}
+              </p>
+            ) : null}
+            <div className="btn-groups">
+              <Link href="/register" className="btn-teeno-primary">
+                Ücretsiz başla
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+              <Link href="/#paketler" className="btn-teeno-outline">
+                Paketleri incele
+              </Link>
             </div>
-            <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">{statLabel}</span>
-              <span className="mx-2 text-border">·</span>
-              Online randevu yazılımı
-            </p>
+            <div className="client-area">
+              <div className="client-avatars" aria-hidden>
+                {[1, 2, 3, 4].map((i) => (
+                  <span key={i}>{siteName.charAt(0)}</span>
+                ))}
+                <span className="client-plus">+</span>
+              </div>
+              <p>
+                <strong>{statLabel}</strong>
+                Online randevu yazılımı — kuaför, berber ve güzellik merkezleri
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="relative z-10 md:-mt-4 lg:mt-0">
-          <div className="absolute -left-2 top-6 z-20 hidden rounded-2xl border bg-card/95 px-4 py-3 text-sm shadow-xl backdrop-blur md:block">
-            <p className="font-bold text-primary">7/24</p>
-            <p className="text-muted-foreground">Online randevu</p>
+          <div className="banner-image">
+            {bannerSrc.startsWith("/") ? (
+              <Image
+                src={bannerSrc}
+                alt={`${siteName} — mobil randevu`}
+                width={640}
+                height={720}
+                priority
+                className="mx-auto h-auto w-full max-w-[min(100%,520px)] object-contain lg:ml-auto lg:max-w-[560px]"
+                sizes="(max-width: 1024px) 90vw, 560px"
+              />
+            ) : (
+              <HeroBannerVisual
+                imageUrl={bannerSrc}
+                alt={`${siteName} — mobil randevu`}
+                className="lg:justify-end"
+              />
+            )}
           </div>
-          <HeroBannerVisual
-            imageUrl={heroImageUrl}
-            alt={`${siteName} — mobil randevu uygulaması`}
-          />
         </div>
       </div>
     </section>

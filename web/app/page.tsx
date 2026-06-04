@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "./teeno-home3.css";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SiteHeader } from "@/components/common/SiteHeader";
 import { LandingAppShowcase } from "@/components/landing/LandingAppShowcase";
@@ -6,6 +7,7 @@ import { LandingCtaBand } from "@/components/landing/LandingCtaBand";
 import { LandingFaq } from "@/components/landing/LandingFaq";
 import { LandingFeaturesGrid } from "@/components/landing/LandingFeaturesGrid";
 import { LandingHero } from "@/components/landing/LandingHero";
+import { LandingHowItWorks } from "@/components/landing/LandingHowItWorks";
 import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingSalonsSection } from "@/components/landing/LandingSalonsSection";
 import { LandingStats } from "@/components/landing/LandingStats";
@@ -128,12 +130,11 @@ export default async function HomePage() {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <SiteHeader variant="landing" />
-      <main className="flex-1">
+    <div className="teeno-home3 flex min-h-screen flex-col">
+      <SiteHeader variant="home3" />
+      <main className="relative flex-1">
         <LandingHero
           siteName={site.copy.siteName}
-          tagline={site.copy.siteTagline}
           title={site.copy.heroTitle}
           subtitle={site.copy.heroSubtitle}
           heroImageUrl={heroImageUrl}
@@ -141,6 +142,7 @@ export default async function HomePage() {
           promoLine={promoDisplay}
         />
         <LandingStats salonCount={directorySalons.length} />
+        <LandingHowItWorks />
         <LandingWhyChoose siteName={site.copy.siteName} showcaseImageUrl={wideImageUrl} />
         <LandingFeaturesGrid />
         <LandingAppShowcase siteName={site.copy.siteName} screenImageUrl={screenImageUrl} />

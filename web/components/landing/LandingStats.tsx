@@ -11,7 +11,7 @@ const items = [
 
 export function LandingStats({ salonCount }: Props) {
   return (
-    <section className="border-b bg-primary text-primary-foreground">
+    <section className="teeno-stats-strip border-b">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-12 md:grid-cols-4 md:py-14">
         {items.map(({ icon: Icon, getValue, label }) => (
           <div key={label} className="text-center">

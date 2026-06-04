@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Building2 } from "lucide-react";
+import { Building2, User } from "lucide-react";
 import { SitePromoStrip } from "@/components/common/SitePromoStrip";
 import { usePublicSiteSettings } from "@/components/providers/public-site-provider";
 import { buttonVariants } from "@/components/ui/button";
@@ -16,10 +17,132 @@ const landingLinks = [
   { href: "/isletmeler", label: "İşletmeler" },
 ];
 
-export function SiteHeader({ variant = "default" }: { variant?: "default" | "landing" }) {
+export function SiteHeader({
+  variant = "default",
+}: {
+  variant?: "default" | "landing" | "home3";
+}) {
   const s = usePublicSiteSettings();
   const promoText = s.copy.promoBannerText?.trim() || SALON_GOOGLE_MAPS_PROMO;
-  const isLanding = variant === "landing";
+  const isHome3 = variant === "home3";
+  const isLanding = variant === "landing" || isHome3;
+  const [sticky, setSticky] = useState(false);
+
+  useEffect(() => {
+    if (!isHome3) return;
+    const onScroll = () => setSticky(window.scrollY > 48);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isHome3]);
+
+  const logo = (
+    <Link
+      href="/"
+      className={cn(
+        "flex min-w-0 items-center gap-2 font-semibold tracking-tight",
+        isHome3 && "teeno-logo-text"
+      )}
+    >
+      {s.images.headerLogoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={s.images.headerLogoUrl}
+          alt={s.copy.siteName}
+          className={cn(
+            "h-8 w-auto max-w-[180px] object-contain object-left",
+            isHome3 && !sticky && "brightness-0 invert"
+          )}
+        />
+      ) : (
+        <>
+          {s.images.headerIconUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={s.images.headerIconUrl}
+              alt=""
+              className="h-8 w-8 object-contain"
+            />
+          ) : (
+            <Building2
+              className={cn(
+                "h-6 w-6 shrink-0",
+                isHome3 && !sticky ? "text-white" : "text-primary"
+              )}
+              aria-hidden
+            />
+          )}
+          <span className="truncate">{s.copy.siteName}</span>
+        </>
+      )}
+    </Link>
+  );
+
+  const nav = (
+    <nav className="hidden items-center gap-0.5 text-sm md:flex">
+      {(isLanding ? landingLinks : []).map((link) => (
+        <Link
+          key={link.href}
+          href={link.href}
+          className={cn(
+            isHome3
+              ? "teeno-nav-link rounded-md px-3 py-2 text-sm font-medium transition-colors"
+              : buttonVariants({ variant: "ghost", size: "sm" })
+          )}
+        >
+          {link.label}
+        </Link>
+      ))}
+      {!isLanding ? (
+        <>
+          <Link href="/#paketler" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+            Paketler
+          </Link>
+          <Link href="/isletmeler" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+            İşletmeler
+          </Link>
+        </>
+      ) : null}
+    </nav>
+  );
+
+  const actions = (
+    <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
+      <Link
+        href="/login"
+        className={cn(
+          isHome3
+            ? "teeno-login-btn inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium"
+            : buttonVariants({ variant: "ghost", size: "sm" })
+        )}
+      >
+        {isHome3 ? <User className="h-4 w-4" aria-hidden /> : null}
+        Giriş
+      </Link>
+      <Link
+        href="/register"
+        className={cn(
+          isHome3
+            ? "teeno-cta-btn inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold"
+            : buttonVariants({ size: "sm" })
+        )}
+      >
+        {isLanding ? "Ücretsiz başla" : "İşletme oluştur"}
+      </Link>
+    </div>
+  );
+
+  if (isHome3) {
+    return (
+      <header className={cn("teeno-header-2 w-full", sticky && "is-sticky")}>
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:py-5">
+          {logo}
+          {nav}
+          {actions}
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header
@@ -30,60 +153,11 @@ export function SiteHeader({ variant = "default" }: { variant?: "default" | "lan
           : "bg-card/60 supports-[backdrop-filter]:bg-card/40"
       )}
     >
-      {isLanding ? null : <SitePromoStrip promoText={promoText} />}
+      {!isLanding ? <SitePromoStrip promoText={promoText} /> : null}
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:py-4">
-        <Link href="/" className="flex min-w-0 items-center gap-2 font-semibold tracking-tight">
-          {s.images.headerLogoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={s.images.headerLogoUrl}
-              alt={s.copy.siteName}
-              className="h-8 w-auto max-w-[180px] object-contain object-left"
-            />
-          ) : (
-            <>
-              {s.images.headerIconUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={s.images.headerIconUrl} alt="" className="h-8 w-8 object-contain" />
-              ) : (
-                <Building2 className="h-6 w-6 shrink-0 text-primary" aria-hidden />
-              )}
-              <span className="truncate">{s.copy.siteName}</span>
-            </>
-          )}
-        </Link>
-        <nav className="hidden items-center gap-1 text-sm md:flex">
-          {(isLanding ? landingLinks : []).map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={buttonVariants({ variant: "ghost", size: "sm" })}
-            >
-              {link.label}
-            </Link>
-          ))}
-          {!isLanding ? (
-            <>
-              <Link href="/#paketler" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-                Paketler
-              </Link>
-              <Link href="/isletmeler" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-                İşletmeler
-              </Link>
-            </>
-          ) : null}
-        </nav>
-        <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
-          <Link
-            href="/login"
-            className={buttonVariants({ variant: "ghost", size: "sm" })}
-          >
-            Giriş
-          </Link>
-          <Link href="/register" className={buttonVariants({ size: "sm" })}>
-            {isLanding ? "Ücretsiz başla" : "İşletme oluştur"}
-          </Link>
-        </div>
+        {logo}
+        {nav}
+        {actions}
       </div>
     </header>
   );
