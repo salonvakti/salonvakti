@@ -2,10 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { HeroBannerVisual } from "@/components/landing/HeroBannerVisual";
-import {
-  DEFAULT_LANDING_HERO_BANNER,
-  TEENO_HOME3_HERO_BG,
-} from "@/lib/landing/default-assets";
+import { DEFAULT_LANDING_HERO_BANNER, SLNVKT_HOME_HERO_BG } from "@/lib/landing/default-assets";
 
 type Props = {
   siteName: string;
@@ -33,7 +30,7 @@ export function LandingHero({
   return (
     <section
       className="hero-banner hero-banner-3"
-      style={{ backgroundImage: `url(${TEENO_HOME3_HERO_BG})` }}
+      style={{ backgroundImage: `url(${SLNVKT_HOME_HERO_BG})` }}
     >
       <div className="relative mx-auto max-w-6xl px-4">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
@@ -46,11 +43,11 @@ export function LandingHero({
               </p>
             ) : null}
             <div className="btn-groups">
-              <Link href="/register" className="btn-teeno-primary">
+              <Link href="/register" className="btn-slnvkt-primary">
                 Ücretsiz başla
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
-              <Link href="/#paketler" className="btn-teeno-outline">
+              <Link href="/#paketler" className="btn-slnvkt-outline">
                 Paketleri incele
               </Link>
             </div>

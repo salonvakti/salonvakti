@@ -30,7 +30,7 @@ const steps = [
 
 export function LandingHowItWorks() {
   return (
-    <section className="teeno-how-steps border-b bg-background py-16 md:py-24">
+    <section className="slnvkt-how-steps border-b bg-background py-16 md:py-24">
       <div className="mx-auto max-w-6xl px-4">
         <SectionHeading
           badge="Nasıl çalışır?"
@@ -45,7 +45,7 @@ export function LandingHowItWorks() {
               className="group rounded-2xl border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
             >
               <p className="step-num">{step.num}</p>
-              <h3 className="mt-3 text-lg font-bold tracking-tight group-hover:text-[var(--teeno-secondary,#de4313)]">
+              <h3 className="mt-3 text-lg font-bold tracking-tight group-hover:text-[var(--slnvkt-secondary,#de4313)]">
                 {step.title}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.body}</p>

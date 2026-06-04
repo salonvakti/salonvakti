@@ -1,0 +1,492 @@
+/* slnvkt — turuncu marka teması (tüm uygulama + ana sayfa düzeni) */
+
+@keyframes slnvkt-move-up-down {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes slnvkt-slide-down {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.slnvkt-app {
+  --slnvkt-primary: #f79b22;
+  --slnvkt-secondary: #de4313;
+  --slnvkt-gradient: linear-gradient(145deg, #f79b22 0%, #de4313 100%);
+  --slnvkt-dark: 15 23 42;
+  --slnvkt-warm-bg: #fffaf5;
+  --slnvkt-warm-bg-2: #fff5eb;
+}
+
+/* —— Admin / platform panel —— */
+.slnvkt-app .slnvkt-dashboard aside {
+  border-color: rgb(247 155 34 / 0.18);
+  background: linear-gradient(180deg, #fffaf5 0%, #fff 28%);
+}
+
+.slnvkt-app .slnvkt-dashboard aside > div:first-child {
+  border-color: rgb(247 155 34 / 0.2);
+}
+
+.slnvkt-app .slnvkt-dashboard aside svg.text-primary,
+.slnvkt-app .slnvkt-dashboard .slnvkt-brand-icon {
+  color: var(--slnvkt-primary);
+}
+
+.slnvkt-app .slnvkt-dashboard .slnvkt-brand-label {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--slnvkt-secondary);
+}
+
+.slnvkt-app .slnvkt-dashboard nav a.bg-sidebar-accent {
+  background: rgb(247 155 34 / 0.14) !important;
+  color: var(--slnvkt-secondary) !important;
+  font-weight: 600;
+}
+
+.slnvkt-app .slnvkt-dashboard nav a:hover {
+  background: rgb(247 155 34 / 0.08);
+  color: var(--slnvkt-secondary);
+}
+
+.slnvkt-app .slnvkt-dashboard > div > header {
+  border-color: rgb(247 155 34 / 0.15);
+  background: rgb(255 255 255 / 0.92);
+}
+
+.slnvkt-app .slnvkt-dashboard main {
+  background: var(--slnvkt-warm-bg);
+}
+
+.slnvkt-app .slnvkt-dashboard .bg-primary,
+.slnvkt-app .slnvkt-dashboard button.bg-primary {
+  background: var(--slnvkt-gradient) !important;
+}
+
+.slnvkt-app .slnvkt-dashboard .text-primary {
+  color: var(--slnvkt-secondary) !important;
+}
+
+.slnvkt-app .slnvkt-dashboard .border-primary {
+  border-color: var(--slnvkt-primary) !important;
+}
+
+.slnvkt-app .slnvkt-dashboard .ring-primary\/20,
+.slnvkt-app .slnvkt-dashboard .ring-primary\/25 {
+  --tw-ring-color: rgb(247 155 34 / 0.35);
+}
+
+/* —— Ana sayfa (.slnvkt-home) —— */
+.slnvkt-home {
+  --primary: oklch(0.74 0.16 55);
+  --primary-foreground: oklch(0.99 0 0);
+  --ring: oklch(0.74 0.16 55);
+  --accent: oklch(0.97 0.03 75);
+  --accent-foreground: oklch(0.42 0.14 40);
+}
+
+.slnvkt-home .slnvkt-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  border-bottom: 1px solid rgb(255 255 255 / 0.15);
+  background: rgb(var(--slnvkt-dark) / 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 28px rgb(0 0 0 / 0.14);
+  transition:
+    background 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.slnvkt-home .slnvkt-header.is-sticky {
+  position: fixed;
+  animation: slnvkt-slide-down 0.45s ease;
+  background: rgb(var(--slnvkt-dark) / 0.96);
+  box-shadow: 0 8px 40px rgb(0 0 0 / 0.2);
+}
+
+.slnvkt-home .slnvkt-logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  background: rgb(255 255 255 / 0.97);
+  padding: 0.4rem 0.85rem;
+  box-shadow: 0 2px 14px rgb(0 0 0 / 0.18);
+}
+
+.slnvkt-home .slnvkt-logo-img {
+  display: block;
+}
+
+.slnvkt-home .slnvkt-logo-icon {
+  color: var(--slnvkt-primary);
+}
+
+.slnvkt-home .slnvkt-logo-text {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.slnvkt-home .slnvkt-nav-link {
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+}
+
+.slnvkt-home .slnvkt-nav-link:hover {
+  color: #fff;
+  background: rgb(255 255 255 / 0.12);
+}
+
+.slnvkt-home .slnvkt-login-btn {
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: 9999px;
+}
+
+.slnvkt-home .slnvkt-login-btn:hover {
+  color: #fff;
+  background: rgb(255 255 255 / 0.14);
+  border-color: rgb(255 255 255 / 0.55);
+}
+
+.slnvkt-home .slnvkt-header .slnvkt-cta-btn {
+  background: var(--slnvkt-gradient);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgb(247 155 34 / 0.45);
+}
+
+.slnvkt-home .slnvkt-header .slnvkt-cta-btn:hover {
+  opacity: 0.95;
+  color: #fff;
+}
+
+.slnvkt-home .hero-banner.hero-banner-3 {
+  position: relative;
+  overflow: hidden;
+  padding-top: 170px;
+  padding-bottom: 60px;
+  background-color: var(--slnvkt-warm-bg-2);
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
+}
+
+.slnvkt-home .hero-banner.hero-banner-3 .banner-content {
+  max-width: 640px;
+}
+
+.slnvkt-home .hero-banner.hero-banner-3 .banner-content h1 {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.slnvkt-home .hero-banner.hero-banner-3 .banner-content p {
+  margin-top: 1.25rem;
+  font-size: 1.125rem;
+  line-height: 1.65;
+  color: #475569;
+  max-width: 540px;
+}
+
+.slnvkt-home .hero-banner .btn-groups {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  margin-top: 1.75rem;
+}
+
+.slnvkt-home .hero-banner .btn-slnvkt-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.875rem 1.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--slnvkt-gradient);
+  box-shadow: 0 10px 28px rgb(247 155 34 / 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slnvkt-home .hero-banner .btn-slnvkt-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px rgb(247 155 34 / 0.4);
+  color: #fff;
+}
+
+.slnvkt-home .hero-banner .btn-slnvkt-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 2px solid rgb(247 155 34 / 0.45);
+  padding: 0.8125rem 1.625rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--slnvkt-secondary);
+  background: #fff;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.slnvkt-home .hero-banner .btn-slnvkt-outline:hover {
+  border-color: var(--slnvkt-primary);
+  background: rgb(247 155 34 / 0.08);
+  color: var(--slnvkt-secondary);
+}
+
+.slnvkt-home .hero-banner .client-area {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgb(247 155 34 / 0.2);
+}
+
+.slnvkt-home .hero-banner .client-avatars {
+  display: flex;
+  align-items: center;
+}
+
+.slnvkt-home .hero-banner .client-avatars span {
+  display: flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 2px solid #fff;
+  margin-left: -0.65rem;
+  background: linear-gradient(145deg, rgb(247 155 34 / 0.25), rgb(222 67 19 / 0.18));
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--slnvkt-secondary);
+}
+
+.slnvkt-home .hero-banner .client-avatars span:first-child {
+  margin-left: 0;
+}
+
+.slnvkt-home .hero-banner .client-avatars .client-plus {
+  background: var(--slnvkt-gradient);
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.slnvkt-home .hero-banner .client-area p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.slnvkt-home .hero-banner .client-area p strong {
+  display: block;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.slnvkt-home .hero-banner .banner-image {
+  position: relative;
+  margin-inline-start: auto;
+  z-index: 1;
+  animation: slnvkt-move-up-down 5s ease-in-out infinite;
+}
+
+.slnvkt-home .hero-banner .banner-image img {
+  filter: drop-shadow(0 10px 10px rgb(0 0 0 / 0.1));
+}
+
+.slnvkt-home .slnvkt-landing-badge {
+  background: rgb(247 155 34 / 0.14) !important;
+  color: var(--slnvkt-secondary) !important;
+}
+
+.slnvkt-home main > section:not(.hero-banner):not(.slnvkt-stats-strip):nth-of-type(odd) {
+  background-color: var(--slnvkt-warm-bg);
+}
+
+.slnvkt-home main > section:not(.hero-banner):not(.slnvkt-stats-strip):nth-of-type(even) {
+  background-color: #fff;
+}
+
+.slnvkt-home .slnvkt-stats-strip {
+  background: var(--slnvkt-gradient) !important;
+  color: #fff;
+}
+
+.slnvkt-home .slnvkt-stats-strip svg {
+  opacity: 0.95;
+}
+
+.slnvkt-home .slnvkt-how-steps .step-num {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  background: var(--slnvkt-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.slnvkt-home .slnvkt-how-steps .group:hover {
+  border-color: rgb(247 155 34 / 0.4);
+}
+
+.slnvkt-home .slnvkt-how-steps .group:hover h3 {
+  color: var(--slnvkt-secondary);
+}
+
+.slnvkt-home main article.group:hover,
+.slnvkt-home main .group.rounded-2xl.border:hover {
+  border-color: rgb(247 155 34 / 0.35);
+}
+
+.slnvkt-home main article.group:hover .rounded-xl.bg-primary\/10 {
+  background: var(--slnvkt-gradient);
+  color: #fff;
+}
+
+.slnvkt-home #hakkimizda ul li span.rounded-full.bg-primary {
+  background: var(--slnvkt-gradient);
+}
+
+.slnvkt-home #paketler .inline-flex.rounded-full button.bg-primary {
+  background: var(--slnvkt-gradient) !important;
+}
+
+.slnvkt-home #paketler .absolute.-top-3.rounded-full.bg-primary {
+  background: var(--slnvkt-gradient) !important;
+}
+
+.slnvkt-home #paketler .border-primary {
+  border-color: var(--slnvkt-primary) !important;
+}
+
+.slnvkt-home #paketler .ring-primary\/20 {
+  --tw-ring-color: rgb(247 155 34 / 0.35);
+}
+
+.slnvkt-home #paketler .text-primary {
+  color: var(--slnvkt-secondary) !important;
+}
+
+.slnvkt-home #sss button:hover {
+  background: rgb(247 155 34 / 0.06);
+}
+
+.slnvkt-home blockquote .text-primary\/30 {
+  color: rgb(247 155 34 / 0.45) !important;
+}
+
+.slnvkt-home .slnvkt-cta-band {
+  background: var(--slnvkt-gradient) !important;
+  color: #fff !important;
+}
+
+.slnvkt-home .slnvkt-cta-band .bg-violet-400\/20,
+.slnvkt-home .slnvkt-cta-band .bg-sky-400\/15 {
+  background: rgb(255 255 255 / 0.15) !important;
+}
+
+.slnvkt-home .slnvkt-cta-band h2,
+.slnvkt-home .slnvkt-cta-band p {
+  color: #fff;
+}
+
+.slnvkt-home footer {
+  background: var(--slnvkt-warm-bg-2);
+  border-top-color: rgb(247 155 34 / 0.2);
+}
+
+.slnvkt-home footer a:hover {
+  color: var(--slnvkt-secondary) !important;
+}
+
+.slnvkt-home footer .border-t.bg-background\/80 {
+  background: rgb(255 255 255 / 0.85);
+}
+
+.slnvkt-home footer .text-lg.font-bold {
+  color: var(--slnvkt-secondary);
+}
+
+.slnvkt-home main a.text-primary,
+.slnvkt-home main a.hover\:text-primary:hover,
+.slnvkt-home main a.font-medium.text-primary {
+  color: var(--slnvkt-secondary);
+}
+
+.slnvkt-home main a.font-medium.text-primary:hover {
+  color: var(--slnvkt-primary);
+}
+
+.slnvkt-home main a.bg-primary,
+.slnvkt-home main button.bg-primary {
+  background: var(--slnvkt-gradient) !important;
+  border-color: transparent;
+}
+
+.slnvkt-home main a.bg-primary:hover,
+.slnvkt-home main button.bg-primary:hover {
+  opacity: 0.92;
+}
+
+.slnvkt-home main a.border-primary,
+.slnvkt-home main button.border-primary {
+  border-color: var(--slnvkt-primary);
+}
+
+.slnvkt-home main a.border-primary:hover {
+  background: rgb(247 155 34 / 0.08);
+  color: var(--slnvkt-secondary);
+}
+
+/* Genel sayfalar (giriş, işletmeler, booking…) */
+.slnvkt-app:not(.slnvkt-home) a.bg-primary,
+.slnvkt-app:not(.slnvkt-home) button.bg-primary {
+  background: var(--slnvkt-gradient) !important;
+}
+
+.slnvkt-app:not(.slnvkt-home) header.sticky a.bg-primary,
+.slnvkt-app:not(.slnvkt-home) .bg-primary.text-primary-foreground {
+  background: var(--slnvkt-gradient) !important;
+}
+
+@media (max-width: 1023px) {
+  .slnvkt-home .hero-banner.hero-banner-3 {
+    padding-top: 7.5rem;
+  }
+
+  .slnvkt-home .slnvkt-header .slnvkt-nav-link {
+    font-size: 0.875rem;
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+  }
+}

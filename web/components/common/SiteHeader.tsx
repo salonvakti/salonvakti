@@ -20,37 +20,37 @@ const landingLinks = [
 export function SiteHeader({
   variant = "default",
 }: {
-  variant?: "default" | "landing" | "home3";
+  variant?: "default" | "landing" | "slnvkt";
 }) {
   const s = usePublicSiteSettings();
   const promoText = s.copy.promoBannerText?.trim() || SALON_GOOGLE_MAPS_PROMO;
-  const isHome3 = variant === "home3";
-  const isLanding = variant === "landing" || isHome3;
+  const isSlnvktHome = variant === "slnvkt";
+  const isLanding = variant === "landing" || isSlnvktHome;
   const [sticky, setSticky] = useState(false);
 
   useEffect(() => {
-    if (!isHome3) return;
+    if (!isSlnvktHome) return;
     const onScroll = () => setSticky(window.scrollY > 48);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [isHome3]);
+  }, [isSlnvktHome]);
 
   const logo = (
     <Link
       href="/"
       className={cn(
         "flex min-w-0 items-center gap-2 font-semibold tracking-tight",
-        isHome3 ? "teeno-logo-link" : undefined
+        isSlnvktHome ? "slnvkt-logo-link" : undefined
       )}
     >
-      <span className={cn(isHome3 && "teeno-logo-wrap")}>
+      <span className={cn(isSlnvktHome && "slnvkt-logo-wrap")}>
         {s.images.headerLogoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={s.images.headerLogoUrl}
             alt={s.copy.siteName}
-            className="teeno-logo-img h-9 w-auto max-w-[200px] object-contain object-left"
+            className="slnvkt-logo-img h-9 w-auto max-w-[200px] object-contain object-left"
           />
         ) : (
           <>
@@ -59,12 +59,12 @@ export function SiteHeader({
               <img
                 src={s.images.headerIconUrl}
                 alt=""
-                className="teeno-logo-img h-9 w-9 object-contain"
+                className="slnvkt-logo-img h-9 w-9 object-contain"
               />
             ) : (
-              <Building2 className="teeno-logo-icon h-7 w-7 shrink-0" aria-hidden />
+              <Building2 className="slnvkt-logo-icon h-7 w-7 shrink-0" aria-hidden />
             )}
-            <span className="teeno-logo-text truncate text-base font-bold">{s.copy.siteName}</span>
+            <span className="slnvkt-logo-text truncate text-base font-bold">{s.copy.siteName}</span>
           </>
         )}
       </span>
@@ -78,8 +78,8 @@ export function SiteHeader({
           key={link.href}
           href={link.href}
           className={cn(
-            isHome3
-              ? "teeno-nav-link rounded-lg px-3.5 py-2 text-[0.9375rem] font-semibold transition-colors"
+            isSlnvktHome
+              ? "slnvkt-nav-link rounded-lg px-3.5 py-2 text-[0.9375rem] font-semibold transition-colors"
               : buttonVariants({ variant: "ghost", size: "sm" })
           )}
         >
@@ -104,19 +104,19 @@ export function SiteHeader({
       <Link
         href="/login"
         className={cn(
-          isHome3
-            ? "teeno-login-btn inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium"
+          isSlnvktHome
+            ? "slnvkt-login-btn inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium"
             : buttonVariants({ variant: "ghost", size: "sm" })
         )}
       >
-        {isHome3 ? <User className="h-4 w-4" aria-hidden /> : null}
+        {isSlnvktHome ? <User className="h-4 w-4" aria-hidden /> : null}
         Giriş
       </Link>
       <Link
         href="/register"
         className={cn(
-          isHome3
-            ? "teeno-cta-btn inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold"
+          isSlnvktHome
+            ? "slnvkt-cta-btn inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold"
             : buttonVariants({ size: "sm" })
         )}
       >
@@ -125,9 +125,9 @@ export function SiteHeader({
     </div>
   );
 
-  if (isHome3) {
+  if (isSlnvktHome) {
     return (
-      <header className={cn("teeno-header-2 w-full", sticky && "is-sticky")}>
+      <header className={cn("slnvkt-header w-full", sticky && "is-sticky")}>
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:py-5">
           {logo}
           {nav}

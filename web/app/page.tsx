@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "./teeno-home3.css";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SiteHeader } from "@/components/common/SiteHeader";
 import { LandingAppShowcase } from "@/components/landing/LandingAppShowcase";
@@ -130,8 +129,8 @@ export default async function HomePage() {
   ];
 
   return (
-    <div className="teeno-home3 flex min-h-screen flex-col">
-      <SiteHeader variant="home3" />
+    <div className="slnvkt-home flex min-h-screen flex-col">
+      <SiteHeader variant="slnvkt" />
       <main className="relative flex-1">
         <LandingHero
           siteName={site.copy.siteName}

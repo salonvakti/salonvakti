@@ -18,8 +18,8 @@ export function DashboardSidebar({ role }: Props) {
   return (
     <aside className="hidden w-60 shrink-0 border-r bg-sidebar text-sidebar-foreground md:flex md:flex-col">
       <div className="flex h-14 items-center gap-2 border-b px-4">
-        <Building2 className="h-5 w-5" aria-hidden />
-        <span className="text-sm font-semibold">SalonVakti</span>
+        <Building2 className="slnvkt-brand-icon h-5 w-5 text-primary" aria-hidden />
+        <span className="slnvkt-brand-label text-sm">slnvkt</span>
       </div>
       <nav className="flex flex-1 flex-col gap-1 p-3 text-sm">
         {items.map((item) => {

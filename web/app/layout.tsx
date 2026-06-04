@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import "./globals.css";
+import "./slnvkt-theme.css";
 import { Inter } from "next/font/google";
 import { PublicSiteProvider } from "@/components/providers/public-site-provider";
 import { getPublicSiteSettings, themeToCssVars } from "@/lib/platform/public-site-settings";
+import { SLNVKT_THEME_CSS_VARS } from "@/lib/theme/slnvkt-theme";
 import { cn } from "@/lib/utils";
 import { SupabaseProvider } from "@/components/providers/supabase-provider";
 
@@ -40,12 +42,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const settings = await getPublicSiteSettings();
-  const vars = themeToCssVars(settings.theme);
-  const bodyStyle = vars as CSSProperties;
+  const bodyStyle = {
+    ...themeToCssVars(settings.theme),
+    ...SLNVKT_THEME_CSS_VARS,
+  } as CSSProperties;
 
   return (
     <html lang="tr" suppressHydrationWarning className={cn(inter.variable)}>
-      <body className="min-h-screen bg-background font-sans antialiased" style={bodyStyle}>
+      <body className="slnvkt-app min-h-screen bg-background font-sans antialiased" style={bodyStyle}>
         <PublicSiteProvider value={settings}>
           <SupabaseProvider>{children}</SupabaseProvider>
         </PublicSiteProvider>

@@ -9,8 +9,7 @@ type Props = {
 };
 
 /**
- * Teeno demosundaki gibi: çerçevesiz, sağda yüzen büyük banner / mockup görseli.
- * @see https://shtheme.com/demosd/teeno/
+ * slnvkt landing: çerçevesiz, sağda yüzen büyük banner / mockup görseli.
  */
 export function HeroBannerVisual({ imageUrl, alt, className }: Props) {
   const src = imageUrl?.trim() || DEFAULT_LANDING_HERO_BANNER;
@@ -18,7 +17,7 @@ export function HeroBannerVisual({ imageUrl, alt, className }: Props) {
 
   return (
     <div className={cn("relative mx-auto w-full max-w-lg md:max-w-xl lg:max-w-none", className)}>
-      {/* Dekoratif şekiller (Teeno banner arka planı) */}
+      {/* Dekoratif şekiller (slnvkt banner arka planı) */}
       <div
         className="absolute -left-8 top-1/4 h-32 w-32 rounded-full bg-primary/25 blur-2xl"
         aria-hidden

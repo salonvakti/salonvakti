@@ -35,7 +35,7 @@ export function DashboardShell({ user, profile, children }: Props) {
   }, [profile?.role, profile?.tenantId, client, refreshSession]);
 
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="slnvkt-dashboard flex min-h-screen w-full">
       <DashboardSidebar role={role} />
       <div className="flex min-w-0 flex-1 flex-col">
         <DashboardTopbar user={user} profile={profile} supabase={client} />

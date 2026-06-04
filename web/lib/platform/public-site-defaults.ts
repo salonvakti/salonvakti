@@ -1,11 +1,11 @@
 import type { ResolvedPublicSiteSettings } from "@/types/public-site";
 
 export const PUBLIC_SITE_DEFAULT_THEME: ResolvedPublicSiteSettings["theme"] = {
-  primary: "",
-  primaryForeground: "",
-  accent: "",
-  accentForeground: "",
-  radiusRem: -1,
+  primary: "oklch(0.74 0.16 55)",
+  primaryForeground: "oklch(0.99 0 0)",
+  accent: "oklch(0.97 0.03 75)",
+  accentForeground: "oklch(0.42 0.14 40)",
+  radiusRem: 0.625,
 };
 
 export const PUBLIC_SITE_DEFAULT_COPY: ResolvedPublicSiteSettings["copy"] = {

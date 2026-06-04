@@ -10,7 +10,7 @@ type Props = {
 
 export function LandingCtaBand({ siteName }: Props) {
   return (
-    <section className="teeno-cta-band relative overflow-hidden border-t bg-gradient-to-r from-primary via-primary to-primary py-16 text-primary-foreground md:py-20">
+    <section className="slnvkt-cta-band relative overflow-hidden border-t bg-gradient-to-r from-primary via-primary to-primary py-16 text-primary-foreground md:py-20">
       <FloatingShapes className="opacity-40" />
       <div className="relative mx-auto max-w-3xl px-4 text-center">
         <h2 className="text-3xl font-bold tracking-tight md:text-4xl">

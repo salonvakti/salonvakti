@@ -447,7 +447,7 @@ export function PlatformSiteLookClient({ initial }: { initial: ResolvedPublicSit
                 <ImageUrlField
                   id="i-hero"
                   label="Kahraman banner görseli"
-                  homeAnchor="Kahraman · sağ (Teeno tarzı)"
+                  homeAnchor="Kahraman · sağ (slnvkt tarzı)"
                   hint="El + telefon mockup veya şeffaf PNG; boşsa /images/hero-hand-phone.png kullanılır"
                   value={s.images.heroBackgroundUrl}
                   disabled={pending}
