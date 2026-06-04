@@ -60,9 +60,16 @@
   color: var(--slnvkt-secondary);
 }
 
-.slnvkt-app .slnvkt-dashboard > div > header {
-  border-color: rgb(247 155 34 / 0.15);
-  background: rgb(255 255 255 / 0.92);
+.slnvkt-app .slnvkt-dashboard .slnvkt-topbar {
+  border-color: rgb(255 255 255 / 0.12);
+  background: rgb(var(--slnvkt-dark) / 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 0.12);
+}
+
+.slnvkt-app .slnvkt-dashboard .slnvkt-topbar a.rounded-full {
+  ring-color: rgb(255 255 255 / 0.25);
 }
 
 .slnvkt-app .slnvkt-dashboard main {
@@ -87,23 +94,13 @@
   --tw-ring-color: rgb(247 155 34 / 0.35);
 }
 
-/* —— Ana sayfa (.slnvkt-home) —— */
-.slnvkt-home {
-  --primary: oklch(0.74 0.16 55);
-  --primary-foreground: oklch(0.99 0 0);
-  --ring: oklch(0.74 0.16 55);
-  --accent: oklch(0.97 0.03 75);
-  --accent-foreground: oklch(0.42 0.14 40);
-}
-
-.slnvkt-home .slnvkt-header {
-  position: absolute;
+/* —— Public header (tüm SiteHeader sayfaları) —— */
+.slnvkt-app .slnvkt-header {
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 50;
   border-bottom: 1px solid rgb(255 255 255 / 0.15);
-  background: rgb(var(--slnvkt-dark) / 0.78);
+  background: rgb(var(--slnvkt-dark) / 0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 4px 28px rgb(0 0 0 / 0.14);
@@ -112,14 +109,19 @@
     box-shadow 0.3s ease;
 }
 
-.slnvkt-home .slnvkt-header.is-sticky {
+.slnvkt-app .slnvkt-header.slnvkt-header--overlay {
+  position: absolute;
+  background: rgb(var(--slnvkt-dark) / 0.78);
+}
+
+.slnvkt-app .slnvkt-header.is-sticky {
   position: fixed;
   animation: slnvkt-slide-down 0.45s ease;
   background: rgb(var(--slnvkt-dark) / 0.96);
   box-shadow: 0 8px 40px rgb(0 0 0 / 0.2);
 }
 
-.slnvkt-home .slnvkt-logo-wrap {
+.slnvkt-app .slnvkt-logo-wrap {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -129,32 +131,32 @@
   box-shadow: 0 2px 14px rgb(0 0 0 / 0.18);
 }
 
-.slnvkt-home .slnvkt-logo-img {
+.slnvkt-app .slnvkt-logo-img {
   display: block;
 }
 
-.slnvkt-home .slnvkt-logo-icon {
+.slnvkt-app .slnvkt-logo-icon {
   color: var(--slnvkt-primary);
 }
 
-.slnvkt-home .slnvkt-logo-text {
+.slnvkt-app .slnvkt-logo-text {
   color: #0f172a;
   font-weight: 700;
 }
 
-.slnvkt-home .slnvkt-nav-link {
+.slnvkt-app .slnvkt-nav-link {
   color: #fff;
   font-weight: 600;
   letter-spacing: 0.01em;
   text-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
 }
 
-.slnvkt-home .slnvkt-nav-link:hover {
+.slnvkt-app .slnvkt-nav-link:hover {
   color: #fff;
   background: rgb(255 255 255 / 0.12);
 }
 
-.slnvkt-home .slnvkt-login-btn {
+.slnvkt-app .slnvkt-login-btn {
   color: #fff;
   font-weight: 600;
   text-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
@@ -162,13 +164,13 @@
   border-radius: 9999px;
 }
 
-.slnvkt-home .slnvkt-login-btn:hover {
+.slnvkt-app .slnvkt-login-btn:hover {
   color: #fff;
   background: rgb(255 255 255 / 0.14);
   border-color: rgb(255 255 255 / 0.55);
 }
 
-.slnvkt-home .slnvkt-header .slnvkt-cta-btn {
+.slnvkt-app .slnvkt-header .slnvkt-cta-btn {
   background: var(--slnvkt-gradient);
   color: #fff;
   border: none;
@@ -176,9 +178,18 @@
   box-shadow: 0 8px 24px rgb(247 155 34 / 0.45);
 }
 
-.slnvkt-home .slnvkt-header .slnvkt-cta-btn:hover {
+.slnvkt-app .slnvkt-header .slnvkt-cta-btn:hover {
   opacity: 0.95;
   color: #fff;
+}
+
+/* —— Ana sayfa (.slnvkt-home) —— */
+.slnvkt-home {
+  --primary: oklch(0.74 0.16 55);
+  --primary-foreground: oklch(0.99 0 0);
+  --ring: oklch(0.74 0.16 55);
+  --accent: oklch(0.97 0.03 75);
+  --accent-foreground: oklch(0.42 0.14 40);
 }
 
 .slnvkt-home .hero-banner.hero-banner-3 {
@@ -484,7 +495,7 @@
     padding-top: 7.5rem;
   }
 
-  .slnvkt-home .slnvkt-header .slnvkt-nav-link {
+  .slnvkt-app .slnvkt-header .slnvkt-nav-link {
     font-size: 0.875rem;
     padding-left: 0.65rem;
     padding-right: 0.65rem;

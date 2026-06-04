@@ -45,8 +45,8 @@ export function DashboardTopbar({ user, profile, supabase }: Props) {
   const initial = avatarInitials(user);
 
   return (
-    <header className="flex h-14 items-center justify-between border-b bg-background px-4">
-      <span className="text-sm text-muted-foreground">
+    <header className="slnvkt-topbar flex h-14 items-center justify-between border-b px-4">
+      <span className="text-sm font-medium text-white/90">
         {profile?.role ? ROLE_LABELS[profile.role] : "Oturum"}
       </span>
       <div className="flex items-center gap-0.5">
@@ -63,7 +63,7 @@ export function DashboardTopbar({ user, profile, supabase }: Props) {
         <DropdownMenu>
           <DropdownMenuTrigger
             type="button"
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none ring-offset-2 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-white/85 outline-none ring-offset-2 transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/40"
             aria-label="Menü"
           >
             <MoreHorizontal className="h-5 w-5" aria-hidden />

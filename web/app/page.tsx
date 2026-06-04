@@ -130,7 +130,7 @@ export default async function HomePage() {
 
   return (
     <div className="slnvkt-home flex min-h-screen flex-col">
-      <SiteHeader variant="slnvkt" />
+      <SiteHeader />
       <main className="relative flex-1">
         <LandingHero
           siteName={site.copy.siteName}
