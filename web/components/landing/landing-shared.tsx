@@ -16,7 +16,7 @@ export function FloatingShapes({ className }: { className?: string }) {
 
 export function SectionBadge({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-block rounded-full bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
+    <span className="teeno-landing-badge inline-block rounded-full bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
       {children}
     </span>
   );
@@ -96,7 +96,7 @@ export function WideShowcaseImage({
 }) {
   if (!imageUrl) {
     return (
-      <div className="mx-auto flex aspect-[16/9] max-w-4xl items-center justify-center rounded-2xl border bg-gradient-to-br from-primary/10 via-muted to-violet-500/10 p-8 shadow-inner">
+      <div className="mx-auto flex aspect-[16/9] max-w-4xl items-center justify-center rounded-2xl border bg-gradient-to-br from-primary/10 via-muted to-primary/5 p-8 shadow-inner">
         <p className="text-center text-sm text-muted-foreground">
           Platform → Site görünümü veya Medya kütüphanesinden kahraman / OG görseli ekleyin.
         </p>

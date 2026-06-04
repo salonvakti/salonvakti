@@ -1,4 +1,4 @@
-/* Teeno Home 3 — scoped to .teeno-home3 (header-home3 + hero-banner-3) */
+/* Teeno Home 3 — turuncu tema + okunaklı header (tüm ana sayfa) */
 
 @keyframes teeno-move-up-down {
   0%,
@@ -24,56 +24,96 @@
   --teeno-secondary: #de4313;
   --teeno-gradient: linear-gradient(145deg, #f79b22 0%, #de4313 100%);
   --teeno-dark: 15 23 42;
+  --teeno-warm-bg: #fffaf5;
+  --teeno-warm-bg-2: #fff5eb;
+
+  /* shadcn / Tailwind primary → turuncu (tüm landing bileşenleri) */
+  --primary: oklch(0.74 0.16 55);
+  --primary-foreground: oklch(0.99 0 0);
+  --ring: oklch(0.74 0.16 55);
+  --accent: oklch(0.97 0.03 75);
+  --accent-foreground: oklch(0.42 0.14 40);
 }
 
+/* —— Header: her zaman okunaklı —— */
 .teeno-home3 .teeno-header-2 {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   z-index: 50;
-  border-bottom: 1px solid rgb(255 255 255 / 0.2);
-  background: transparent;
+  border-bottom: 1px solid rgb(255 255 255 / 0.15);
+  background: rgb(var(--teeno-dark) / 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 28px rgb(0 0 0 / 0.14);
   transition:
     background 0.3s ease,
-    box-shadow 0.3s ease,
-    padding 0.3s ease;
+    box-shadow 0.3s ease;
 }
 
 .teeno-home3 .teeno-header-2.is-sticky {
   position: fixed;
   animation: teeno-slide-down 0.45s ease;
-  background: rgb(var(--teeno-dark) / 0.92);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 40px rgb(0 0 0 / 0.12);
+  background: rgb(var(--teeno-dark) / 0.96);
+  box-shadow: 0 8px 40px rgb(0 0 0 / 0.2);
 }
 
-.teeno-home3 .teeno-header-2 .teeno-nav-link {
-  color: rgb(255 255 255 / 0.92);
+.teeno-home3 .teeno-logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  background: rgb(255 255 255 / 0.97);
+  padding: 0.4rem 0.85rem;
+  box-shadow: 0 2px 14px rgb(0 0 0 / 0.18);
 }
 
-.teeno-home3 .teeno-header-2 .teeno-nav-link:hover {
+.teeno-home3 .teeno-logo-img {
+  display: block;
+}
+
+.teeno-home3 .teeno-logo-icon {
   color: var(--teeno-primary);
 }
 
-.teeno-home3 .teeno-header-2 .teeno-logo-text {
-  color: #fff;
+.teeno-home3 .teeno-logo-text {
+  color: #0f172a;
+  font-weight: 700;
 }
 
-.teeno-home3 .teeno-header-2 .teeno-login-btn {
-  color: rgb(255 255 255 / 0.92);
+.teeno-home3 .teeno-nav-link {
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
 }
 
-.teeno-home3 .teeno-header-2 .teeno-login-btn:hover {
+.teeno-home3 .teeno-nav-link:hover {
   color: #fff;
-  background: rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.12);
+}
+
+.teeno-home3 .teeno-login-btn {
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: 9999px;
+}
+
+.teeno-home3 .teeno-login-btn:hover {
+  color: #fff;
+  background: rgb(255 255 255 / 0.14);
+  border-color: rgb(255 255 255 / 0.55);
 }
 
 .teeno-home3 .teeno-header-2 .teeno-cta-btn {
   background: var(--teeno-gradient);
   color: #fff;
   border: none;
-  box-shadow: 0 8px 24px rgb(247 155 34 / 0.35);
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgb(247 155 34 / 0.45);
 }
 
 .teeno-home3 .teeno-header-2 .teeno-cta-btn:hover {
@@ -81,12 +121,13 @@
   color: #fff;
 }
 
+/* —— Hero —— */
 .teeno-home3 .hero-banner.hero-banner-3 {
   position: relative;
   overflow: hidden;
   padding-top: 170px;
   padding-bottom: 60px;
-  background-color: #fff5eb;
+  background-color: var(--teeno-warm-bg-2);
   background-repeat: no-repeat;
   background-position: center bottom;
   background-size: cover;
@@ -145,18 +186,19 @@
   align-items: center;
   gap: 0.5rem;
   border-radius: 9999px;
-  border: 2px solid rgb(15 23 42 / 0.12);
+  border: 2px solid rgb(247 155 34 / 0.45);
   padding: 0.8125rem 1.625rem;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--teeno-secondary);
   background: #fff;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .teeno-home3 .hero-banner .btn-teeno-outline:hover {
   border-color: var(--teeno-primary);
-  color: var(--teeno-primary);
+  background: rgb(247 155 34 / 0.08);
+  color: var(--teeno-secondary);
 }
 
 .teeno-home3 .hero-banner .client-area {
@@ -166,7 +208,7 @@
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 1.75rem;
-  border-top: 1px solid rgb(15 23 42 / 0.08);
+  border-top: 1px solid rgb(247 155 34 / 0.2);
 }
 
 .teeno-home3 .hero-banner .client-avatars {
@@ -183,7 +225,7 @@
   border-radius: 9999px;
   border: 2px solid #fff;
   margin-left: -0.65rem;
-  background: linear-gradient(145deg, rgb(247 155 34 / 0.2), rgb(222 67 19 / 0.15));
+  background: linear-gradient(145deg, rgb(247 155 34 / 0.25), rgb(222 67 19 / 0.18));
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--teeno-secondary);
@@ -222,25 +264,27 @@
   filter: drop-shadow(0 10px 10px rgb(0 0 0 / 0.1));
 }
 
+/* —— Bölüm rozetleri ve arka planlar —— */
+.teeno-home3 .teeno-landing-badge {
+  background: rgb(247 155 34 / 0.14) !important;
+  color: var(--teeno-secondary) !important;
+}
+
+.teeno-home3 main > section:not(.hero-banner):not(.teeno-stats-strip):nth-of-type(odd) {
+  background-color: var(--teeno-warm-bg);
+}
+
+.teeno-home3 main > section:not(.hero-banner):not(.teeno-stats-strip):nth-of-type(even) {
+  background-color: #fff;
+}
+
 .teeno-home3 .teeno-stats-strip {
-  background: var(--teeno-gradient);
+  background: var(--teeno-gradient) !important;
   color: #fff;
 }
 
 .teeno-home3 .teeno-stats-strip svg {
-  opacity: 0.9;
-}
-
-.teeno-home3 .teeno-section-badge {
-  display: inline-block;
-  border-radius: 9999px;
-  background: rgb(247 155 34 / 0.12);
-  padding: 0.35rem 1rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--teeno-secondary);
+  opacity: 0.95;
 }
 
 .teeno-home3 .teeno-how-steps .step-num {
@@ -253,17 +297,132 @@
   color: transparent;
 }
 
+.teeno-home3 .teeno-how-steps .group:hover {
+  border-color: rgb(247 155 34 / 0.4);
+}
+
+.teeno-home3 .teeno-how-steps .group:hover h3 {
+  color: var(--teeno-secondary);
+}
+
+/* Kartlar ve hover */
+.teeno-home3 main article.group:hover,
+.teeno-home3 main .group.rounded-2xl.border:hover {
+  border-color: rgb(247 155 34 / 0.35);
+}
+
+.teeno-home3 main article.group:hover .rounded-xl.bg-primary\/10 {
+  background: var(--teeno-gradient);
+  color: #fff;
+}
+
+.teeno-home3 #hakkimizda ul li span.rounded-full.bg-primary {
+  background: var(--teeno-gradient);
+}
+
+.teeno-home3 #paketler .inline-flex.rounded-full button.bg-primary {
+  background: var(--teeno-gradient) !important;
+}
+
+.teeno-home3 #paketler .absolute.-top-3.rounded-full.bg-primary {
+  background: var(--teeno-gradient) !important;
+}
+
+.teeno-home3 #paketler .border-primary {
+  border-color: var(--teeno-primary) !important;
+}
+
+.teeno-home3 #paketler .ring-primary\/20 {
+  --tw-ring-color: rgb(247 155 34 / 0.35);
+}
+
+.teeno-home3 #paketler .text-primary {
+  color: var(--teeno-secondary) !important;
+}
+
+.teeno-home3 #sss button:hover {
+  background: rgb(247 155 34 / 0.06);
+}
+
+.teeno-home3 blockquote .text-primary\/30 {
+  color: rgb(247 155 34 / 0.45) !important;
+}
+
+/* CTA band */
+.teeno-home3 .teeno-cta-band {
+  background: var(--teeno-gradient) !important;
+  color: #fff !important;
+}
+
+.teeno-home3 .teeno-cta-band .bg-violet-400\/20,
+.teeno-home3 .teeno-cta-band .bg-sky-400\/15 {
+  background: rgb(255 255 255 / 0.15) !important;
+}
+
+.teeno-home3 .teeno-cta-band h2,
+.teeno-home3 .teeno-cta-band p {
+  color: #fff;
+}
+
+/* Footer */
+.teeno-home3 footer {
+  background: var(--teeno-warm-bg-2);
+  border-top-color: rgb(247 155 34 / 0.2);
+}
+
+.teeno-home3 footer a:hover {
+  color: var(--teeno-secondary) !important;
+}
+
+.teeno-home3 footer .border-t.bg-background\/80 {
+  background: rgb(255 255 255 / 0.85);
+}
+
+.teeno-home3 footer .text-lg.font-bold {
+  color: var(--teeno-secondary);
+}
+
+/* Genel link vurgusu */
+.teeno-home3 main a.text-primary,
+.teeno-home3 main a.hover\:text-primary:hover,
+.teeno-home3 main a.font-medium.text-primary {
+  color: var(--teeno-secondary);
+}
+
+.teeno-home3 main a.font-medium.text-primary:hover {
+  color: var(--teeno-primary);
+}
+
+/* shadcn primary butonlar */
+.teeno-home3 main a.bg-primary,
+.teeno-home3 main button.bg-primary {
+  background: var(--teeno-gradient) !important;
+  border-color: transparent;
+}
+
+.teeno-home3 main a.bg-primary:hover,
+.teeno-home3 main button.bg-primary:hover {
+  opacity: 0.92;
+}
+
+.teeno-home3 main a.border-primary,
+.teeno-home3 main button.border-primary {
+  border-color: var(--teeno-primary);
+}
+
+.teeno-home3 main a.border-primary:hover {
+  background: rgb(247 155 34 / 0.08);
+  color: var(--teeno-secondary);
+}
+
 @media (max-width: 1023px) {
-  .teeno-home3 .teeno-header-2:not(.is-sticky) .teeno-nav-link,
-  .teeno-home3 .teeno-header-2:not(.is-sticky) .teeno-login-btn {
-    color: inherit;
-  }
-
-  .teeno-home3 .teeno-header-2:not(.is-sticky) .teeno-logo-text {
-    color: inherit;
-  }
-
   .teeno-home3 .hero-banner.hero-banner-3 {
     padding-top: 7.5rem;
+  }
+
+  .teeno-home3 .teeno-header-2 .teeno-nav-link {
+    font-size: 0.875rem;
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
   }
 }

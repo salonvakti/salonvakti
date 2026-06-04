@@ -41,40 +41,33 @@ export function SiteHeader({
       href="/"
       className={cn(
         "flex min-w-0 items-center gap-2 font-semibold tracking-tight",
-        isHome3 && "teeno-logo-text"
+        isHome3 ? "teeno-logo-link" : undefined
       )}
     >
-      {s.images.headerLogoUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={s.images.headerLogoUrl}
-          alt={s.copy.siteName}
-          className={cn(
-            "h-8 w-auto max-w-[180px] object-contain object-left",
-            isHome3 && !sticky && "brightness-0 invert"
-          )}
-        />
-      ) : (
-        <>
-          {s.images.headerIconUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={s.images.headerIconUrl}
-              alt=""
-              className="h-8 w-8 object-contain"
-            />
-          ) : (
-            <Building2
-              className={cn(
-                "h-6 w-6 shrink-0",
-                isHome3 && !sticky ? "text-white" : "text-primary"
-              )}
-              aria-hidden
-            />
-          )}
-          <span className="truncate">{s.copy.siteName}</span>
-        </>
-      )}
+      <span className={cn(isHome3 && "teeno-logo-wrap")}>
+        {s.images.headerLogoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={s.images.headerLogoUrl}
+            alt={s.copy.siteName}
+            className="teeno-logo-img h-9 w-auto max-w-[200px] object-contain object-left"
+          />
+        ) : (
+          <>
+            {s.images.headerIconUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={s.images.headerIconUrl}
+                alt=""
+                className="teeno-logo-img h-9 w-9 object-contain"
+              />
+            ) : (
+              <Building2 className="teeno-logo-icon h-7 w-7 shrink-0" aria-hidden />
+            )}
+            <span className="teeno-logo-text truncate text-base font-bold">{s.copy.siteName}</span>
+          </>
+        )}
+      </span>
     </Link>
   );
 
@@ -86,7 +79,7 @@ export function SiteHeader({
           href={link.href}
           className={cn(
             isHome3
-              ? "teeno-nav-link rounded-md px-3 py-2 text-sm font-medium transition-colors"
+              ? "teeno-nav-link rounded-lg px-3.5 py-2 text-[0.9375rem] font-semibold transition-colors"
               : buttonVariants({ variant: "ghost", size: "sm" })
           )}
         >
