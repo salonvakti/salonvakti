@@ -6,6 +6,7 @@ import { CheckCircle2 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SectionHeading } from "@/components/landing/landing-shared";
+import { getPricingDisplay } from "@/lib/landing/pricing-display";
 import { cn } from "@/lib/utils";
 import type { LandingPackageSlug } from "@/lib/landing/package-prices";
 
@@ -84,7 +85,7 @@ export function LandingPricing({ plans, promoLine }: Props) {
 }
 
 function PricingCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
-  const period = yearly ? "/yıl" : "/ay";
+  const { price, period } = getPricingDisplay(plan.priceLabel, yearly);
 
   return (
     <Card
@@ -104,7 +105,7 @@ function PricingCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
         <CardTitle className="text-2xl">{plan.name}</CardTitle>
         <CardDescription className="text-base">{plan.tagline}</CardDescription>
         <p className="pt-4 text-3xl font-extrabold tracking-tight text-primary">
-          {plan.priceLabel}
+          {price}
           <span className="text-base font-normal text-muted-foreground">{period}</span>
         </p>
       </CardHeader>
