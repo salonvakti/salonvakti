@@ -16,8 +16,12 @@ export interface TenantRow {
   /** Genel tanıtım sayfası (/isletme/{slug}) metni */
   promo_text: string | null;
   status: TenantStatus;
-  /** Lisans paket etiketi (örn. basic, pro) */
+  /** Lisans paket etiketi (örn. basic, pro) — geriye dönük etiket */
   license_plan: string | null;
+  /** Abonelik paketi: basic | pro | ultimate */
+  plan_type: string;
+  /** Paket varsayılanlarını ezen modül/limit JSON */
+  feature_overrides: Record<string, unknown>;
   /** Lisans geçerlilik başlangıcı; null = başlangıç kısıtı yok */
   license_start_at: string | null;
   /** Lisans bitişi; geçmiş tarih = panel erişimi kapalı */

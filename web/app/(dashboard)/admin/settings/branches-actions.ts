@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getSessionProfile } from "@/lib/auth/session";
 import type { TenantBranchRow } from "@/lib/db-types";
+import { assertCanCreateBranch, loadTenantFeaturesById } from "@/lib/features";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function listBranchesForBusinessAction(): Promise<{
@@ -65,6 +66,28 @@ export async function createBranchAction(input: {
   const name = input.name.trim();
   if (!name) {
     return { ok: false, error: "Şube adı gerekli." };
+  }
+
+  const { features, error: featuresError } = await loadTenantFeaturesById(
+    supabase,
+    profile.tenantId
+  );
+  if (featuresError) {
+    return { ok: false, error: featuresError };
+  }
+
+  const { count: branchCount, error: countError } = await supabase
+    .from("tenant_branches")
+    .select("id", { count: "exact", head: true })
+    .eq("tenant_id", profile.tenantId);
+
+  if (countError) {
+    return { ok: false, error: countError.message };
+  }
+
+  const limitCheck = assertCanCreateBranch(features, branchCount ?? 0);
+  if (!limitCheck.ok) {
+    return { ok: false, error: limitCheck.error };
   }
 
   const { data: lastRow } = await supabase

@@ -23,6 +23,8 @@ create table public.tenants (
   promo_text text,
   status public.tenant_status not null default 'active',
   license_plan text,
+  plan_type text not null default 'basic' check (plan_type in ('basic', 'pro', 'ultimate')),
+  feature_overrides jsonb not null default '{}'::jsonb,
   license_start_at timestamptz,
   license_end_at timestamptz,
   settings_json jsonb default '{}'::jsonb,

@@ -1,5 +1,9 @@
 import type { TenantRow, TenantStatus } from "@/lib/db-types";
+import { normalizePlanType } from "@/lib/features";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
+
+const TENANT_PLATFORM_SELECT =
+  "id,name,slug,logo_url,address,phone,status,license_plan,plan_type,feature_overrides,license_start_at,license_end_at,settings_json,created_at,updated_at";
 
 export { normalizeTenantSlug } from "@/lib/tenant/slug";
 
@@ -18,9 +22,7 @@ export async function listTenantsForPlatform(): Promise<{
 
   const { data, error } = await admin
     .from("tenants")
-    .select(
-      "id,name,slug,logo_url,address,phone,status,license_plan,license_start_at,license_end_at,settings_json,created_at,updated_at"
-    )
+    .select(TENANT_PLATFORM_SELECT)
     .order("name", { ascending: true });
 
   if (error) {
@@ -57,15 +59,15 @@ export async function createTenantRecord(input: {
       slug: input.slug,
       status: input.status,
       license_plan: input.license_plan,
+      plan_type: normalizePlanType(input.license_plan),
+      feature_overrides: {},
       license_start_at: input.license_start_at,
       license_end_at: input.license_end_at,
       phone: input.phone,
       address: input.address,
       updated_at: now,
     })
-    .select(
-      "id,name,slug,logo_url,address,phone,status,license_plan,license_start_at,license_end_at,settings_json,created_at,updated_at"
-    )
+    .select(TENANT_PLATFORM_SELECT)
     .single();
 
   if (error) {
@@ -150,6 +152,7 @@ export async function updateTenantPlatformFields(
       slug: fields.slug,
       status: fields.status,
       license_plan: fields.license_plan,
+      plan_type: normalizePlanType(fields.license_plan),
       license_start_at: fields.license_start_at,
       license_end_at: fields.license_end_at,
       updated_at: new Date().toISOString(),
