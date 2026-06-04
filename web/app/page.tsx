@@ -147,7 +147,12 @@ export default async function HomePage() {
         <LandingAppShowcase siteName={site.copy.siteName} screenImageUrl={screenImageUrl} />
         <LandingSalonsSection salons={showcaseSalons} />
         <LandingPricing plans={pricingPlans} promoLine={promoDisplay} />
-        <LandingTestimonials />
+        <LandingTestimonials
+          reviews={site.integrations.googleMapsReviews}
+          mapsUrl={site.integrations.googleMapsUrl}
+          rating={site.integrations.googleMapsRating}
+          reviewCount={site.integrations.googleMapsReviewCount}
+        />
         <LandingFaq siteName={site.copy.siteName} />
         <LandingCtaBand siteName={site.copy.siteName} />
       </main>

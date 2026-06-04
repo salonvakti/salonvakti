@@ -19,7 +19,7 @@ function buildFaqs(siteName: string) {
   },
   {
     q: "Müşteriler randevuyu nasıl alır?",
-    a: "İşletmenizin /booking/{slug} adresini veya QR kodunu paylaşın. Müşteri hizmet, personel ve saat seçer; randevu işletme onayına düşer.",
+    a: "İşletmenizin randevu adresini veya QR kodunu paylaşın. Müşteri hizmet, personel ve saat seçer; randevu işletme onayına düşer.",
   },
   {
     q: "Paketler arasındaki fark nedir?",
@@ -27,7 +27,7 @@ function buildFaqs(siteName: string) {
   },
   {
     q: "Verilerim güvende mi?",
-    a: "Müşteri ve randevu verileri işletme sınırlarında tutulur. Platform kullanıcıları bu kişisel verilere erişemez.",
+    a: "Müşteri ve randevu verileri işletme sınırlarında tutulur. Yöneticiler dahi bu kişisel verilere erişemez.",
   },
 ];
 }

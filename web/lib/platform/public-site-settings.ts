@@ -5,11 +5,14 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   PUBLIC_SITE_DEFAULT_COPY,
   PUBLIC_SITE_DEFAULT_IMAGES,
+  PUBLIC_SITE_DEFAULT_INTEGRATIONS,
   PUBLIC_SITE_DEFAULT_THEME,
 } from "@/lib/platform/public-site-defaults";
 import type {
+  GoogleMapsReview,
   PublicSiteCopySettings,
   PublicSiteImageSettings,
+  PublicSiteIntegrationsSettings,
   PublicSiteSettingsPayload,
   PublicSiteThemeSettings,
   ResolvedPublicSiteSettings,
@@ -26,6 +29,7 @@ export type {
 const DEFAULT_THEME = PUBLIC_SITE_DEFAULT_THEME;
 const DEFAULT_COPY = PUBLIC_SITE_DEFAULT_COPY;
 const DEFAULT_IMAGES = PUBLIC_SITE_DEFAULT_IMAGES;
+const DEFAULT_INTEGRATIONS = PUBLIC_SITE_DEFAULT_INTEGRATIONS;
 
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v);
@@ -36,7 +40,37 @@ function parsePayload(raw: unknown): PublicSiteSettingsPayload {
   const theme = isRecord(raw.theme) ? (raw.theme as PublicSiteThemeSettings) : undefined;
   const copy = isRecord(raw.copy) ? (raw.copy as PublicSiteCopySettings) : undefined;
   const images = isRecord(raw.images) ? (raw.images as PublicSiteImageSettings) : undefined;
-  return { theme, copy, images };
+  const integrations = isRecord(raw.integrations)
+    ? (raw.integrations as PublicSiteIntegrationsSettings)
+    : undefined;
+  return { theme, copy, images, integrations };
+}
+
+function parseGoogleReviews(raw: unknown): GoogleMapsReview[] {
+  if (!Array.isArray(raw)) return [];
+  const out: GoogleMapsReview[] = [];
+  for (const item of raw) {
+    if (!isRecord(item)) continue;
+    const text = typeof item.text === "string" ? item.text.trim() : "";
+    if (!text) continue;
+    out.push({
+      authorName:
+        typeof item.authorName === "string" && item.authorName.trim()
+          ? item.authorName.trim()
+          : "Google kullanıcısı",
+      rating:
+        typeof item.rating === "number" && item.rating >= 1 && item.rating <= 5
+          ? item.rating
+          : 5,
+      text,
+      relativeTime: typeof item.relativeTime === "string" ? item.relativeTime.trim() : "",
+      profilePhotoUrl:
+        typeof item.profilePhotoUrl === "string" && item.profilePhotoUrl.trim()
+          ? item.profilePhotoUrl.trim()
+          : null,
+    });
+  }
+  return out;
 }
 
 export function mergePublicSiteSettings(raw: unknown): ResolvedPublicSiteSettings {
@@ -44,6 +78,7 @@ export function mergePublicSiteSettings(raw: unknown): ResolvedPublicSiteSetting
   const t = p.theme ?? {};
   const c = p.copy ?? {};
   const i = p.images ?? {};
+  const g = p.integrations ?? {};
   return {
     theme: {
       primary: typeof t.primary === "string" ? t.primary.trim() : DEFAULT_THEME.primary,
@@ -105,6 +140,33 @@ export function mergePublicSiteSettings(raw: unknown): ResolvedPublicSiteSetting
           : i.ogImageUrl === null
             ? null
             : DEFAULT_IMAGES.ogImageUrl,
+    },
+    integrations: {
+      googleMapsUrl:
+        typeof g.googleMapsUrl === "string" && g.googleMapsUrl.trim()
+          ? g.googleMapsUrl.trim()
+          : g.googleMapsUrl === null
+            ? null
+            : DEFAULT_INTEGRATIONS.googleMapsUrl,
+      googleMapsPlaceId:
+        typeof g.googleMapsPlaceId === "string" && g.googleMapsPlaceId.trim()
+          ? g.googleMapsPlaceId.trim()
+          : g.googleMapsPlaceId === null
+            ? null
+            : DEFAULT_INTEGRATIONS.googleMapsPlaceId,
+      googleMapsRating:
+        typeof g.googleMapsRating === "number" && Number.isFinite(g.googleMapsRating)
+          ? g.googleMapsRating
+          : DEFAULT_INTEGRATIONS.googleMapsRating,
+      googleMapsReviewCount:
+        typeof g.googleMapsReviewCount === "number" && Number.isFinite(g.googleMapsReviewCount)
+          ? g.googleMapsReviewCount
+          : DEFAULT_INTEGRATIONS.googleMapsReviewCount,
+      googleMapsReviews: parseGoogleReviews(g.googleMapsReviews),
+      googleMapsReviewsFetchedAt:
+        typeof g.googleMapsReviewsFetchedAt === "string" && g.googleMapsReviewsFetchedAt.trim()
+          ? g.googleMapsReviewsFetchedAt.trim()
+          : DEFAULT_INTEGRATIONS.googleMapsReviewsFetchedAt,
     },
   };
 }

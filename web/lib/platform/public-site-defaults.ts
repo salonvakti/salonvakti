@@ -26,3 +26,12 @@ export const PUBLIC_SITE_DEFAULT_IMAGES: ResolvedPublicSiteSettings["images"] = 
   heroBackgroundUrl: null,
   ogImageUrl: null,
 };
+
+export const PUBLIC_SITE_DEFAULT_INTEGRATIONS: ResolvedPublicSiteSettings["integrations"] = {
+  googleMapsUrl: null,
+  googleMapsPlaceId: null,
+  googleMapsRating: null,
+  googleMapsReviewCount: null,
+  googleMapsReviews: [],
+  googleMapsReviewsFetchedAt: null,
+};

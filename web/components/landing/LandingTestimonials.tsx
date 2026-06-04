@@ -1,51 +1,71 @@
-import { Quote } from "lucide-react";
 import { SectionHeading } from "@/components/landing/landing-shared";
+import { GoogleReviewsCarousel } from "@/components/landing/GoogleReviewsCarousel";
+import type { GoogleMapsReview } from "@/types/public-site";
 
-const items = [
+const FALLBACK: GoogleMapsReview[] = [
   {
-    quote:
-      "Müşterilerimiz artık telefon beklemiyor; paylaştığımız linkten randevu alıyorlar. Onay akışı sayesinde takvim hep düzenli.",
-    name: "Ayşe K.",
-    role: "Güzellik salonu sahibi",
+    authorName: "Ayşe K.",
+    rating: 5,
+    text: "Müşterilerimiz artık telefon beklemiyor; paylaştığımız linkten randevu alıyorlar. Onay akışı sayesinde takvim hep düzenli.",
+    relativeTime: "",
+    profilePhotoUrl: null,
   },
   {
-    quote:
-      "Personel yalnızca kendi randevularını görüyor, ben tüm işletmeyi tek panelden yönetiyorum. Kurulum birkaç dakika sürdü.",
-    name: "Mehmet T.",
-    role: "Berber işletmesi",
+    authorName: "Mehmet T.",
+    rating: 5,
+    text: "Personel yalnızca kendi randevularını görüyor, ben tüm işletmeyi tek panelden yönetiyorum. Kurulum birkaç dakika sürdü.",
+    relativeTime: "",
+    profilePhotoUrl: null,
   },
   {
-    quote:
-      "Paket yapısı net; ihtiyacımız olan modüller açık, gereksiz özellik için fazla ödeme yapmıyoruz.",
-    name: "Zeynep D.",
-    role: "Kuaför zinciri yöneticisi",
+    authorName: "Zeynep D.",
+    rating: 5,
+    text: "Paket yapısı net; ihtiyacımız olan modüller açık, gereksiz özellik için fazla ödeme yapmıyoruz.",
+    relativeTime: "",
+    profilePhotoUrl: null,
   },
 ];
 
-export function LandingTestimonials() {
+type Props = {
+  reviews: GoogleMapsReview[];
+  mapsUrl: string | null;
+  rating: number | null;
+  reviewCount: number | null;
+};
+
+export function LandingTestimonials({ reviews, mapsUrl, rating, reviewCount }: Props) {
+  const fromGoogle = reviews.length > 0;
+  const display = fromGoogle ? reviews : FALLBACK;
+
   return (
     <section className="border-b py-16 md:py-24">
       <div className="mx-auto max-w-6xl px-4">
         <SectionHeading
           badge="Referanslar"
           title="İşletmeler ne diyor?"
-          subtitle="Salon ve kuaför işletmelerinden geri bildirimler."
+          subtitle={
+            fromGoogle
+              ? "Google Haritalar üzerinden alınan gerçek müşteri yorumları."
+              : "Salon ve kuaför işletmelerinden geri bildirimler."
+          }
         />
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {items.map((t) => (
-            <blockquote
-              key={t.name}
-              className="relative rounded-2xl border bg-card p-6 shadow-sm"
-            >
-              <Quote className="mb-4 h-8 w-8 text-primary/30" aria-hidden />
-              <p className="text-sm leading-relaxed text-muted-foreground">&ldquo;{t.quote}&rdquo;</p>
-              <footer className="mt-6 border-t pt-4">
-                <p className="font-semibold">{t.name}</p>
-                <p className="text-xs text-muted-foreground">{t.role}</p>
-              </footer>
-            </blockquote>
-          ))}
+
+        <div className="mt-14">
+          <GoogleReviewsCarousel
+            reviews={display}
+            mapsUrl={fromGoogle ? mapsUrl : null}
+            rating={fromGoogle ? rating : null}
+            reviewCount={fromGoogle ? reviewCount : null}
+          />
         </div>
+
+        {!fromGoogle ? (
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Google yorumlarını göstermek için platform yöneticisi panelinde{" "}
+            <span className="font-medium text-foreground">Google yorumları</span> bölümünden
+            Haritalar bağlantınızı kaydedin.
+          </p>
+        ) : null}
       </div>
     </section>
   );

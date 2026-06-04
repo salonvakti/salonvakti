@@ -98,6 +98,11 @@ export const dashboardNav = {
       roles: ["platform_admin"] as UserRole[],
     },
     {
+      href: "/platform/google-reviews",
+      label: "Google yorumları",
+      roles: ["platform_admin"] as UserRole[],
+    },
+    {
       href: "/platform/media",
       label: "Medya kütüphanesi",
       roles: ["platform_admin", "platform_user"] as UserRole[],
