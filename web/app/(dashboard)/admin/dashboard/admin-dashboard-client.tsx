@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { AppointmentCalendar } from "@/components/calendar/AppointmentCalendar";
+import { CalendarPreviewPanel } from "@/components/calendar/CalendarPreviewPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { AppointmentSummary } from "@/types/appointment";
 
@@ -38,8 +39,6 @@ export function AdminDashboardClient({
     sortAppointmentsByUpcoming(initialAppointments)
   );
   const [error, setError] = useState<string | null>(initialListError);
-  const [selectedDate, setSelectedDate] = useState<string>(formatDateInputValue(new Date()));
-
   useEffect(() => {
     setAppointments(sortAppointmentsByUpcoming(initialAppointments));
     setError(initialListError);
@@ -51,10 +50,6 @@ export function AdminDashboardClient({
     return key === todayKey && item.status === "pending";
   }).length;
   const activeClientCount = new Set(appointments.map((item) => item.clientName)).size;
-
-  const selectedDayAppointments = useMemo(() => {
-    return appointments.filter((item) => formatDateInputValue(new Date(item.startTime)) === selectedDate);
-  }, [appointments, selectedDate]);
 
   const upcomingAppointments = useMemo(() => {
     const now = Date.now();
@@ -83,22 +78,8 @@ export function AdminDashboardClient({
         <TabsContent value="list">
           <AppointmentCalendar items={upcomingAppointments} title="Yaklaşan randevular" />
         </TabsContent>
-        <TabsContent value="calendar">
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <label htmlFor="preview-date" className="text-sm font-medium">
-                Önizleme tarihi
-              </label>
-              <input
-                id="preview-date"
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="h-8 rounded-md border px-2 text-sm"
-              />
-            </div>
-            <AppointmentCalendar items={selectedDayAppointments} title="Seçilen gün randevuları" />
-          </div>
+        <TabsContent value="calendar" className="mt-4">
+          <CalendarPreviewPanel items={appointments} />
         </TabsContent>
       </Tabs>
     </div>
