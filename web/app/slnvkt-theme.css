@@ -271,58 +271,6 @@
   color: var(--slnvkt-secondary);
 }
 
-.slnvkt-home .hero-banner .client-area {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1.75rem;
-  border-top: 1px solid rgb(247 155 34 / 0.2);
-}
-
-.slnvkt-home .hero-banner .client-avatars {
-  display: flex;
-  align-items: center;
-}
-
-.slnvkt-home .hero-banner .client-avatars span {
-  display: flex;
-  height: 2.75rem;
-  width: 2.75rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  border: 2px solid #fff;
-  margin-left: -0.65rem;
-  background: linear-gradient(145deg, rgb(247 155 34 / 0.25), rgb(222 67 19 / 0.18));
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--slnvkt-secondary);
-}
-
-.slnvkt-home .hero-banner .client-avatars span:first-child {
-  margin-left: 0;
-}
-
-.slnvkt-home .hero-banner .client-avatars .client-plus {
-  background: var(--slnvkt-gradient);
-  color: #fff;
-  font-size: 0.85rem;
-}
-
-.slnvkt-home .hero-banner .client-area p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #64748b;
-}
-
-.slnvkt-home .hero-banner .client-area p strong {
-  display: block;
-  font-size: 1rem;
-  color: #0f172a;
-}
-
 .slnvkt-home .hero-banner .banner-image {
   position: relative;
   margin-inline-start: auto;

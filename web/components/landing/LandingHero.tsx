@@ -9,7 +9,6 @@ type Props = {
   title: string;
   subtitle: string;
   heroImageUrl: string | null;
-  salonCount: number;
   promoLine?: string;
 };
 
@@ -18,13 +17,8 @@ export function LandingHero({
   title,
   subtitle,
   heroImageUrl,
-  salonCount,
   promoLine,
 }: Props) {
-  const statLabel =
-    salonCount > 0
-      ? `${salonCount}+ işletme platformda`
-      : "500+ salon hedefi";
   const bannerSrc = heroImageUrl?.trim() || DEFAULT_LANDING_HERO_BANNER;
 
   return (
@@ -50,18 +44,6 @@ export function LandingHero({
               <Link href="/#paketler" className="btn-slnvkt-outline">
                 Paketleri incele
               </Link>
-            </div>
-            <div className="client-area">
-              <div className="client-avatars" aria-hidden>
-                {[1, 2, 3, 4].map((i) => (
-                  <span key={i}>{siteName.charAt(0)}</span>
-                ))}
-                <span className="client-plus">+</span>
-              </div>
-              <p>
-                <strong>{statLabel}</strong>
-                Online randevu yazılımı — kuaför, berber ve güzellik merkezleri
-              </p>
             </div>
           </div>
 

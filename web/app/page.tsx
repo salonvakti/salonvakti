@@ -137,7 +137,6 @@ export default async function HomePage() {
           title={site.copy.heroTitle}
           subtitle={site.copy.heroSubtitle}
           heroImageUrl={heroImageUrl}
-          salonCount={directorySalons.length}
           promoLine={promoDisplay}
         />
         <LandingStats salonCount={directorySalons.length} />
