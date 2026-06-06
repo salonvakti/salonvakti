@@ -122,6 +122,7 @@ export const dashboardNav = {
     },
     { href: "/admin/reports", label: "Raporlar", roles: ["business_admin"] as UserRole[] },
     { href: "/admin/clients", label: "Müşteriler", roles: ["business_admin"] as UserRole[] },
+    { href: "/admin/sms", label: "SMS", roles: ["business_admin"] as UserRole[] },
     { href: "/admin/services", label: "Hizmetler", roles: ["business_admin"] as UserRole[] },
     { href: "/admin/staff", label: "Personel", roles: ["business_admin"] as UserRole[] },
     { href: "/admin/settings", label: "Ayarlar", roles: ["business_admin"] as UserRole[] },

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { createInvitedClientAction, issueClientInviteAction } from "./actions";
 import { useSupabaseContext } from "@/components/providers/supabase-provider";
@@ -281,7 +282,14 @@ export default function AdminClientsPage() {
                   <TableCell>
                     <Badge className={meta.badgeClass}>{meta.label}</Badge>
                   </TableCell>
-                  <TableCell className="font-medium">{c.name}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link
+                      href={`/admin/clients/${c.id}`}
+                      className="text-primary underline-offset-2 hover:underline"
+                    >
+                      {c.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>{c.phone ?? "—"}</TableCell>
                   <TableCell>{c.email ?? "—"}</TableCell>
                   <TableCell>

@@ -20,6 +20,7 @@ import {
   pickPublicPromo,
 } from "@/lib/public/tenant-public-fields";
 import { BranchesSettingsSection } from "@/components/admin/BranchesSettingsSection";
+import { SmsSettingsSection } from "@/components/admin/SmsSettingsSection";
 
 export default function AdminSettingsPage() {
   const { client, profile, session } = useSupabaseContext();
@@ -211,6 +212,8 @@ export default function AdminSettingsPage() {
       </Card>
 
       <BranchesSettingsSection />
+
+      <SmsSettingsSection />
 
       <Card>
         <CardHeader>

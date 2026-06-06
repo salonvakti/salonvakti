@@ -131,6 +131,22 @@ create table public.landing_package_prices (
   updated_at timestamptz not null default now ()
 );
 
+-- İşletme SMS kayıtları (migration: 016_tenant_sms.sql)
+create table public.tenant_sms_messages (
+  id uuid primary key default gen_random_uuid (),
+  tenant_id uuid not null references public.tenants (id) on delete cascade,
+  recipient_phone text not null,
+  message text not null,
+  status text not null check (status in ('sent', 'failed')),
+  netgsm_job_id text,
+  netgsm_code text,
+  netgsm_description text,
+  sent_by_user_id uuid references auth.users (id) on delete set null,
+  created_at timestamptz not null default now ()
+);
+
+create index tenant_sms_messages_tenant_created_idx on public.tenant_sms_messages (tenant_id, created_at desc);
+
 -- Müşteri global profili ve favori salonlar (migration: 015_customer_profiles_favorites.sql)
 create table public.customer_profiles (
   user_id uuid primary key references auth.users (id) on delete cascade,

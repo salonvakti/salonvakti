@@ -84,6 +84,19 @@ export interface CustomerProfileRow {
   updated_at: string;
 }
 
+export interface TenantSmsMessageRow {
+  id: string;
+  tenant_id: string;
+  recipient_phone: string;
+  message: string;
+  status: "sent" | "failed";
+  netgsm_job_id: string | null;
+  netgsm_code: string | null;
+  netgsm_description: string | null;
+  sent_by_user_id: string | null;
+  created_at: string;
+}
+
 export interface CustomerFavoriteTenantRow {
   user_id: string;
   tenant_id: string;
