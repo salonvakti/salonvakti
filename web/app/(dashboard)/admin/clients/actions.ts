@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { getSessionProfile } from "@/lib/auth/session";
 import { normalizePhoneDigits } from "@/lib/phone/normalize";
-import { absoluteUrl } from "@/lib/seo/site-url";
+import { absoluteUrlFromRequest } from "@/lib/seo/site-url";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -87,7 +87,7 @@ export async function issueClientInviteAction(
 
   return {
     ok: true,
-    inviteUrl: absoluteUrl(`/davet/${encodeURIComponent(token)}`),
+    inviteUrl: await absoluteUrlFromRequest(`/davet/${encodeURIComponent(token)}`),
     error: null,
   };
 }
@@ -157,7 +157,7 @@ export async function createInvitedClientAction(input: {
 
   return {
     ok: true,
-    inviteUrl: absoluteUrl(`/davet/${encodeURIComponent(token)}`),
+    inviteUrl: await absoluteUrlFromRequest(`/davet/${encodeURIComponent(token)}`),
     error: null,
   };
 }

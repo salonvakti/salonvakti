@@ -1,25 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { MoreHorizontal } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import type { SessionProfile } from "@/lib/auth/session";
 import { ROLE_LABELS } from "@/lib/constants/roles";
-import type { SupabaseClient, User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 
 type Props = {
   user: User;
   profile: SessionProfile | null;
-  supabase: SupabaseClient | null;
 };
 
 function avatarInitials(user: User): string {
@@ -39,9 +28,7 @@ function avatarInitials(user: User): string {
   return (e.charAt(0) || "?").toUpperCase();
 }
 
-export function DashboardTopbar({ user, profile, supabase }: Props) {
-  const router = useRouter();
-  const email = user.email ?? null;
+export function DashboardTopbar({ user, profile }: Props) {
   const initial = avatarInitials(user);
 
   return (
@@ -49,40 +36,16 @@ export function DashboardTopbar({ user, profile, supabase }: Props) {
       <span className="text-sm font-medium text-white/90">
         {profile?.role ? ROLE_LABELS[profile.role] : "Oturum"}
       </span>
-      <div className="flex items-center gap-0.5">
-        <Link
-          href="/account"
-          className="rounded-full outline-none ring-offset-2 focus-visible:ring-2"
-          aria-label="Hesap ayarları"
-          title="Hesap ayarları"
-        >
-          <Avatar className="h-9 w-9">
-            <AvatarFallback>{initial}</AvatarFallback>
-          </Avatar>
-        </Link>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            type="button"
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-white/85 outline-none ring-offset-2 transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/40"
-            aria-label="Menü"
-          >
-            <MoreHorizontal className="h-5 w-5" aria-hidden />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuLabel>{email ?? "Kullanıcı"}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => router.push("/")} className="cursor-pointer">
-              Siteye dön
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => void supabase?.auth.signOut()}
-              className="cursor-pointer"
-            >
-              Çıkış
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <Link
+        href="/account"
+        className="rounded-full outline-none ring-offset-2 focus-visible:ring-2"
+        aria-label="Hesap ayarları"
+        title="Hesap ayarları"
+      >
+        <Avatar className="h-9 w-9">
+          <AvatarFallback>{initial}</AvatarFallback>
+        </Avatar>
+      </Link>
     </header>
   );
 }
