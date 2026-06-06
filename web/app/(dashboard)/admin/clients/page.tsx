@@ -10,7 +10,7 @@ import {
 } from "./actions";
 import { useSupabaseContext } from "@/components/providers/supabase-provider";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -353,11 +353,12 @@ export default function AdminClientsPage() {
                   <TableCell className="text-right">
                     <div className="flex flex-wrap justify-end gap-2">
                       {c.phone ? (
-                        <Button size="sm" variant="outline" asChild>
-                          <Link href={`/admin/sms?phone=${encodeURIComponent(c.phone)}`}>
-                            SMS gönder
-                          </Link>
-                        </Button>
+                        <Link
+                          href={`/admin/sms?phone=${encodeURIComponent(c.phone)}`}
+                          className={buttonVariants({ size: "sm", variant: "outline" })}
+                        >
+                          SMS gönder
+                        </Link>
                       ) : null}
                       {!c.user_id ? (
                         <Button
