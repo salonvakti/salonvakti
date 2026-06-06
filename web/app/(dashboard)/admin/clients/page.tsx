@@ -1,8 +1,13 @@
 "use client";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { createInvitedClientAction, issueClientInviteAction } from "./actions";
+import {
+  approveClientBusinessAction,
+  createInvitedClientAction,
+  issueClientInviteAction,
+} from "./actions";
 import { useSupabaseContext } from "@/components/providers/supabase-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +39,39 @@ type ClientListRow = {
   invite_expires_at: string | null;
 };
 
+async function buildLastAppointmentMap(
+  supabase: SupabaseClient,
+  tenantId: string
+): Promise<Map<string, string>> {
+  const { data } = await supabase
+    .from("appointments")
+    .select("client_id,start_time")
+    .eq("tenant_id", tenantId)
+    .order("start_time", { ascending: false });
+
+  const map = new Map<string, string>();
+  for (const row of data ?? []) {
+    const clientId = row.client_id as string | null;
+    const startTime = row.start_time as string | null;
+    if (clientId && startTime && !map.has(clientId)) {
+      map.set(clientId, startTime);
+    }
+  }
+  return map;
+}
+
+function sortClientsByLastAppointment(
+  clients: ClientListRow[],
+  lastByClient: Map<string, string>
+): ClientListRow[] {
+  return [...clients].sort((a, b) => {
+    const tsA = lastByClient.get(a.id) ? new Date(lastByClient.get(a.id)!).getTime() : 0;
+    const tsB = lastByClient.get(b.id) ? new Date(lastByClient.get(b.id)!).getTime() : 0;
+    if (tsB !== tsA) return tsB - tsA;
+    return a.name.localeCompare(b.name, "tr");
+  });
+}
+
 export default function AdminClientsPage() {
   const { client, profile } = useSupabaseContext();
   const [rows, setRows] = useState<ClientListRow[]>([]);
@@ -61,13 +99,15 @@ export default function AdminClientsPage() {
         return;
       }
 
-      const { data, error: fetchError } = await client
-        .from("clients")
-        .select(
-          "id,name,phone,email,user_id,business_approved_at,phone_verified_at,invite_token,invite_expires_at"
-        )
-        .eq("tenant_id", profile.tenantId)
-        .order("created_at", { ascending: false });
+      const [{ data, error: fetchError }, lastMap] = await Promise.all([
+        client
+          .from("clients")
+          .select(
+            "id,name,phone,email,user_id,business_approved_at,phone_verified_at,invite_token,invite_expires_at"
+          )
+          .eq("tenant_id", profile.tenantId),
+        buildLastAppointmentMap(client, profile.tenantId),
+      ]);
 
       if (!active) return;
 
@@ -75,7 +115,7 @@ export default function AdminClientsPage() {
         setError(`Müşteriler yüklenemedi: ${fetchError.message}`);
         setRows([]);
       } else {
-        setRows((data ?? []) as ClientListRow[]);
+        setRows(sortClientsByLastAppointment((data ?? []) as ClientListRow[], lastMap));
       }
       setLoading(false);
     }
@@ -96,21 +136,17 @@ export default function AdminClientsPage() {
   }, [rows, query]);
 
   async function approveBusiness(clientId: string) {
-    if (!client || !profile?.tenantId) return;
     setBusyId(clientId);
     setError(null);
-    const now = new Date().toISOString();
-    const { error: upErr } = await client
-      .from("clients")
-      .update({ business_approved_at: now })
-      .eq("id", clientId)
-      .eq("tenant_id", profile.tenantId);
+    const result = await approveClientBusinessAction(clientId);
 
-    if (upErr) {
-      setError(`Onay kaydedilemedi: ${upErr.message}`);
+    if (!result.ok || !result.approvedAt) {
+      setError(`Onay kaydedilemedi: ${result.error ?? "Bilinmeyen hata."}`);
     } else {
       setRows((prev) =>
-        prev.map((r) => (r.id === clientId ? { ...r, business_approved_at: now } : r))
+        prev.map((r) =>
+          r.id === clientId ? { ...r, business_approved_at: result.approvedAt } : r
+        )
       );
     }
     setBusyId(null);
@@ -158,14 +194,16 @@ export default function AdminClientsPage() {
         setCopiedId("__new__");
         setTimeout(() => setCopiedId(null), 2500);
         if (client && profile?.tenantId) {
-          const { data } = await client
-            .from("clients")
-            .select(
-              "id,name,phone,email,user_id,business_approved_at,phone_verified_at,invite_token,invite_expires_at"
-            )
-            .eq("tenant_id", profile.tenantId)
-            .order("created_at", { ascending: false });
-          setRows((data ?? []) as ClientListRow[]);
+          const [{ data }, lastMap] = await Promise.all([
+            client
+              .from("clients")
+              .select(
+                "id,name,phone,email,user_id,business_approved_at,phone_verified_at,invite_token,invite_expires_at"
+              )
+              .eq("tenant_id", profile.tenantId),
+            buildLastAppointmentMap(client, profile.tenantId),
+          ]);
+          setRows(sortClientsByLastAppointment((data ?? []) as ClientListRow[], lastMap));
         }
       } catch {
         setError("Panoya kopyalanamadı.");
@@ -314,6 +352,13 @@ export default function AdminClientsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex flex-wrap justify-end gap-2">
+                      {c.phone ? (
+                        <Button size="sm" variant="outline" asChild>
+                          <Link href={`/admin/sms?phone=${encodeURIComponent(c.phone)}`}>
+                            SMS gönder
+                          </Link>
+                        </Button>
+                      ) : null}
                       {!c.user_id ? (
                         <Button
                           size="sm"

@@ -161,3 +161,45 @@ export async function createInvitedClientAction(input: {
     error: null,
   };
 }
+
+export async function approveClientBusinessAction(
+  clientId: string
+): Promise<{ ok: boolean; approvedAt: string | null; error: string | null }> {
+  const gate = await requireBusinessAdminTenant();
+  if (!gate.ok) {
+    return { ok: false, approvedAt: null, error: gate.error };
+  }
+
+  const admin = createServiceRoleSupabaseClient();
+  if (!admin) {
+    return { ok: false, approvedAt: null, error: "Sunucu yapılandırması eksik." };
+  }
+
+  const { data: row, error: rErr } = await admin
+    .from("clients")
+    .select("id,tenant_id")
+    .eq("id", clientId)
+    .maybeSingle();
+
+  if (rErr || !row) {
+    return { ok: false, approvedAt: null, error: rErr?.message ?? "Müşteri bulunamadı." };
+  }
+
+  if ((row.tenant_id as string) !== gate.tenantId) {
+    return { ok: false, approvedAt: null, error: "Bu müşteri kaydına erişiminiz yok." };
+  }
+
+  const now = new Date().toISOString();
+  const { error: uErr } = await admin
+    .from("clients")
+    .update({ business_approved_at: now })
+    .eq("id", clientId)
+    .eq("tenant_id", gate.tenantId);
+
+  if (uErr) {
+    return { ok: false, approvedAt: null, error: uErr.message };
+  }
+
+  revalidatePath("/admin/clients");
+  return { ok: true, approvedAt: now, error: null };
+}

@@ -37,9 +37,15 @@ function formatDateTime(iso: string): string {
   });
 }
 
-export function AdminSmsClient({ initial }: { initial: SmsDashboardData }) {
+export function AdminSmsClient({
+  initial,
+  prefilledPhone = "",
+}: {
+  initial: SmsDashboardData;
+  prefilledPhone?: string;
+}) {
   const router = useRouter();
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(prefilledPhone);
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);

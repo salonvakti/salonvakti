@@ -2,7 +2,11 @@ import { redirect } from "next/navigation";
 import { AdminSmsClient } from "./admin-sms-client";
 import { getSmsDashboardAction } from "./actions";
 
-export default async function AdminSmsPage() {
+type AdminSmsPageProps = {
+  searchParams: { phone?: string };
+};
+
+export default async function AdminSmsPage({ searchParams }: AdminSmsPageProps) {
   const res = await getSmsDashboardAction();
 
   if (!res.ok || !res.data) {
@@ -18,5 +22,8 @@ export default async function AdminSmsPage() {
     redirect("/login?next=/admin/sms");
   }
 
-  return <AdminSmsClient initial={res.data} />;
+  const prefilledPhone =
+    typeof searchParams.phone === "string" ? searchParams.phone.trim() : "";
+
+  return <AdminSmsClient initial={res.data} prefilledPhone={prefilledPhone} />;
 }
