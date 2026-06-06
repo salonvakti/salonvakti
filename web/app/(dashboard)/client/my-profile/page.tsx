@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { ClientProfilesClient } from "./client-profiles-client";
-import { listCustomerClientProfiles } from "@/lib/client/customer-profiles";
+import { getCustomerProfileForUser } from "@/lib/customer/profile";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function ClientMyProfilePage() {
@@ -16,7 +16,7 @@ export default async function ClientMyProfilePage() {
     redirect("/customer/login?next=/client/my-profile");
   }
 
-  const rows = await listCustomerClientProfiles(user.id);
+  const profile = await getCustomerProfileForUser(user);
 
-  return <ClientProfilesClient initialRows={rows} />;
+  return <ClientProfilesClient initial={profile} />;
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getCustomerProfileAction } from "@/app/(dashboard)/client/profile-actions";
+import { CustomerProfileForm } from "@/components/customer/CustomerProfileForm";
 import { useSupabaseContext } from "@/components/providers/supabase-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,21 +16,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { SessionProfile } from "@/lib/auth/session";
-import { isBusinessRole } from "@/lib/constants/roles";
+import { isBusinessRole, isCustomerRole } from "@/lib/constants/roles";
+import { parseNameParts } from "@/lib/customer/profile-names";
+import type { CustomerProfileData } from "@/lib/customer/profile";
 import type { SupabaseClient } from "@supabase/supabase-js";
-
-function initialNames(meta: Record<string, unknown>): { first: string; last: string } {
-  const f = typeof meta.first_name === "string" ? meta.first_name : "";
-  const l = typeof meta.last_name === "string" ? meta.last_name : "";
-  if (f.trim() || l.trim()) return { first: f, last: l };
-  const d = typeof meta.display_name === "string" ? meta.display_name.trim() : "";
-  if (d) {
-    const parts = d.split(/\s+/).filter(Boolean);
-    if (parts.length === 1) return { first: parts[0], last: "" };
-    return { first: parts[0], last: parts.slice(1).join(" ") };
-  }
-  return { first: "", last: "" };
-}
 
 async function syncStaffDisplayName(
   client: SupabaseClient,
@@ -57,6 +48,7 @@ async function syncStaffDisplayName(
 
 export default function AccountSettingsPage() {
   const { client, session, profile, refreshSession } = useSupabaseContext();
+  const isCustomer = profile?.role ? isCustomerRole(profile.role) : false;
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -65,6 +57,10 @@ export default function AccountSettingsPage() {
   const [profileBusy, setProfileBusy] = useState(false);
   const [profileMsg, setProfileMsg] = useState<string | null>(null);
   const [profileErr, setProfileErr] = useState<string | null>(null);
+
+  const [customerProfile, setCustomerProfile] = useState<CustomerProfileData | null>(null);
+  const [customerProfileLoading, setCustomerProfileLoading] = useState(false);
+  const [customerProfileErr, setCustomerProfileErr] = useState<string | null>(null);
 
   const [emailBusy, setEmailBusy] = useState(false);
   const [emailMsg, setEmailMsg] = useState<string | null>(null);
@@ -79,12 +75,30 @@ export default function AccountSettingsPage() {
   useEffect(() => {
     if (!session?.user) return;
     const meta = session.user.user_metadata ?? {};
-    const { first, last } = initialNames(meta);
-    setFirstName(first);
-    setLastName(last);
+    const { firstName: f, lastName: l } = parseNameParts(meta);
+    setFirstName(f);
+    setLastName(l);
     setPhone(typeof meta.phone === "string" ? meta.phone : "");
     setEmail(session.user.email ?? "");
   }, [session]);
+
+  useEffect(() => {
+    if (!isCustomer || !session?.user) {
+      setCustomerProfile(null);
+      return;
+    }
+
+    setCustomerProfileLoading(true);
+    setCustomerProfileErr(null);
+    void getCustomerProfileAction().then((res) => {
+      setCustomerProfileLoading(false);
+      if (!res.ok || !res.profile) {
+        setCustomerProfileErr(res.error ?? "Profil yüklenemedi.");
+        return;
+      }
+      setCustomerProfile(res.profile);
+    });
+  }, [isCustomer, session?.user]);
 
   async function onSaveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -194,66 +208,85 @@ export default function AccountSettingsPage() {
     setPasswordBusy(false);
   }
 
+  async function reloadCustomerProfile() {
+    const res = await getCustomerProfileAction();
+    if (res.ok && res.profile) {
+      setCustomerProfile(res.profile);
+      await refreshSession();
+    }
+  }
+
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Hesabım</h1>
         <p className="text-muted-foreground">
-          Ad soyad, iletişim, e-posta ve şifre ayarlarınız tüm kullanıcı tipleri için buradan
-          yönetilir.
+          {isCustomer
+            ? "Profil bilgileriniz Profilim sayfasıyla aynıdır. E-posta ve şifre buradan yönetilir."
+            : "Ad soyad, iletişim, e-posta ve şifre ayarlarınız tüm kullanıcı tipleri için buradan yönetilir."}
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Kişisel bilgiler</CardTitle>
-          <CardDescription>Ad, soyad ve telefon hesap kaydınızda saklanır.</CardDescription>
-        </CardHeader>
-        <form onSubmit={(ev) => void onSaveProfile(ev)}>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="first">Ad</Label>
-              <Input
-                id="first"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                autoComplete="given-name"
-                disabled={profileBusy}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="last">Soyad</Label>
-              <Input
-                id="last"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                autoComplete="family-name"
-                disabled={profileBusy}
-              />
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="phone">Telefon</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                autoComplete="tel"
-                disabled={profileBusy}
-              />
-            </div>
-            {profileErr ? <p className="text-sm text-destructive sm:col-span-2">{profileErr}</p> : null}
-            {profileMsg ? (
-              <p className="text-sm text-muted-foreground sm:col-span-2">{profileMsg}</p>
-            ) : null}
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" disabled={profileBusy}>
-              {profileBusy ? "Kaydediliyor…" : "Profili kaydet"}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+      {isCustomer ? (
+        customerProfileLoading ? (
+          <p className="text-sm text-muted-foreground">Profil yükleniyor…</p>
+        ) : customerProfileErr ? (
+          <p className="text-sm text-destructive">{customerProfileErr}</p>
+        ) : customerProfile ? (
+          <CustomerProfileForm initial={customerProfile} onSaved={() => void reloadCustomerProfile()} />
+        ) : null
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Kişisel bilgiler</CardTitle>
+            <CardDescription>Ad, soyad ve telefon hesap kaydınızda saklanır.</CardDescription>
+          </CardHeader>
+          <form onSubmit={(ev) => void onSaveProfile(ev)}>
+            <CardContent className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="first">Ad</Label>
+                <Input
+                  id="first"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  autoComplete="given-name"
+                  disabled={profileBusy}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="last">Soyad</Label>
+                <Input
+                  id="last"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  autoComplete="family-name"
+                  disabled={profileBusy}
+                />
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="phone">Telefon</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  autoComplete="tel"
+                  disabled={profileBusy}
+                />
+              </div>
+              {profileErr ? <p className="text-sm text-destructive sm:col-span-2">{profileErr}</p> : null}
+              {profileMsg ? (
+                <p className="text-sm text-muted-foreground sm:col-span-2">{profileMsg}</p>
+              ) : null}
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" disabled={profileBusy}>
+                {profileBusy ? "Kaydediliyor…" : "Profili kaydet"}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

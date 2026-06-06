@@ -3,75 +3,65 @@
 import { revalidatePath } from "next/cache";
 import { getSessionProfile } from "@/lib/auth/session";
 import { isCustomerRole } from "@/lib/constants/roles";
-import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
+import {
+  getCustomerProfileForUser,
+  saveCustomerProfileForUser,
+  type CustomerProfileData,
+  type CustomerProfileInput,
+} from "@/lib/customer/profile";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function updateCustomerClientProfileAction(input: {
-  clientId: string;
-  name: string;
-  phone: string | null;
-  email: string | null;
-}): Promise<{ ok: boolean; error: string | null }> {
+async function requireCustomerUser() {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
-    return { ok: false, error: "Oturum yapılandırması eksik." };
+    return { ok: false as const, error: "Oturum yapılandırması eksik." };
   }
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return { ok: false, error: "Oturum yok." };
+    return { ok: false as const, error: "Oturum yok." };
   }
 
   const profile = getSessionProfile(user);
   if (!profile || !isCustomerRole(profile.role)) {
-    return { ok: false, error: "Bu işlem yalnızca müşteri hesapları içindir." };
+    return { ok: false as const, error: "Bu işlem yalnızca müşteri hesapları içindir." };
   }
 
-  const name = input.name.trim();
-  if (!name) {
-    return { ok: false, error: "İsim gerekli." };
+  return { ok: true as const, user };
+}
+
+export async function getCustomerProfileAction(): Promise<{
+  ok: boolean;
+  profile: CustomerProfileData | null;
+  error: string | null;
+}> {
+  const gate = await requireCustomerUser();
+  if (!gate.ok) {
+    return { ok: false, profile: null, error: gate.error };
   }
 
-  const admin = createServiceRoleSupabaseClient();
-  if (!admin) {
-    return { ok: false, error: "Sunucu yapılandırması eksik." };
+  const profile = await getCustomerProfileForUser(gate.user);
+  return { ok: true, profile, error: null };
+}
+
+export async function saveCustomerProfileAction(
+  input: CustomerProfileInput
+): Promise<{ ok: boolean; error: string | null }> {
+  const gate = await requireCustomerUser();
+  if (!gate.ok) {
+    return { ok: false, error: gate.error };
   }
 
-  const { data: row, error: rErr } = await admin
-    .from("clients")
-    .select("id,user_id")
-    .eq("id", input.clientId)
-    .maybeSingle();
-
-  if (rErr || !row) {
-    return { ok: false, error: rErr?.message ?? "Kayıt bulunamadı." };
-  }
-
-  if ((row.user_id as string | null) !== user.id) {
-    return { ok: false, error: "Bu kaydı güncelleyemezsiniz." };
-  }
-
-  const phone = input.phone?.trim() || null;
-  const email = input.email?.trim() || null;
-
-  const { error: uErr } = await admin
-    .from("clients")
-    .update({
-      name,
-      phone,
-      email,
-    })
-    .eq("id", input.clientId)
-    .eq("user_id", user.id);
-
-  if (uErr) {
-    return { ok: false, error: uErr.message };
+  const result = await saveCustomerProfileForUser(gate.user, input);
+  if (!result.ok) {
+    return result;
   }
 
   revalidatePath("/client/my-profile");
   revalidatePath("/client/my-bookings");
+  revalidatePath("/account");
 
   return { ok: true, error: null };
 }

@@ -6,6 +6,7 @@ import { isCustomerRole } from "@/lib/constants/roles";
 import { hasStaffBookingConflict, listAvailableBookingSlots } from "@/lib/booking/availability";
 import { assertBranchAndStaffForBooking, loadActiveBranchIdsForTenant } from "@/lib/booking/branch-booking-guards";
 import { parseAppointmentCompanionType } from "@/lib/booking/companion";
+import { addCustomerFavoriteTenant } from "@/lib/customer/favorite-salons";
 import { validateBookingWallSlot } from "@/lib/booking/slot-validation";
 import type { TenantRow } from "@/lib/db-types";
 import { normalizePhoneDigits } from "@/lib/phone/normalize";
@@ -294,8 +295,13 @@ export async function createPublicBookingAction(input: {
 
   const appointmentId = appointment.id as string;
 
+  if (isRegisteredCustomer && user?.id) {
+    await addCustomerFavoriteTenant(user.id, salon.id);
+  }
+
   revalidatePath(`/booking/${slug}/confirmation`);
   revalidatePath("/client/my-bookings");
+  revalidatePath("/client/favorite-salons");
 
   return { ok: true, appointmentId, error: null };
 }

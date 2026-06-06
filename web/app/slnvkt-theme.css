@@ -139,24 +139,43 @@
 }
 
 .slnvkt-app .slnvkt-logo-img {
-  display: block;
   flex-shrink: 0;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .slnvkt-app .slnvkt-logo-img--mobile {
+  display: block;
   height: 2rem;
   width: auto;
   max-width: 6.5rem;
-  object-fit: contain;
-  object-position: left center;
 }
 
 .slnvkt-app .slnvkt-logo-img--desktop {
+  display: block;
   height: 2.25rem;
   width: auto;
   max-width: 12.5rem;
-  object-fit: contain;
-  object-position: left center;
+}
+
+@media (min-width: 768px) {
+  .slnvkt-app .slnvkt-logo-img--mobile {
+    display: none;
+  }
+}
+
+.slnvkt-app .slnvkt-logo-img--desktop.slnvkt-logo-img--desktop-only {
+  display: block;
+}
+
+.slnvkt-app .slnvkt-logo-img--desktop:not(.slnvkt-logo-img--desktop-only) {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .slnvkt-app .slnvkt-logo-img--desktop:not(.slnvkt-logo-img--desktop-only) {
+    display: block;
+  }
 }
 
 .slnvkt-app .slnvkt-logo-icon {

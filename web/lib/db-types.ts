@@ -70,6 +70,26 @@ export interface TenantBranchRow {
   updated_at: string;
 }
 
+export interface CustomerProfileRow {
+  user_id: string;
+  birth_date: string | null;
+  allergen_status: string | null;
+  regular_medications: string | null;
+  chronic_condition_pregnancy: string | null;
+  skin_hair_type: string | null;
+  kvkk_consent_at: string | null;
+  commercial_consent_at: string | null;
+  service_risk_consent_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CustomerFavoriteTenantRow {
+  user_id: string;
+  tenant_id: string;
+  created_at: string;
+}
+
 export interface ClientRow {
   id: string;
   tenant_id: string;

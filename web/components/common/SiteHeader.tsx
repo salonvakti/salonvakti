@@ -43,20 +43,29 @@ export function SiteHeader() {
         >
           <span className="slnvkt-logo-wrap min-w-0">
             {s.images.headerLogoUrl ? (
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={s.images.headerMobileLogoUrl?.trim() || s.images.headerLogoUrl}
-                  alt={s.copy.siteName}
-                  className="slnvkt-logo-img slnvkt-logo-img--mobile md:hidden"
-                />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+              s.images.headerMobileLogoUrl?.trim() ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={s.images.headerMobileLogoUrl.trim()}
+                    alt={s.copy.siteName}
+                    className="slnvkt-logo-img slnvkt-logo-img--mobile"
+                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={s.images.headerLogoUrl}
+                    alt={s.copy.siteName}
+                    className="slnvkt-logo-img slnvkt-logo-img--desktop"
+                  />
+                </>
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={s.images.headerLogoUrl}
                   alt={s.copy.siteName}
-                  className="slnvkt-logo-img slnvkt-logo-img--desktop hidden md:block"
+                  className="slnvkt-logo-img slnvkt-logo-img--desktop slnvkt-logo-img--desktop-only"
                 />
-              </>
+              )
             ) : (
               <>
                 {s.images.headerIconUrl ? (

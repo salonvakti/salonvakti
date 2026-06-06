@@ -131,6 +131,30 @@ create table public.landing_package_prices (
   updated_at timestamptz not null default now ()
 );
 
+-- Müşteri global profili ve favori salonlar (migration: 015_customer_profiles_favorites.sql)
+create table public.customer_profiles (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  birth_date date,
+  allergen_status text,
+  regular_medications text,
+  chronic_condition_pregnancy text,
+  skin_hair_type text,
+  kvkk_consent_at timestamptz,
+  commercial_consent_at timestamptz,
+  service_risk_consent_at timestamptz,
+  created_at timestamptz not null default now (),
+  updated_at timestamptz not null default now ()
+);
+
+create table public.customer_favorite_tenants (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  tenant_id uuid not null references public.tenants (id) on delete cascade,
+  created_at timestamptz not null default now (),
+  primary key (user_id, tenant_id)
+);
+
+create index customer_favorite_tenants_user_idx on public.customer_favorite_tenants (user_id);
+
 -- Vitrin tema / metin / görsel (migration: 012_platform_public_site_settings.sql)
 create table public.platform_public_site_settings (
   id text primary key default 'default' check (id = 'default'),
