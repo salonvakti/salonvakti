@@ -25,6 +25,7 @@ export const PUBLIC_SITE_DEFAULT_IMAGES: ResolvedPublicSiteSettings["images"] = 
   headerIconUrl: null,
   heroBackgroundUrl: null,
   ogImageUrl: null,
+  howItWorksImageUrl: null,
 };
 
 export const PUBLIC_SITE_DEFAULT_INTEGRATIONS: ResolvedPublicSiteSettings["integrations"] = {

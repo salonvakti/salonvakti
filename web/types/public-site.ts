@@ -23,6 +23,8 @@ export type PublicSiteImageSettings = {
   headerIconUrl?: string | null;
   heroBackgroundUrl?: string | null;
   ogImageUrl?: string | null;
+  /** Ana sayfa «Sistem nasıl çalışır» bölümü görseli */
+  howItWorksImageUrl?: string | null;
 };
 
 /** Google Haritalar vitrin yorumları (Places API ile önbellek) */

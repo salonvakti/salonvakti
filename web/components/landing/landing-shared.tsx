@@ -90,15 +90,18 @@ export function DeviceMockup({
 export function WideShowcaseImage({
   imageUrl,
   alt,
+  emptyHint,
 }: {
   imageUrl: string | null;
   alt: string;
+  emptyHint?: string;
 }) {
   if (!imageUrl) {
     return (
       <div className="mx-auto flex aspect-[16/9] max-w-4xl items-center justify-center rounded-2xl border bg-gradient-to-br from-primary/10 via-muted to-primary/5 p-8 shadow-inner">
         <p className="text-center text-sm text-muted-foreground">
-          Platform → Site görünümü veya Medya kütüphanesinden kahraman / OG görseli ekleyin.
+          {emptyHint ??
+            "Platform → Site görünümü veya Medya kütüphanesinden kahraman / OG görseli ekleyin."}
         </p>
       </div>
     );

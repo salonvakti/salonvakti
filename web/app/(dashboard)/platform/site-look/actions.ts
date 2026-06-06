@@ -173,6 +173,9 @@ export async function savePlatformSiteSettingsAction(
   const og = cleanUrl(full.images.ogImageUrl ?? undefined);
   if (og) nextImages.ogImageUrl = og;
   else delete nextImages.ogImageUrl;
+  const howItWorks = cleanUrl(full.images.howItWorksImageUrl ?? undefined);
+  if (howItWorks) nextImages.howItWorksImageUrl = howItWorks;
+  else delete nextImages.howItWorksImageUrl;
 
   const settings_json: Record<string, unknown> = { ...prev };
   if (Object.keys(nextTheme).length) settings_json.theme = nextTheme;

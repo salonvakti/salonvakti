@@ -32,8 +32,8 @@ export const SITE_LOOK_SECTIONS = [
     id: "showcase",
     label: "Vitrin görselleri",
     icon: ImageIcon,
-    homeBlock: "Hakkında + Ekran",
-    description: "Geniş tanıtım ve ekran görüntüsü bölümleri (Open Graph görseli öncelikli).",
+    homeBlock: "Hakkında + Sistem",
+    description: "«Neden biz?» vitrin görseli ve «Sistem nasıl çalışır» bölümü için ayrı görseller.",
   },
   {
     id: "seo",
@@ -57,4 +57,10 @@ export function resolveWideShowcaseUrl(s: {
   images: { heroBackgroundUrl: string | null; ogImageUrl: string | null };
 }): string | null {
   return s.images.ogImageUrl?.trim() || s.images.heroBackgroundUrl?.trim() || null;
+}
+
+export function resolveHowItWorksImageUrl(s: {
+  images: { howItWorksImageUrl: string | null };
+}): string | null {
+  return s.images.howItWorksImageUrl?.trim() || null;
 }

@@ -63,11 +63,7 @@ export default async function HomePage() {
     DEFAULT_LANDING_HERO_BANNER;
   const wideImageUrl =
     site.images.ogImageUrl?.trim() || site.images.heroBackgroundUrl?.trim() || null;
-  const screenImageUrl =
-    site.images.ogImageUrl?.trim() ||
-    site.images.heroBackgroundUrl?.trim() ||
-    site.images.headerLogoUrl?.trim() ||
-    null;
+  const howItWorksImageUrl = site.images.howItWorksImageUrl?.trim() || null;
 
   const prices = await getLandingPackagePriceLabels();
   const { salons: directorySalons } = await listPublicSalons();
@@ -143,7 +139,10 @@ export default async function HomePage() {
         <LandingHowItWorks />
         <LandingWhyChoose siteName={site.copy.siteName} showcaseImageUrl={wideImageUrl} />
         <LandingFeaturesGrid />
-        <LandingAppShowcase siteName={site.copy.siteName} screenImageUrl={screenImageUrl} />
+        <LandingAppShowcase
+          siteName={site.copy.siteName}
+          howItWorksImageUrl={howItWorksImageUrl}
+        />
         <LandingSalonsSection salons={showcaseSalons} />
         <LandingPricing plans={pricingPlans} promoLine={promoDisplay} />
         <LandingTestimonials

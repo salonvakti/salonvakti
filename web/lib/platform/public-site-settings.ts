@@ -140,6 +140,12 @@ export function mergePublicSiteSettings(raw: unknown): ResolvedPublicSiteSetting
           : i.ogImageUrl === null
             ? null
             : DEFAULT_IMAGES.ogImageUrl,
+      howItWorksImageUrl:
+        typeof i.howItWorksImageUrl === "string" && i.howItWorksImageUrl.trim()
+          ? i.howItWorksImageUrl.trim()
+          : i.howItWorksImageUrl === null
+            ? null
+            : DEFAULT_IMAGES.howItWorksImageUrl,
     },
     integrations: {
       googleMapsUrl:

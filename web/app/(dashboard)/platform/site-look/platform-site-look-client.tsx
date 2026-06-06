@@ -461,19 +461,31 @@ export function PlatformSiteLookClient({ initial }: { initial: ResolvedPublicSit
             {activeSection === "showcase" ? (
               <div className="grid max-w-xl gap-5">
                 <p className="rounded-lg border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-                  Bu görsel ana sayfada <strong className="text-foreground">Neden biz?</strong> geniş
-                  alanında ve <strong className="text-foreground">Ekran görünümü</strong> bölümünde
-                  kullanılır. Yatay ekran görüntüsü veya tanıtım görseli önerilir.
+                  <strong className="text-foreground">Vitrin görseli</strong> ana sayfada{" "}
+                  <strong className="text-foreground">Neden biz?</strong> bölümünde kullanılır.{" "}
+                  <strong className="text-foreground">Sistem nasıl çalışır</strong> görseli ise
+                  ayrı bir alandır; panel ekran görüntüsü veya akış diyagramı önerilir.
                 </p>
                 <ImageUrlField
                   id="i-og"
                   label="Vitrin / Open Graph görseli"
-                  homeAnchor="Hakkında + Ekran bölümü"
+                  homeAnchor="Neden biz? · sağ görsel"
                   hint="Sosyal paylaşımda da kullanılır; kahraman görseli yoksa mockup yedek olur"
                   value={s.images.ogImageUrl}
                   disabled={pending}
                   onChange={(v) =>
                     setS((o) => ({ ...o, images: { ...o.images, ogImageUrl: v } }))
+                  }
+                />
+                <ImageUrlField
+                  id="i-how"
+                  label="Sistem nasıl çalışır görseli"
+                  homeAnchor="Sistem nasıl çalışır · sağ"
+                  hint="Ana sayfada akış anlatımının yanında gösterilir; yatay ekran görüntüsü önerilir"
+                  value={s.images.howItWorksImageUrl}
+                  disabled={pending}
+                  onChange={(v) =>
+                    setS((o) => ({ ...o, images: { ...o.images, howItWorksImageUrl: v } }))
                   }
                 />
                 <ImageUrlField

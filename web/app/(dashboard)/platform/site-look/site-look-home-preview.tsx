@@ -54,6 +54,7 @@ export function SiteLookHomePreview({ s, activeSection }: Props) {
     s.images.ogImageUrl?.trim() ||
     DEFAULT_LANDING_HERO_BANNER;
   const wideImg = s.images.ogImageUrl?.trim() || s.images.heroBackgroundUrl?.trim() || null;
+  const howImg = s.images.howItWorksImageUrl?.trim() || null;
 
   return (
     <div className="space-y-3">
@@ -102,7 +103,7 @@ export function SiteLookHomePreview({ s, activeSection }: Props) {
           </div>
         </Block>
 
-        <Block id="showcase" active={activeSection} label="Neden biz + Ekran">
+        <Block id="showcase" active={activeSection} label="Neden biz + Sistem">
           <div className="space-y-2 p-2">
             <div className="h-12 rounded bg-muted/60" />
             {wideImg ? (
@@ -110,7 +111,16 @@ export function SiteLookHomePreview({ s, activeSection }: Props) {
               <img src={wideImg} alt="" className="h-14 w-full rounded object-cover" />
             ) : (
               <div className="flex h-14 items-center justify-center rounded border border-dashed text-muted-foreground">
-                OG / vitrin görseli
+                Neden biz görseli
+              </div>
+            )}
+            <p className="text-[0.55rem] text-muted-foreground">Sistem nasıl çalışır</p>
+            {howImg ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={howImg} alt="" className="h-14 w-full rounded object-cover" />
+            ) : (
+              <div className="flex h-14 items-center justify-center rounded border border-dashed text-muted-foreground">
+                Sistem görseli
               </div>
             )}
           </div>
