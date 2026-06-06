@@ -10,6 +10,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BookingCompanionField } from "@/components/booking/BookingCompanionField";
+import type { AppointmentCompanionType } from "@/lib/booking/companion";
 import { cn } from "@/lib/utils";
 import type { ServiceSummary } from "@/types/service";
 
@@ -19,12 +21,14 @@ function BookingCheckoutInner({
   services,
   requiresBranch,
   branchOptions,
+  isRegisteredCustomer,
 }: {
   salonSlug: string;
   salonName: string;
   services: ServiceSummary[];
   requiresBranch: boolean;
   branchOptions: { id: string; name: string }[];
+  isRegisteredCustomer: boolean;
 }) {
   const router = useRouter();
   const params = useSearchParams();
@@ -42,6 +46,7 @@ function BookingCheckoutInner({
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [companion, setCompanion] = useState<AppointmentCompanionType | "">("");
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -72,6 +77,7 @@ function BookingCheckoutInner({
         dateStr,
         slotHHmm: slot,
         branchId: requiresBranch ? branchId : null,
+        companionType: isRegisteredCustomer && companion ? companion : null,
       });
 
       if (!result.ok || !result.appointmentId) {
@@ -157,6 +163,10 @@ function BookingCheckoutInner({
             <Input id="bk-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
 
+          {isRegisteredCustomer ? (
+            <BookingCompanionField value={companion} onChange={setCompanion} />
+          ) : null}
+
           {formError ? <p className="text-sm text-destructive">{formError}</p> : null}
 
           <div className="flex gap-3">
@@ -186,12 +196,14 @@ export function BookingCheckoutClient({
   services,
   requiresBranch,
   branchOptions,
+  isRegisteredCustomer,
 }: {
   salonSlug: string;
   salonName: string;
   services: ServiceSummary[];
   requiresBranch: boolean;
   branchOptions: { id: string; name: string }[];
+  isRegisteredCustomer: boolean;
 }) {
   return (
     <div className="flex min-h-screen flex-col">
@@ -203,6 +215,7 @@ export function BookingCheckoutClient({
           services={services}
           requiresBranch={requiresBranch}
           branchOptions={branchOptions}
+          isRegisteredCustomer={isRegisteredCustomer}
         />
       </Suspense>
       <SiteFooter />

@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { AppointmentCalendar } from "@/components/calendar/AppointmentCalendar";
 import { useSupabaseContext } from "@/components/providers/supabase-provider";
 import type { AppointmentSummary } from "@/types/appointment";
-import type { AppointmentStatus } from "@/lib/db-types";
+import {
+  APPOINTMENT_SUMMARY_SELECT,
+  mapAppointmentSummaryRow,
+} from "@/lib/appointments/map-summary";
 
 function sortAppointmentsByUpcoming(items: AppointmentSummary[]): AppointmentSummary[] {
   const now = Date.now();
@@ -78,9 +81,7 @@ export default function StaffMySchedulePage() {
 
       const { data, error: fetchError } = await client
         .from("appointments")
-        .select(
-          "id,tenant_id,staff_id,start_time,end_time,status,clients(name),services(name),staff(display_name),tenant_branches(name)"
-        )
+        .select(APPOINTMENT_SUMMARY_SELECT)
         .eq("tenant_id", profile.tenantId)
         .eq("staff_id", resolvedStaffId)
         .order("start_time", { ascending: true });
@@ -91,18 +92,9 @@ export default function StaffMySchedulePage() {
         setError(`Randevular yüklenemedi: ${fetchError.message}`);
         setAppointments([]);
       } else {
-        const mapped: AppointmentSummary[] = (data ?? []).map((item) => ({
-          id: item.id as string,
-          tenantId: item.tenant_id as string,
-          clientName: (item.clients as { name?: string } | null)?.name ?? "Müşteri",
-          serviceName: (item.services as { name?: string } | null)?.name ?? "Hizmet",
-          staffName: (item.staff as { display_name?: string } | null)?.display_name ?? null,
-          staffId: (item.staff_id as string | null) ?? null,
-          branchName: (item.tenant_branches as { name?: string } | null)?.name ?? null,
-          startTime: item.start_time as string,
-          endTime: item.end_time as string,
-          status: item.status as AppointmentStatus,
-        }));
+        const mapped: AppointmentSummary[] = (data ?? []).map((item) =>
+          mapAppointmentSummaryRow(item as Record<string, unknown>)
+        );
         setAppointments(sortAppointmentsByUpcoming(mapped));
       }
       setLoading(false);

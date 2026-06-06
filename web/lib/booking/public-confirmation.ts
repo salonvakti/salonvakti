@@ -1,5 +1,6 @@
 import "server-only";
 
+import { formatCompanionLabel, parseAppointmentCompanionType } from "@/lib/booking/companion";
 import type { AppointmentStatus } from "@/lib/db-types";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 
@@ -9,6 +10,7 @@ export type PublicAppointmentConfirmation = {
   startTime: string;
   endTime: string;
   status: AppointmentStatus;
+  companionLabel: string | null;
 };
 
 /**
@@ -23,7 +25,7 @@ export async function getPublicAppointmentConfirmation(
 
   const { data: appt, error: aErr } = await admin
     .from("appointments")
-    .select("tenant_id,staff_id,service_id,start_time,end_time,status")
+    .select("tenant_id,staff_id,service_id,start_time,end_time,status,companion_type")
     .eq("id", appointmentId)
     .maybeSingle();
 
@@ -50,11 +52,14 @@ export async function getPublicAppointmentConfirmation(
     staffName = (st?.display_name as string | undefined) ?? null;
   }
 
+  const companionType = parseAppointmentCompanionType(appt.companion_type as string | null);
+
   return {
     serviceName: (svcRow?.name as string | undefined) ?? "Hizmet",
     staffName,
     startTime: appt.start_time as string,
     endTime: appt.end_time as string,
     status: appt.status as AppointmentStatus,
+    companionLabel: formatCompanionLabel(companionType),
   };
 }

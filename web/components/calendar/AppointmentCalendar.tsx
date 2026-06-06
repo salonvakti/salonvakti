@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { formatCompanionLabel } from "@/lib/booking/companion";
 import type { AppointmentSummary } from "@/types/appointment";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,9 @@ export function AppointmentCalendar({
                     {a.serviceName}
                     {a.staffName ? ` · ${a.staffName}` : ""}
                     {a.branchName ? ` · ${a.branchName}` : ""}
+                    {formatCompanionLabel(a.companionType)
+                      ? ` · Misafir: ${formatCompanionLabel(a.companionType)}`
+                      : ""}
                   </p>
                 </div>
                 <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3 md:flex-col md:items-end lg:flex-row lg:items-center">

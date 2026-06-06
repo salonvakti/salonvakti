@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatCompanionLabel } from "@/lib/booking/companion";
 import type { AppointmentSummary } from "@/types/appointment";
 import type { AppointmentStatus } from "@/lib/db-types";
 import {
@@ -208,6 +209,7 @@ export function AdminAppointmentsClient({
           <TableHeader>
             <TableRow>
               <TableHead>Müşteri</TableHead>
+              <TableHead>Misafir</TableHead>
               <TableHead>Hizmet</TableHead>
               <TableHead>Personel</TableHead>
               <TableHead>Zaman</TableHead>
@@ -219,6 +221,9 @@ export function AdminAppointmentsClient({
             {visibleAppointments.map((a) => (
               <TableRow key={a.id}>
                 <TableCell className="font-medium">{a.clientName}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  {formatCompanionLabel(a.companionType) ?? "—"}
+                </TableCell>
                 <TableCell>{a.serviceName}</TableCell>
                 <TableCell>{a.staffName ?? "—"}</TableCell>
                 <TableCell>{new Date(a.startTime).toLocaleString("tr-TR")}</TableCell>

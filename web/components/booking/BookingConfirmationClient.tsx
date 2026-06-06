@@ -59,6 +59,12 @@ function BookingConfirmationInner({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-muted-foreground">
+            {serverConfirmation.companionLabel ? (
+              <p>
+                Yanınızda eşlik eden misafir:{" "}
+                <span className="font-medium text-foreground">{serverConfirmation.companionLabel}</span>
+              </p>
+            ) : null}
             <p>
               İşletme onayı veya iptalından sonra bilgilendirilirsiniz. Kayıtlı müşteri hesabınız varsa
               randevularınızı{" "}

@@ -38,6 +38,8 @@ export type AppointmentStatus =
   | "cancelled_by_client"
   | "completed";
 
+export type AppointmentCompanionType = "child" | "pet" | "friend";
+
 export interface AppointmentRow {
   id: string;
   tenant_id: string;
@@ -51,6 +53,8 @@ export interface AppointmentRow {
   status: AppointmentStatus;
   /** Rezervasyon oluşturulurken kopyalanan hizmet fiyatı (TRY); eski kayıtlarda null olabilir */
   price_snapshot: number | null;
+  /** Kayıtlı müşteri randevusunda yan misafir */
+  companion_type: AppointmentCompanionType | null;
   created_at: string;
 }
 

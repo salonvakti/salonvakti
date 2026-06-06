@@ -13,6 +13,8 @@ create type public.appointment_status as enum (
   'completed'
 );
 
+create type public.appointment_companion_type as enum ('child', 'pet', 'friend');
+
 create table public.tenants (
   id uuid primary key default gen_random_uuid (),
   name text not null,
@@ -106,6 +108,7 @@ create table public.appointments (
   end_time timestamptz not null,
   status public.appointment_status not null default 'pending',
   price_snapshot numeric(12, 2),
+  companion_type public.appointment_companion_type,
   created_at timestamptz not null default now (),
   check (end_time > start_time)
 );

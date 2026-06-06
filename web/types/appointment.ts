@@ -1,6 +1,6 @@
 /** Randevu – domain modeli */
 
-import type { AppointmentStatus } from "@/lib/db-types";
+import type { AppointmentCompanionType, AppointmentStatus } from "@/lib/db-types";
 
 export interface AppointmentSummary {
   id: string;
@@ -14,4 +14,6 @@ export interface AppointmentSummary {
   startTime: string;
   endTime: string;
   status: AppointmentStatus;
+  /** Yanında eşlik eden misafir (kayıtlı müşteri randevuları) */
+  companionType: AppointmentCompanionType | null;
 }

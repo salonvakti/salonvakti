@@ -3,30 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { getSessionProfile } from "@/lib/auth/session";
 import { isBusinessRole } from "@/lib/constants/roles";
+import {
+  APPOINTMENT_SUMMARY_SELECT,
+  mapAppointmentSummaryRow,
+} from "@/lib/appointments/map-summary";
 import type { AppointmentSummary } from "@/types/appointment";
 import type { AppointmentStatus } from "@/lib/db-types";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-const appointmentSelect =
-  "id,tenant_id,staff_id,branch_id,start_time,end_time,status,clients(name),services(name),staff(display_name),tenant_branches(name)";
-
 function mapAppointmentRows(data: unknown[] | null): AppointmentSummary[] {
-  return (data ?? []).map((item) => {
-    const row = item as Record<string, unknown>;
-    return {
-      id: row.id as string,
-      tenantId: row.tenant_id as string,
-      clientName: (row.clients as { name?: string } | null)?.name ?? "Müşteri",
-      serviceName: (row.services as { name?: string } | null)?.name ?? "Hizmet",
-      staffName: (row.staff as { display_name?: string } | null)?.display_name ?? null,
-      staffId: (row.staff_id as string | null) ?? null,
-      branchName: (row.tenant_branches as { name?: string } | null)?.name ?? null,
-      startTime: row.start_time as string,
-      endTime: row.end_time as string,
-      status: row.status as AppointmentStatus,
-    };
-  });
+  return (data ?? []).map((item) => mapAppointmentSummaryRow(item as Record<string, unknown>));
 }
 
 /** İşletme paneli: tarayıcıdaki anon/RLS sorgusu boş dönse bile liste sunucudan gelir. */
@@ -66,7 +53,7 @@ export async function listAppointmentsForTenantAdminAction(): Promise<{
   const [apRes, stRes] = await Promise.all([
     admin
       .from("appointments")
-      .select(appointmentSelect)
+      .select(APPOINTMENT_SUMMARY_SELECT)
       .eq("tenant_id", tenantId)
       .order("start_time", { ascending: true }),
     admin

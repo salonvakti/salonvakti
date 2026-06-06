@@ -5,6 +5,7 @@ import { getSessionProfile } from "@/lib/auth/session";
 import { isCustomerRole } from "@/lib/constants/roles";
 import { hasStaffBookingConflict, listAvailableBookingSlots } from "@/lib/booking/availability";
 import { assertBranchAndStaffForBooking, loadActiveBranchIdsForTenant } from "@/lib/booking/branch-booking-guards";
+import { parseAppointmentCompanionType } from "@/lib/booking/companion";
 import { validateBookingWallSlot } from "@/lib/booking/slot-validation";
 import type { TenantRow } from "@/lib/db-types";
 import { normalizePhoneDigits } from "@/lib/phone/normalize";
@@ -90,6 +91,8 @@ export async function createPublicBookingAction(input: {
   dateStr: string;
   slotHHmm: string;
   branchId?: string | null;
+  /** Yalnızca kayıtlı müşteri (customer) oturumunda */
+  companionType?: string | null;
 }): Promise<{ ok: boolean; appointmentId: string | null; error: string | null }> {
   const slug = normalizeTenantSlug(input.salonSlug);
   if (!slug) {
@@ -261,6 +264,13 @@ export async function createPublicBookingAction(input: {
     clientId = inserted.id as string;
   }
 
+  const isRegisteredCustomer = Boolean(
+    user?.id && sessionProfile && isCustomerRole(sessionProfile.role)
+  );
+  const companionType = isRegisteredCustomer
+    ? parseAppointmentCompanionType(input.companionType)
+    : null;
+
   const { data: appointment, error: apErr } = await admin
     .from("appointments")
     .insert({
@@ -273,6 +283,7 @@ export async function createPublicBookingAction(input: {
       end_time: end.toISOString(),
       status: "pending",
       price_snapshot: service.price,
+      companion_type: companionType,
     })
     .select("id")
     .single();
