@@ -38,6 +38,10 @@ export type GoogleMapsReview = {
   profilePhotoUrl: string | null;
 };
 
+export type PublicSiteLegalSettings = {
+  kvkkText?: string;
+};
+
 export type PublicSiteIntegrationsSettings = {
   googleMapsUrl?: string | null;
   googleMapsPlaceId?: string | null;
@@ -51,6 +55,7 @@ export type PublicSiteSettingsPayload = {
   theme?: PublicSiteThemeSettings;
   copy?: PublicSiteCopySettings;
   images?: PublicSiteImageSettings;
+  legal?: PublicSiteLegalSettings;
   integrations?: PublicSiteIntegrationsSettings;
 };
 
@@ -58,5 +63,6 @@ export type ResolvedPublicSiteSettings = {
   theme: Required<PublicSiteThemeSettings>;
   copy: Required<PublicSiteCopySettings>;
   images: Required<PublicSiteImageSettings>;
+  legal: Required<PublicSiteLegalSettings>;
   integrations: Required<PublicSiteIntegrationsSettings>;
 };

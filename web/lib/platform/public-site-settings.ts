@@ -6,12 +6,14 @@ import {
   PUBLIC_SITE_DEFAULT_COPY,
   PUBLIC_SITE_DEFAULT_IMAGES,
   PUBLIC_SITE_DEFAULT_INTEGRATIONS,
+  PUBLIC_SITE_DEFAULT_LEGAL,
   PUBLIC_SITE_DEFAULT_THEME,
 } from "@/lib/platform/public-site-defaults";
 import type {
   GoogleMapsReview,
   PublicSiteCopySettings,
   PublicSiteImageSettings,
+  PublicSiteLegalSettings,
   PublicSiteIntegrationsSettings,
   PublicSiteSettingsPayload,
   PublicSiteThemeSettings,
@@ -29,6 +31,7 @@ export type {
 const DEFAULT_THEME = PUBLIC_SITE_DEFAULT_THEME;
 const DEFAULT_COPY = PUBLIC_SITE_DEFAULT_COPY;
 const DEFAULT_IMAGES = PUBLIC_SITE_DEFAULT_IMAGES;
+const DEFAULT_LEGAL = PUBLIC_SITE_DEFAULT_LEGAL;
 const DEFAULT_INTEGRATIONS = PUBLIC_SITE_DEFAULT_INTEGRATIONS;
 
 function isRecord(v: unknown): v is Record<string, unknown> {
@@ -40,10 +43,11 @@ function parsePayload(raw: unknown): PublicSiteSettingsPayload {
   const theme = isRecord(raw.theme) ? (raw.theme as PublicSiteThemeSettings) : undefined;
   const copy = isRecord(raw.copy) ? (raw.copy as PublicSiteCopySettings) : undefined;
   const images = isRecord(raw.images) ? (raw.images as PublicSiteImageSettings) : undefined;
+  const legal = isRecord(raw.legal) ? (raw.legal as PublicSiteLegalSettings) : undefined;
   const integrations = isRecord(raw.integrations)
     ? (raw.integrations as PublicSiteIntegrationsSettings)
     : undefined;
-  return { theme, copy, images, integrations };
+  return { theme, copy, images, legal, integrations };
 }
 
 function parseGoogleReviews(raw: unknown): GoogleMapsReview[] {
@@ -78,6 +82,7 @@ export function mergePublicSiteSettings(raw: unknown): ResolvedPublicSiteSetting
   const t = p.theme ?? {};
   const c = p.copy ?? {};
   const i = p.images ?? {};
+  const l = p.legal ?? {};
   const g = p.integrations ?? {};
   return {
     theme: {
@@ -152,6 +157,10 @@ export function mergePublicSiteSettings(raw: unknown): ResolvedPublicSiteSetting
           : i.howItWorksImageUrl === null
             ? null
             : DEFAULT_IMAGES.howItWorksImageUrl,
+    },
+    legal: {
+      kvkkText:
+        typeof l.kvkkText === "string" && l.kvkkText.trim() ? l.kvkkText.trim() : DEFAULT_LEGAL.kvkkText,
     },
     integrations: {
       googleMapsUrl:

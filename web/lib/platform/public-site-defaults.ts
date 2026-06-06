@@ -1,4 +1,5 @@
 import type { ResolvedPublicSiteSettings } from "@/types/public-site";
+import { DEFAULT_KVKK_TEXT } from "@/lib/platform/kvkk-default-text";
 
 export const PUBLIC_SITE_DEFAULT_THEME: ResolvedPublicSiteSettings["theme"] = {
   primary: "oklch(0.74 0.16 55)",
@@ -27,6 +28,10 @@ export const PUBLIC_SITE_DEFAULT_IMAGES: ResolvedPublicSiteSettings["images"] = 
   heroBackgroundUrl: null,
   ogImageUrl: null,
   howItWorksImageUrl: null,
+};
+
+export const PUBLIC_SITE_DEFAULT_LEGAL: ResolvedPublicSiteSettings["legal"] = {
+  kvkkText: DEFAULT_KVKK_TEXT,
 };
 
 export const PUBLIC_SITE_DEFAULT_INTEGRATIONS: ResolvedPublicSiteSettings["integrations"] = {

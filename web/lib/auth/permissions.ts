@@ -107,6 +107,11 @@ export const dashboardNav = {
       label: "Medya kütüphanesi",
       roles: ["platform_admin", "platform_user"] as UserRole[],
     },
+    {
+      href: "/platform/legal",
+      label: "KVKK metni",
+      roles: ["platform_admin", "platform_user"] as UserRole[],
+    },
   ],
   businessAdmin: [
     { href: "/admin/dashboard", label: "Özet", roles: ["business_admin"] as UserRole[] },

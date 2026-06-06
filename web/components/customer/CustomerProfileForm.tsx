@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { saveCustomerProfileAction } from "@/app/(dashboard)/client/profile-actions";
 import { Button } from "@/components/ui/button";
@@ -200,7 +201,29 @@ export function CustomerProfileForm({ initial, showLinkedSalons = false, onSaved
               required
             />
             <span className="text-sm leading-relaxed">
-              <strong>KVKK Aydınlatma Metni Onayı</strong> — Kişisel verilerin işlenmesi için (zorunlu).
+              <strong>KVKK Aydınlatma Metni Onayı</strong> —{" "}
+              <Link
+                href="/kvkk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-primary underline-offset-2 hover:underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Aydınlatma Metni
+              </Link>
+              &apos;ni ve{" "}
+              <Link
+                href="/kvkk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-primary underline-offset-2 hover:underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Açık Rıza Metni
+              </Link>
+              &apos;ni okudum ve anladım. Kişisel verilerimin ve özel nitelikli kişisel verilerimin (sağlık,
+              cilt tipi vb.) metinde belirtilen amaçlar ve altyapı sağlayıcılar ile paylaşılmasına açık rıza
+              veriyorum <span className="text-muted-foreground">(zorunlu)</span>.
             </span>
           </label>
           <label className="flex cursor-pointer items-start gap-3 rounded-lg border p-3">
@@ -212,8 +235,17 @@ export function CustomerProfileForm({ initial, showLinkedSalons = false, onSaved
               disabled={pending}
             />
             <span className="text-sm leading-relaxed">
-              <strong>Ticari Elektronik İleti Onayı (İYS)</strong> — SMS, WhatsApp ve e-posta üzerinden kampanya
-              mesajları almak istiyorum.
+              <strong>Ticari Elektronik İleti Onayı (İYS)</strong> —{" "}
+              <Link
+                href="/kvkk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-primary underline-offset-2 hover:underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                KVKK metninde
+              </Link>{" "}
+              belirtilen kapsamda; SMS, WhatsApp ve e-posta üzerinden kampanya mesajları almak istiyorum.
             </span>
           </label>
           <label className="flex cursor-pointer items-start gap-3 rounded-lg border p-3">
@@ -225,7 +257,16 @@ export function CustomerProfileForm({ initial, showLinkedSalons = false, onSaved
               disabled={pending}
             />
             <span className="text-sm leading-relaxed">
-              <strong>Hizmet öncesi onay formları</strong> — Özellikle güzellik merkezleri için işlem risklerini
+              <strong>Hizmet öncesi onay formları</strong> — Özellikle güzellik merkezleri için{" "}
+              <Link
+                href="/kvkk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-primary underline-offset-2 hover:underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                işlem risklerini
+              </Link>{" "}
               okudum ve anladım.
             </span>
           </label>
