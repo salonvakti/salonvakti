@@ -164,6 +164,9 @@ export async function savePlatformSiteSettingsAction(
   const logo = cleanUrl(full.images.headerLogoUrl ?? undefined);
   if (logo) nextImages.headerLogoUrl = logo;
   else delete nextImages.headerLogoUrl;
+  const mobileLogo = cleanUrl(full.images.headerMobileLogoUrl ?? undefined);
+  if (mobileLogo) nextImages.headerMobileLogoUrl = mobileLogo;
+  else delete nextImages.headerMobileLogoUrl;
   const icon = cleanUrl(full.images.headerIconUrl ?? undefined);
   if (icon) nextImages.headerIconUrl = icon;
   else delete nextImages.headerIconUrl;

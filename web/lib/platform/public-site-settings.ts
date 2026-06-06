@@ -122,6 +122,12 @@ export function mergePublicSiteSettings(raw: unknown): ResolvedPublicSiteSetting
           : i.headerLogoUrl === null
             ? null
             : DEFAULT_IMAGES.headerLogoUrl,
+      headerMobileLogoUrl:
+        typeof i.headerMobileLogoUrl === "string" && i.headerMobileLogoUrl.trim()
+          ? i.headerMobileLogoUrl.trim()
+          : i.headerMobileLogoUrl === null
+            ? null
+            : DEFAULT_IMAGES.headerMobileLogoUrl,
       headerIconUrl:
         typeof i.headerIconUrl === "string" && i.headerIconUrl.trim()
           ? i.headerIconUrl.trim()

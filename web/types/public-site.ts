@@ -20,6 +20,8 @@ export type PublicSiteCopySettings = {
 
 export type PublicSiteImageSettings = {
   headerLogoUrl?: string | null;
+  /** Mobil header için kompakt logo; yoksa geniş logo kullanılır */
+  headerMobileLogoUrl?: string | null;
   headerIconUrl?: string | null;
   heroBackgroundUrl?: string | null;
   ogImageUrl?: string | null;

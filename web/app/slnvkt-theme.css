@@ -125,14 +125,38 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  max-width: 100%;
   border-radius: 0.75rem;
   background: rgb(255 255 255 / 0.97);
-  padding: 0.4rem 0.85rem;
+  padding: 0.35rem 0.65rem;
   box-shadow: 0 2px 14px rgb(0 0 0 / 0.18);
+}
+
+@media (min-width: 768px) {
+  .slnvkt-app .slnvkt-logo-wrap {
+    padding: 0.4rem 0.85rem;
+  }
 }
 
 .slnvkt-app .slnvkt-logo-img {
   display: block;
+  flex-shrink: 0;
+}
+
+.slnvkt-app .slnvkt-logo-img--mobile {
+  height: 2rem;
+  width: auto;
+  max-width: 6.5rem;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.slnvkt-app .slnvkt-logo-img--desktop {
+  height: 2.25rem;
+  width: auto;
+  max-width: 12.5rem;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .slnvkt-app .slnvkt-logo-icon {

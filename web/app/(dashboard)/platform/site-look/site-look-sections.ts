@@ -19,7 +19,7 @@ export const SITE_LOOK_SECTIONS = [
     label: "Header",
     icon: Menu,
     homeBlock: "Üst menü",
-    description: "Site adı ve logo; tüm sayfalarda yapışkan header.",
+    description: "Site adı, masaüstü ve mobil logo; tüm sayfalarda yapışkan header.",
   },
   {
     id: "hero",

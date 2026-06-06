@@ -75,7 +75,16 @@ export function SiteLookHomePreview({ s, activeSection }: Props) {
             className="flex items-center justify-between rounded-t-md px-2 py-1.5"
             style={{ background: primary, color: primaryFg }}
           >
-            <span className="truncate font-semibold">{s.copy.siteName || "Site"}</span>
+            {s.images.headerLogoUrl || s.images.headerMobileLogoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={s.images.headerMobileLogoUrl?.trim() || s.images.headerLogoUrl || ""}
+                alt=""
+                className="max-h-5 max-w-[4.5rem] rounded bg-white/95 object-contain px-1"
+              />
+            ) : (
+              <span className="truncate font-semibold">{s.copy.siteName || "Site"}</span>
+            )}
             <span className="opacity-70">Menü</span>
           </div>
         </Block>

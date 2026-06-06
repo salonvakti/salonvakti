@@ -37,15 +37,26 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:py-5">
-        <Link href="/" className="slnvkt-logo-link flex min-w-0 items-center gap-2 font-semibold tracking-tight">
-          <span className="slnvkt-logo-wrap">
+        <Link
+          href="/"
+          className="slnvkt-logo-link flex min-w-0 max-w-[42%] shrink items-center gap-2 font-semibold tracking-tight sm:max-w-none"
+        >
+          <span className="slnvkt-logo-wrap min-w-0">
             {s.images.headerLogoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={s.images.headerLogoUrl}
-                alt={s.copy.siteName}
-                className="slnvkt-logo-img h-9 w-auto max-w-[200px] object-contain object-left"
-              />
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={s.images.headerMobileLogoUrl?.trim() || s.images.headerLogoUrl}
+                  alt={s.copy.siteName}
+                  className="slnvkt-logo-img slnvkt-logo-img--mobile md:hidden"
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={s.images.headerLogoUrl}
+                  alt={s.copy.siteName}
+                  className="slnvkt-logo-img slnvkt-logo-img--desktop hidden md:block"
+                />
+              </>
             ) : (
               <>
                 {s.images.headerIconUrl ? (

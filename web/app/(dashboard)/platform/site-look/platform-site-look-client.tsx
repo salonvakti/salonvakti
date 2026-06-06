@@ -365,13 +365,24 @@ export function PlatformSiteLookClient({ initial }: { initial: ResolvedPublicSit
                 </Field>
                 <ImageUrlField
                   id="i-logo"
-                  label="Geniş logo"
-                  homeAnchor="Header"
-                  hint="Varsa site adı metni gizlenir"
+                  label="Geniş logo (masaüstü)"
+                  homeAnchor="Header · md ve üzeri"
+                  hint="Varsa site adı metni gizlenir; yatay logo önerilir"
                   value={s.images.headerLogoUrl}
                   disabled={pending}
                   onChange={(v) =>
                     setS((o) => ({ ...o, images: { ...o.images, headerLogoUrl: v } }))
+                  }
+                />
+                <ImageUrlField
+                  id="i-logo-mobile"
+                  label="Mobil logo"
+                  homeAnchor="Header · mobil"
+                  hint="Kompakt kare veya kısa logo; kaymayı önler. Boşsa geniş logo kullanılır"
+                  value={s.images.headerMobileLogoUrl}
+                  disabled={pending}
+                  onChange={(v) =>
+                    setS((o) => ({ ...o, images: { ...o.images, headerMobileLogoUrl: v } }))
                   }
                 />
                 <ImageUrlField

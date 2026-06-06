@@ -22,6 +22,7 @@ export const PUBLIC_SITE_DEFAULT_COPY: ResolvedPublicSiteSettings["copy"] = {
 
 export const PUBLIC_SITE_DEFAULT_IMAGES: ResolvedPublicSiteSettings["images"] = {
   headerLogoUrl: null,
+  headerMobileLogoUrl: null,
   headerIconUrl: null,
   heroBackgroundUrl: null,
   ogImageUrl: null,
