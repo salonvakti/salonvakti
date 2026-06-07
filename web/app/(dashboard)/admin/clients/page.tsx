@@ -410,11 +410,9 @@ export default function AdminClientsPage() {
                         {c.name}
                       </Link>
                       {c.user_id ? (
-                        <UserCheck
-                          className="size-3.5 shrink-0 text-muted-foreground"
-                          title="Hesap bağlı"
-                          aria-label="Hesap bağlı"
-                        />
+                        <span title="Hesap bağlı" aria-label="Hesap bağlı">
+                          <UserCheck className="size-3.5 shrink-0 text-muted-foreground" />
+                        </span>
                       ) : null}
                     </div>
                   </TableCell>
