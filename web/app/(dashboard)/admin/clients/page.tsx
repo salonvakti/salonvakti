@@ -14,8 +14,15 @@ import { useSupabaseContext } from "@/components/providers/supabase-provider";
 import { hasBooleanFeature } from "@/lib/features";
 import { buildWhatsAppChatUrl } from "@/lib/whatsapp/whatsapp-chat-url";
 import type { ResolvedTenantFeatures } from "@/types/features";
-import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  CheckCircle2,
+  Link2,
+  Loader2,
+  MessageSquare,
+  ShieldCheck,
+  UserCheck,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -233,10 +240,19 @@ export default function AdminClientsPage() {
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Müşteriler</h1>
-          <p className="text-muted-foreground">
-            İşletme onaylı (yeşil), telefon onaylı (sarı), yalnızca platform kaydı (turuncu). Hesap bağlamak için
-            davet bağlantısı gönderin — daha önce randevu alan kayıtlar da listede yer alır.
+          <p className="text-sm text-muted-foreground">
+            En son randevuya göre sıralanır. İkonlarla SMS, WhatsApp, davet ve onay işlemleri.
           </p>
+          <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
+            {(Object.entries(clientTierMeta) as [keyof typeof clientTierMeta, (typeof clientTierMeta)[keyof typeof clientTierMeta]][]).map(
+              ([, meta]) => (
+                <span key={meta.label} className="inline-flex items-center gap-1.5">
+                  <span className={cn("size-2 rounded-full", meta.dotClass)} />
+                  {meta.label}
+                </span>
+              )
+            )}
+          </div>
         </div>
         <div className="flex w-full flex-col gap-2 md:w-auto">
           <Input
@@ -311,17 +327,18 @@ export default function AdminClientsPage() {
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       {loading ? <p className="text-sm text-muted-foreground">Yükleniyor...</p> : null}
 
-      <div className="rounded-md border">
-        <Table>
+      {copiedId && copiedId !== "__new__" ? (
+        <p className="text-sm text-emerald-700">Davet bağlantısı panoya kopyalandı.</p>
+      ) : null}
+
+      <div className="overflow-x-auto rounded-md border">
+        <Table className="min-w-[640px]">
           <TableHeader>
             <TableRow>
-              <TableHead>Durum</TableHead>
-              <TableHead>İsim</TableHead>
-              <TableHead>Telefon</TableHead>
-              <TableHead>E-posta</TableHead>
-              <TableHead>Hesap</TableHead>
-              <TableHead>Davet</TableHead>
-              <TableHead className="text-right">İşlem</TableHead>
+              <TableHead className="w-8" />
+              <TableHead>Müşteri</TableHead>
+              <TableHead>İletişim</TableHead>
+              <TableHead className="w-[148px] text-right">İşlemler</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -332,88 +349,118 @@ export default function AdminClientsPage() {
                 c.invite_token &&
                 c.invite_expires_at &&
                 new Date(c.invite_expires_at).getTime() > Date.now();
+              const isBusy = busyId === c.id;
+              const whatsappUrl = buildWhatsAppChatUrl(c.phone);
+
               return (
                 <TableRow key={c.id} className={cn(meta.rowClass)}>
+                  <TableCell className="w-8 pr-0">
+                    <span
+                      className={cn("inline-block size-2.5 rounded-full", meta.dotClass)}
+                      title={meta.label}
+                    />
+                  </TableCell>
                   <TableCell>
-                    <Badge className={meta.badgeClass}>{meta.label}</Badge>
+                    <div className="flex min-w-0 items-center gap-2">
+                      <Link
+                        href={`/admin/clients/${c.id}`}
+                        className="truncate font-medium text-primary underline-offset-2 hover:underline"
+                      >
+                        {c.name}
+                      </Link>
+                      {c.user_id ? (
+                        <UserCheck
+                          className="size-3.5 shrink-0 text-muted-foreground"
+                          title="Hesap bağlı"
+                          aria-label="Hesap bağlı"
+                        />
+                      ) : null}
+                    </div>
                   </TableCell>
-                  <TableCell className="font-medium">
-                    <Link
-                      href={`/admin/clients/${c.id}`}
-                      className="text-primary underline-offset-2 hover:underline"
-                    >
-                      {c.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{c.phone ?? "—"}</TableCell>
-                  <TableCell>{c.email ?? "—"}</TableCell>
                   <TableCell>
-                    {c.user_id ? (
-                      <span className="text-xs text-muted-foreground">Bağlı</span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">Yok</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="max-w-[140px] text-xs text-muted-foreground">
-                    {!c.user_id ? (
-                      copiedId === c.id ? (
-                        <span className="text-emerald-700">Panoya kopyalandı</span>
-                      ) : inviteActive ? (
-                        <span>Süre dolmadan yenileyebilirsiniz</span>
-                      ) : (
-                        <span>—</span>
-                      )
-                    ) : (
-                      <span>—</span>
-                    )}
+                    <div className="min-w-0 space-y-0.5 text-sm">
+                      <p className="truncate tabular-nums">{c.phone ?? "—"}</p>
+                      {c.email ? (
+                        <p className="truncate text-xs text-muted-foreground">{c.email}</p>
+                      ) : null}
+                    </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex flex-wrap justify-end gap-2">
+                    <div className="inline-flex items-center justify-end gap-0.5">
                       {c.phone ? (
-                        <>
-                          <Link
-                            href={`/admin/sms?phone=${encodeURIComponent(c.phone)}`}
-                            className={buttonVariants({ size: "sm", variant: "outline" })}
-                          >
-                            SMS gönder
-                          </Link>
-                          {whatsappEnabled && buildWhatsAppChatUrl(c.phone) ? (
-                            <a
-                              href={buildWhatsAppChatUrl(c.phone)!}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              title="WhatsApp ile yaz"
-                              aria-label={`${c.name} ile WhatsApp`}
-                              className={cn(
-                                buttonVariants({ size: "sm", variant: "outline" }),
-                                "px-2 text-[#25D366] hover:bg-[#25D366]/10 border-[#25D366]/40"
-                              )}
-                            >
-                              <WhatsAppIcon className="size-4" />
-                            </a>
-                          ) : null}
-                        </>
+                        <Link
+                          href={`/admin/sms?phone=${encodeURIComponent(c.phone)}`}
+                          title="SMS gönder"
+                          aria-label={`${c.name} — SMS gönder`}
+                          className={buttonVariants({ size: "icon-sm", variant: "ghost" })}
+                        >
+                          <MessageSquare className="size-3.5" />
+                        </Link>
+                      ) : null}
+                      {whatsappEnabled && whatsappUrl ? (
+                        <a
+                          href={whatsappUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="WhatsApp ile yaz"
+                          aria-label={`${c.name} ile WhatsApp`}
+                          className={cn(
+                            buttonVariants({ size: "icon-sm", variant: "ghost" }),
+                            "text-[#25D366] hover:bg-[#25D366]/10 hover:text-[#25D366]"
+                          )}
+                        >
+                          <WhatsAppIcon className="size-3.5" />
+                        </a>
                       ) : null}
                       {!c.user_id ? (
                         <Button
-                          size="sm"
-                          variant="secondary"
-                          disabled={busyId === c.id}
+                          type="button"
+                          size="icon-sm"
+                          variant="ghost"
+                          disabled={isBusy}
+                          title={
+                            copiedId === c.id
+                              ? "Panoya kopyalandı"
+                              : inviteActive
+                                ? "Davet bağlantısı kopyala (aktif davet var)"
+                                : "Davet bağlantısı kopyala"
+                          }
+                          aria-label={`${c.name} — davet bağlantısı`}
+                          className={cn(
+                            copiedId === c.id && "text-emerald-600",
+                            inviteActive && copiedId !== c.id && "text-primary"
+                          )}
                           onClick={() => void copyInviteForRow(c.id)}
                         >
-                          {busyId === c.id ? "…" : "Davet bağlantısı"}
+                          {isBusy ? (
+                            <Loader2 className="size-3.5 animate-spin" />
+                          ) : (
+                            <Link2 className="size-3.5" />
+                          )}
                         </Button>
                       ) : null}
                       {c.business_approved_at ? (
-                        <span className="text-xs text-muted-foreground">Onaylı</span>
+                        <span
+                          className="inline-flex size-7 items-center justify-center text-green-600"
+                          title="İşletme onaylı"
+                        >
+                          <CheckCircle2 className="size-3.5" />
+                        </span>
                       ) : (
                         <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={busyId === c.id}
+                          type="button"
+                          size="icon-sm"
+                          variant="ghost"
+                          disabled={isBusy}
+                          title="İşletme onayı ver"
+                          aria-label={`${c.name} — işletme onayı`}
                           onClick={() => void approveBusiness(c.id)}
                         >
-                          {busyId === c.id ? "…" : "İşletme onayı"}
+                          {isBusy ? (
+                            <Loader2 className="size-3.5 animate-spin" />
+                          ) : (
+                            <ShieldCheck className="size-3.5" />
+                          )}
                         </Button>
                       )}
                     </div>
@@ -423,7 +470,7 @@ export default function AdminClientsPage() {
             })}
             {!loading && filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-sm text-muted-foreground">
+                <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">
                   Müşteri yok veya arama sonucu boş.
                 </TableCell>
               </TableRow>
