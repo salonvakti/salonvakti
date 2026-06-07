@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSupabaseContext } from "@/components/providers/supabase-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import {
   pickPublicPromo,
 } from "@/lib/public/tenant-public-fields";
 import { BranchesSettingsSection } from "@/components/admin/BranchesSettingsSection";
+import { GoogleCalendarSettingsSection } from "@/components/admin/GoogleCalendarSettingsSection";
 import { SmsSettingsSection } from "@/components/admin/SmsSettingsSection";
 
 export default function AdminSettingsPage() {
@@ -214,6 +215,10 @@ export default function AdminSettingsPage() {
       <BranchesSettingsSection />
 
       <SmsSettingsSection />
+
+      <Suspense fallback={null}>
+        <GoogleCalendarSettingsSection />
+      </Suspense>
 
       <Card>
         <CardHeader>

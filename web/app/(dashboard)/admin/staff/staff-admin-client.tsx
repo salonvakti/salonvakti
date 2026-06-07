@@ -2,7 +2,15 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { createStaffMemberAction, listStaffForAdminAction, updateStaffBranchAction } from "./actions";
+import {
+  createStaffMemberAction,
+  listStaffForAdminAction,
+  updateStaffBranchAction,
+  updateStaffGoogleCalendarEmailAction,
+} from "./actions";
+import { getBusinessTenantFeaturesAction } from "@/app/(dashboard)/admin/settings/features-actions";
+import { hasGoogleCalendarPackage } from "@/lib/google/calendar-settings";
+import type { ResolvedTenantFeatures } from "@/types/features";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,11 +45,26 @@ export function StaffAdminClient({
   const [password, setPassword] = useState("");
   const [newStaffBranchId, setNewStaffBranchId] = useState<string>("");
   const [pending, startTransition] = useTransition();
+  const [features, setFeatures] = useState<ResolvedTenantFeatures | null>(null);
+  const [calendarEmails, setCalendarEmails] = useState<Record<string, string>>({});
 
   useEffect(() => {
     setRows(initialRows);
     setError(initialListError);
+    setCalendarEmails(
+      Object.fromEntries(
+        initialRows.map((r) => [r.id, r.google_calendar_email ?? ""])
+      )
+    );
   }, [initialRows, initialListError]);
+
+  useEffect(() => {
+    void getBusinessTenantFeaturesAction().then((res) => {
+      if (!res.error) setFeatures(res.features);
+    });
+  }, []);
+
+  const calendarEnabled = features ? hasGoogleCalendarPackage(features) : false;
 
   function submitCreate() {
     startTransition(async () => {
@@ -200,6 +223,7 @@ export function StaffAdminClient({
               <TableHead>Rol</TableHead>
               <TableHead>Hesap</TableHead>
               <TableHead>Takvim</TableHead>
+              {calendarEnabled ? <TableHead>Google Takvim e-postası</TableHead> : null}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -255,11 +279,51 @@ export function StaffAdminClient({
                     style={{ backgroundColor: r.color ?? "#ccc" }}
                   />
                 </TableCell>
+                {calendarEnabled ? (
+                  <TableCell>
+                    <div className="flex min-w-[220px] items-center gap-2">
+                      <Input
+                        type="email"
+                        value={calendarEmails[r.id] ?? ""}
+                        onChange={(e) =>
+                          setCalendarEmails((prev) => ({ ...prev, [r.id]: e.target.value }))
+                        }
+                        placeholder="personel@gmail.com"
+                        disabled={pending}
+                        className="h-8"
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={pending}
+                        onClick={() => {
+                          startTransition(async () => {
+                            const res = await updateStaffGoogleCalendarEmailAction({
+                              staffId: r.id,
+                              googleCalendarEmail: calendarEmails[r.id]?.trim() || null,
+                            });
+                            if (!res.ok && res.error) {
+                              window.alert(res.error);
+                              return;
+                            }
+                            router.refresh();
+                          });
+                        }}
+                      >
+                        Kaydet
+                      </Button>
+                    </div>
+                  </TableCell>
+                ) : null}
               </TableRow>
             ))}
             {rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
+                <TableCell
+                  colSpan={calendarEnabled ? 6 : 5}
+                  className="text-center text-sm text-muted-foreground"
+                >
                   Henüz personel yok.
                 </TableCell>
               </TableRow>

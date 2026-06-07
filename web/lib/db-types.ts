@@ -55,6 +55,8 @@ export interface AppointmentRow {
   price_snapshot: number | null;
   /** Kayıtlı müşteri randevusunda yan misafir */
   companion_type: AppointmentCompanionType | null;
+  /** Google Calendar etkinlik kimliği (Pro/Ultimate senkronizasyonu) */
+  google_calendar_event_id: string | null;
   created_at: string;
 }
 
@@ -146,6 +148,8 @@ export interface StaffRow {
   /** İşletme içi görünüm rolü (Supabase Auth rolünden bağımsız etiket) */
   team_role: string | null;
   color: string | null;
+  /** Google Takvim davetleri için e-posta (Pro/Ultimate) */
+  google_calendar_email: string | null;
 }
 
 /** Ana sayfa Basic / Pro / Ultimate fiyat satırı */

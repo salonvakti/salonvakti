@@ -9,6 +9,7 @@ import {
 } from "@/lib/appointments/map-summary";
 import type { AppointmentSummary } from "@/types/appointment";
 import type { AppointmentStatus } from "@/lib/db-types";
+import { syncConfirmedAppointmentToGoogleCalendar } from "@/lib/google/calendar-sync";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -129,6 +130,17 @@ export async function updateAppointmentStatusAdminAction(input: {
       error:
         "Bu randevu güncellenemedi. Yalnızca «beklemede» durumundaki talepler onaylanabilir veya reddedilebilir.",
     };
+  }
+
+  if (input.status === "confirmed") {
+    const sync = await syncConfirmedAppointmentToGoogleCalendar({
+      admin,
+      tenantId: profile.tenantId,
+      appointmentId: input.appointmentId,
+    });
+    if (!sync.ok && !sync.skipped) {
+      console.error("[google-calendar] sync failed:", sync.error);
+    }
   }
 
   revalidatePath("/admin/appointments");

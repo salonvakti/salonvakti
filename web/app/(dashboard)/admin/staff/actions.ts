@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { createStaffMemberWithAuthUser } from "@/lib/business/staff-members";
 import { getSessionProfile } from "@/lib/auth/session";
+import { loadTenantFeaturesById } from "@/lib/features";
+import { hasGoogleCalendarPackage } from "@/lib/google/calendar-settings";
 import type { StaffRow } from "@/lib/db-types";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -39,7 +41,7 @@ export async function listStaffForAdminAction(): Promise<{
 
   const { data, error } = await admin
     .from("staff")
-    .select("id,tenant_id,branch_id,user_id,display_name,team_role,color")
+    .select("id,tenant_id,branch_id,user_id,display_name,team_role,color,google_calendar_email")
     .eq("tenant_id", profile.tenantId)
     .order("display_name", { ascending: true });
 
@@ -145,6 +147,59 @@ export async function updateStaffBranchAction(input: {
   const { error } = await admin
     .from("staff")
     .update({ branch_id: branchId })
+    .eq("id", input.staffId)
+    .eq("tenant_id", profile.tenantId);
+
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+
+  revalidatePath("/admin/staff");
+  return { ok: true, error: null };
+}
+
+export async function updateStaffGoogleCalendarEmailAction(input: {
+  staffId: string;
+  googleCalendarEmail: string | null;
+}): Promise<{ ok: boolean; error: string | null }> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return { ok: false, error: "Oturum yapılandırması eksik." };
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { ok: false, error: "Oturum yok." };
+  }
+
+  const profile = getSessionProfile(user);
+  if (profile?.role !== "business_admin" || !profile.tenantId) {
+    return { ok: false, error: "Bu işlem için işletme yöneticisi olmalısınız." };
+  }
+
+  const admin = createServiceRoleSupabaseClient();
+  if (!admin) {
+    return { ok: false, error: "Sunucu yapılandırması eksik." };
+  }
+
+  const { features } = await loadTenantFeaturesById(admin, profile.tenantId);
+  if (!hasGoogleCalendarPackage(features)) {
+    return {
+      ok: false,
+      error: "Google Takvim e-postası yalnızca Pro ve Ultimate paketlerde düzenlenebilir.",
+    };
+  }
+
+  const email = input.googleCalendarEmail?.trim() || null;
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false, error: "Geçerli bir e-posta adresi girin." };
+  }
+
+  const { error } = await admin
+    .from("staff")
+    .update({ google_calendar_email: email })
     .eq("id", input.staffId)
     .eq("tenant_id", profile.tenantId);
 
