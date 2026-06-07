@@ -84,6 +84,46 @@ function sortClientsByLastAppointment(
   });
 }
 
+const clientActionIconClass = buttonVariants({ size: "icon-sm", variant: "outline" });
+
+function ClientActionsLegend({ whatsappEnabled }: { whatsappEnabled: boolean }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+      <span className="inline-flex items-center gap-1.5">
+        <span className={cn(clientActionIconClass, "pointer-events-none size-6")}>
+          <MessageSquare className="size-3" />
+        </span>
+        SMS
+      </span>
+      {whatsappEnabled ? (
+        <span className="inline-flex items-center gap-1.5">
+          <span
+            className={cn(
+              clientActionIconClass,
+              "pointer-events-none size-6 text-[#25D366] border-[#25D366]/40"
+            )}
+          >
+            <WhatsAppIcon className="size-3" />
+          </span>
+          WhatsApp
+        </span>
+      ) : null}
+      <span className="inline-flex items-center gap-1.5">
+        <span className={cn(clientActionIconClass, "pointer-events-none size-6")}>
+          <Link2 className="size-3" />
+        </span>
+        Davet
+      </span>
+      <span className="inline-flex items-center gap-1.5">
+        <span className={cn(clientActionIconClass, "pointer-events-none size-6")}>
+          <ShieldCheck className="size-3" />
+        </span>
+        Onay
+      </span>
+    </div>
+  );
+}
+
 export default function AdminClientsPage() {
   const { client, profile } = useSupabaseContext();
   const [rows, setRows] = useState<ClientListRow[]>([]);
@@ -332,6 +372,7 @@ export default function AdminClientsPage() {
       ) : null}
 
       <div className="overflow-x-auto rounded-md border">
+        <ClientActionsLegend whatsappEnabled={whatsappEnabled} />
         <Table className="min-w-[640px]">
           <TableHeader>
             <TableRow>
@@ -386,13 +427,13 @@ export default function AdminClientsPage() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="inline-flex items-center justify-end gap-0.5">
+                    <div className="inline-flex items-center justify-end gap-1">
                       {c.phone ? (
                         <Link
                           href={`/admin/sms?phone=${encodeURIComponent(c.phone)}`}
                           title="SMS gönder"
                           aria-label={`${c.name} — SMS gönder`}
-                          className={buttonVariants({ size: "icon-sm", variant: "ghost" })}
+                          className={clientActionIconClass}
                         >
                           <MessageSquare className="size-3.5" />
                         </Link>
@@ -405,8 +446,8 @@ export default function AdminClientsPage() {
                           title="WhatsApp ile yaz"
                           aria-label={`${c.name} ile WhatsApp`}
                           className={cn(
-                            buttonVariants({ size: "icon-sm", variant: "ghost" }),
-                            "text-[#25D366] hover:bg-[#25D366]/10 hover:text-[#25D366]"
+                            clientActionIconClass,
+                            "text-[#25D366] hover:bg-[#25D366]/10 hover:text-[#25D366] border-[#25D366]/40"
                           )}
                         >
                           <WhatsAppIcon className="size-3.5" />
@@ -416,19 +457,19 @@ export default function AdminClientsPage() {
                         <Button
                           type="button"
                           size="icon-sm"
-                          variant="ghost"
+                          variant="outline"
                           disabled={isBusy}
                           title={
                             copiedId === c.id
-                              ? "Panoya kopyalandı"
+                              ? "Davet bağlantısı kopyalandı"
                               : inviteActive
                                 ? "Davet bağlantısı kopyala (aktif davet var)"
                                 : "Davet bağlantısı kopyala"
                           }
                           aria-label={`${c.name} — davet bağlantısı`}
                           className={cn(
-                            copiedId === c.id && "text-emerald-600",
-                            inviteActive && copiedId !== c.id && "text-primary"
+                            copiedId === c.id && "border-emerald-500/50 text-emerald-600",
+                            inviteActive && copiedId !== c.id && "border-primary/50 text-primary"
                           )}
                           onClick={() => void copyInviteForRow(c.id)}
                         >
@@ -441,7 +482,10 @@ export default function AdminClientsPage() {
                       ) : null}
                       {c.business_approved_at ? (
                         <span
-                          className="inline-flex size-7 items-center justify-center text-green-600"
+                          className={cn(
+                            clientActionIconClass,
+                            "text-green-600 border-green-500/40 bg-green-500/5"
+                          )}
                           title="İşletme onaylı"
                         >
                           <CheckCircle2 className="size-3.5" />
@@ -450,7 +494,7 @@ export default function AdminClientsPage() {
                         <Button
                           type="button"
                           size="icon-sm"
-                          variant="ghost"
+                          variant="outline"
                           disabled={isBusy}
                           title="İşletme onayı ver"
                           aria-label={`${c.name} — işletme onayı`}
