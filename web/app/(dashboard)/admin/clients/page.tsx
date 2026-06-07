@@ -3,12 +3,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { getBusinessTenantFeaturesAction } from "@/app/(dashboard)/admin/settings/features-actions";
 import {
   approveClientBusinessAction,
   createInvitedClientAction,
   issueClientInviteAction,
 } from "./actions";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { useSupabaseContext } from "@/components/providers/supabase-provider";
+import { hasBooleanFeature } from "@/lib/features";
+import { buildWhatsAppChatUrl } from "@/lib/whatsapp/whatsapp-chat-url";
+import type { ResolvedTenantFeatures } from "@/types/features";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -85,6 +90,18 @@ export default function AdminClientsPage() {
   const [invitePhone, setInvitePhone] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteBusy, startInviteTransition] = useTransition();
+  const [features, setFeatures] = useState<ResolvedTenantFeatures | null>(null);
+
+  const whatsappEnabled =
+    profile?.role === "business_admin" &&
+    features != null &&
+    hasBooleanFeature(features, "whatsappIntegration");
+
+  useEffect(() => {
+    void getBusinessTenantFeaturesAction().then((res) => {
+      if (!res.error) setFeatures(res.features);
+    });
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -353,12 +370,29 @@ export default function AdminClientsPage() {
                   <TableCell className="text-right">
                     <div className="flex flex-wrap justify-end gap-2">
                       {c.phone ? (
-                        <Link
-                          href={`/admin/sms?phone=${encodeURIComponent(c.phone)}`}
-                          className={buttonVariants({ size: "sm", variant: "outline" })}
-                        >
-                          SMS gönder
-                        </Link>
+                        <>
+                          <Link
+                            href={`/admin/sms?phone=${encodeURIComponent(c.phone)}`}
+                            className={buttonVariants({ size: "sm", variant: "outline" })}
+                          >
+                            SMS gönder
+                          </Link>
+                          {whatsappEnabled && buildWhatsAppChatUrl(c.phone) ? (
+                            <a
+                              href={buildWhatsAppChatUrl(c.phone)!}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="WhatsApp ile yaz"
+                              aria-label={`${c.name} ile WhatsApp`}
+                              className={cn(
+                                buttonVariants({ size: "sm", variant: "outline" }),
+                                "px-2 text-[#25D366] hover:bg-[#25D366]/10 border-[#25D366]/40"
+                              )}
+                            >
+                              <WhatsAppIcon className="size-4" />
+                            </a>
+                          ) : null}
+                        </>
                       ) : null}
                       {!c.user_id ? (
                         <Button

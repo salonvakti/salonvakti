@@ -99,16 +99,7 @@ export function SmsSettingsSection() {
       <CardHeader>
         <CardTitle>SMS (Netgsm)</CardTitle>
         <CardDescription>
-          Her işletme kendi Netgsm hesabıyla SMS gönderir. API bilgileri{" "}
-          <a
-            href="https://www.netgsm.com.tr/dokuman/#otp-sms"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline-offset-2 hover:underline"
-          >
-            Netgsm OTP SMS dokümantasyonundan
-          </a>{" "}
-          alınır.
+          Her işletme kendi Netgsm hesabıyla SMS gönderir.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-2">
